@@ -1,0 +1,37 @@
+{
+  "name": "apimatic/core-lib-php",
+  "description": "Core logic and the utilities for the Apimatic's PHP SDK",
+  "keywords": [
+    "apimatic",
+    "php",
+    "core",
+    "CoreLib"
+  ],
+  "license": "OSL-3.0",
+  "type": "library",
+  "homepage": "https://github.com/apimatic/core-lib-php",
+  "require": {
+    "php": ">=7.2 <8.2",
+    "ext-json": "*",
+    "apimatic/unirest-php": "^3.0.0",
+    "apimatic/jsonmapper": "^3.0.4"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.5",
+    "phan/phan": "5.3.1",
+    "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5"
+  },
+  "autoload": {
+    "psr-4": { "CoreLib\\": "src/" }
+  },
+  "autoload-dev": {
+    "psr-4": { "CoreLib\\Tests\\": "tests/" }
+  },
+  "scripts": {
+    "test": "phpunit --coverage-text",
+    "test-coverage": "phpunit --coverage-html=coverage",
+    "lint": "phpcs --standard=phpcs-ruleset.xml src/",
+    "lint-fix": "phpcbf --standard=phpcs-ruleset.xml src/",
+    "analyze": "phan --allow-polyfill-parser"
+  }
+}
