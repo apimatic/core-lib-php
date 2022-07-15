@@ -3,4 +3,4 @@ composer.lock
 vendor/
 .phpunit.result.cache
 coverage/
-.idea
+.idea/
