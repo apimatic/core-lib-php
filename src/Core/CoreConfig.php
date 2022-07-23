@@ -1,31 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CoreLib\Core;
 
-use CoreLib\Types\DefaultConfigurations;
+use CoreDesign\Core\Authentication\AuthInterface;
+use CoreDesign\Http\HttpClientInterface;
+use CoreDesign\Http\HttpConfigurations;
+use CoreDesign\Sdk\ConverterInterface;
 
 class CoreConfig
 {
-    public static function init(DefaultConfigurations $config): self
-    {
-        return new CoreConfig($config);
-    }
+    private $httpConfigurations;
+    private $httpClient;
+    private $converter;
+    private $authManagers;
 
     /**
-     * @var DefaultConfigurations
+     * @param HttpConfigurations $config
+     * @param HttpClientInterface $httpClient
+     * @param ConverterInterface $converter
+     * @param array<string, AuthInterface> $authManagers
      */
-    private $defaultConfig;
-
-    private function __construct(DefaultConfigurations $config)
-    {
-        $this->defaultConfig = $config;
+    public function __construct(
+        HttpConfigurations $config,
+        HttpClientInterface $httpClient,
+        ConverterInterface $converter,
+        array $authManagers
+    ) {
+        $this->httpConfigurations = $config;
+        $this->httpClient = $httpClient;
+        $this->converter = $converter;
+        $this->authManagers = $authManagers;
     }
 
-    /**
-     * Get the default configurations.
-     */
-    public function getDefaultConfig(): DefaultConfigurations
+    public function getHttpConfigurations(): HttpConfigurations
     {
-        return $this->defaultConfig;
+        return $this->httpConfigurations;
+    }
+
+    public function getHttpClient(): HttpClientInterface
+    {
+        return $this->httpClient;
+    }
+
+    public function getConverter(): ConverterInterface
+    {
+        return $this->converter;
+    }
+
+    public function getAuthManagers(): array
+    {
+        return $this->authManagers;
     }
 }

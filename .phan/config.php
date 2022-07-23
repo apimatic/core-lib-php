@@ -26,8 +26,10 @@ return [
     // your application should be included in this list.
     'directory_list' => [
         'src',
-        $vendor_dir . '/apimatic/unirest-php',
-        $vendor_dir . '/apimatic/jsonmapper'
+        'tests',
+        $vendor_dir . '/apimatic/core-interfaces-php',
+        $vendor_dir . '/apimatic/jsonmapper',
+        $vendor_dir . '/phpunit/phpunit'
     ],
 
     // A directory list that defines files that will be excluded

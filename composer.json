@@ -10,11 +10,17 @@
   "license": "OSL-3.0",
   "type": "library",
   "homepage": "https://github.com/apimatic/core-lib-php",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "C:\\Users\\Asad Apimatic\\vs-workspace\\core-interfaces-php"
+    }
+  ],
   "require": {
     "php": ">=7.2 <8.2",
     "ext-json": "*",
-    "apimatic/unirest-php": "^3.0.0",
-    "apimatic/jsonmapper": "^3.0.4"
+    "apimatic/jsonmapper": "^3.0.4",
+    "apimatic/core-interfaces-php": "@dev"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.5",
@@ -30,8 +36,11 @@
   "scripts": {
     "test": "phpunit --coverage-text",
     "test-coverage": "phpunit --coverage-html=coverage",
-    "lint": "phpcs --standard=phpcs-ruleset.xml src/",
-    "lint-fix": "phpcbf --standard=phpcs-ruleset.xml src/",
-    "analyze": "phan --allow-polyfill-parser"
+    "analyze": "phan --allow-polyfill-parser",
+    "lint-fix-src": "phpcbf --standard=phpcs-ruleset.xml src/",
+    "lint-fix-test": "phpcbf --standard=phpcs-ruleset.xml tests/",
+    "lint-src": "phpcs --standard=phpcs-ruleset.xml src/",
+    "lint-test": "phpcs --standard=phpcs-ruleset.xml tests/",
+    "lint": ["@lint-src", "@lint-test"]
   }
 }
