@@ -28,7 +28,8 @@ class MockConverter implements ConverterInterface
             $request->getQueryUrl(),
             $request->getHeaders(),
             $request->getParameters(),
-            $request->getBody()
+            $request->getBody(),
+            $request->getRetryOption()
         );
     }
 

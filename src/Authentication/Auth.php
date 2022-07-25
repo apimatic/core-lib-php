@@ -6,7 +6,7 @@ namespace CoreLib\Authentication;
 
 use CoreDesign\Core\Authentication\AuthGroup;
 use CoreDesign\Core\Authentication\AuthInterface;
-use CoreDesign\Core\Request\RequestInterface;
+use CoreDesign\Core\Request\RequestSetterInterface;
 use InvalidArgumentException;
 
 class Auth implements AuthInterface
@@ -41,6 +41,7 @@ class Auth implements AuthInterface
      * @var string
      */
     private $groupType;
+    private $isValid = false;
 
     /**
      * @param array $auths
@@ -58,12 +59,12 @@ class Auth implements AuthInterface
     public function withAuthManagers(array $authManagers): self
     {
         $this->authGroups = array_map(function ($auth) use ($authManagers) {
-            if (is_string($auth)) {
+            if (is_string($auth) && isset($authManagers[$auth])) {
                 return $authManagers[$auth];
             } elseif ($auth instanceof Auth) {
                 return $auth->withAuthManagers($authManagers);
             }
-            return null;
+            throw new InvalidArgumentException("AuthManager not found with name: " . json_encode($auth));
         }, $this->auths);
         return $this;
     }
@@ -71,12 +72,13 @@ class Auth implements AuthInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function apply(RequestInterface $request): void
+    public function validate(): void
     {
         $success = empty($this->authGroups);
+        $errors = '';
         foreach ($this->authGroups as $authGroup) {
             try {
-                $authGroup->apply($request);
+                $authGroup->validate();
                 if ($this->groupType == AuthGroup::OR) {
                     $success = true;
                 }
@@ -84,10 +86,25 @@ class Auth implements AuthInterface
                 if ($this->groupType == AuthGroup::AND) {
                     throw $e;
                 }
+                $errors .= "\n-> {$e->getMessage()}";
             }
         }
-        if (!$success) {
-            throw new InvalidArgumentException("Missing required auth credentials");
+        if ($this->groupType == AuthGroup::OR && !$success) {
+            throw new InvalidArgumentException("Missing required auth credentials:$errors");
+        }
+        $this->isValid = true;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function apply(RequestSetterInterface $request): void
+    {
+        if (!$this->isValid) {
+            return;
+        }
+        foreach ($this->authGroups as $authGroup) {
+            $authGroup->apply($request);
         }
     }
 }

@@ -6,20 +6,14 @@ namespace CoreLib\Core;
 
 use CoreDesign\Core\Authentication\AuthInterface;
 use CoreDesign\Http\HttpClientInterface;
-use CoreDesign\Http\HttpConfigurations;
 use CoreDesign\Sdk\ConverterInterface;
 
 class CoreConfigBuilder
 {
-    public static function init(HttpConfigurations $config): self
+    public static function init(HttpClientInterface $httpClient): self
     {
-        return new CoreConfigBuilder($config);
+        return new CoreConfigBuilder($httpClient);
     }
-
-    /**
-     * @var HttpConfigurations
-     */
-    private $config;
 
     /**
      * @var HttpClientInterface
@@ -36,15 +30,9 @@ class CoreConfigBuilder
      */
     private $authManagers = [];
 
-    private function __construct(HttpConfigurations $config)
-    {
-        $this->config = $config;
-    }
-
-    public function httpClient(HttpClientInterface $httpClient): self
+    private function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
-        return $this;
     }
 
     public function converter(ConverterInterface $converter): self
@@ -61,6 +49,6 @@ class CoreConfigBuilder
 
     public function build(): CoreConfig
     {
-        return new CoreConfig($this->config, $this->httpClient, $this->converter, $this->authManagers);
+        return new CoreConfig($this->httpClient, $this->converter, $this->authManagers);
     }
 }

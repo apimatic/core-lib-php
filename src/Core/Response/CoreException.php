@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types\Response;
+namespace CoreLib\Core\Response;
 
 use CoreDesign\Core\CoreExceptionInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
+use CoreDesign\Sdk\ConverterInterface;
 
 class CoreException extends \Exception implements CoreExceptionInterface
 {
@@ -27,5 +28,10 @@ class CoreException extends \Exception implements CoreExceptionInterface
     public function getResponse(): ?ResponseInterface
     {
         return $this->response;
+    }
+
+    public function convert(ConverterInterface $converter)
+    {
+        return $converter->createApiException($this);
     }
 }
