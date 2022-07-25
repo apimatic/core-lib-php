@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Core;
+namespace CoreLib\Tests;
 
 use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;

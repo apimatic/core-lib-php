@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Types;
+namespace CoreLib\Tests;
 
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Request\RequestMethod;
@@ -66,7 +66,7 @@ class TypesTest extends TestCase
             $fileWrapper->getContent()
         );
         $curlFile = $fileWrapper->createCurlFileInstance('application/octet-stream');
-        $this->assertStringEndsWith('Mocking\Other\testFile.txt', $curlFile->getFilename());
+        $this->assertStringEndsWith('testFile.txt', $curlFile->getFilename());
         $this->assertEquals('text/plain', $curlFile->getMimeType());
         $this->assertEquals('My Text', $curlFile->getPostFilename());
     }

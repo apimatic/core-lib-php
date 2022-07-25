@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Authentication;
+namespace CoreLib\Tests;
 
 use CoreDesign\Core\Request\RequestMethod;
 use CoreLib\Authentication\Auth;
