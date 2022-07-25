@@ -7,7 +7,7 @@ use CoreDesign\Core\CoreExceptionInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Sdk\ConverterInterface;
-use CoreLib\Tests\Mocking\MockClass;
+use CoreLib\Tests\Mocking\Other\MockClass;
 
 class MockConverter implements ConverterInterface
 {

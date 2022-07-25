@@ -8,6 +8,7 @@ use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Sdk\ConverterInterface;
+use CoreLib\Types\Sdk\CoreCallback;
 
 class CallbackCatcher extends CoreCallback
 {

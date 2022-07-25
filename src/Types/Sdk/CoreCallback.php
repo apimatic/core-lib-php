@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types;
+namespace CoreLib\Types\Sdk;
 
 use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Mocking;
+namespace CoreLib\Tests\Mocking\Other;
 
 class MockClass
 {

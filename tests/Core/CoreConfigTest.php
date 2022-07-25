@@ -11,8 +11,8 @@ use CoreDesign\Http\RetryOption;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
 use CoreLib\Core\Response\CoreException;
-use CoreLib\Tests\Mocking\MockClass;
 use CoreLib\Tests\Mocking\MockHelper;
+use CoreLib\Tests\Mocking\Other\MockClass;
 use PHPUnit\Framework\TestCase;
 
 class CoreConfigTest extends TestCase

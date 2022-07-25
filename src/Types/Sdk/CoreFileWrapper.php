@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types;
+namespace CoreLib\Types\Sdk;
 
+use CURLFile;
 use SplFileObject;
 
 class CoreFileWrapper
@@ -49,10 +50,10 @@ class CoreFileWrapper
     /**
      * Internal method: Do not use directly!
      */
-    public function createCurlFileInstance(string $defaultMimeType): \CURLFile
+    public function createCurlFileInstance(string $defaultMimeType): CURLFile
     {
         $mimeType = $this->mimeType ?? $defaultMimeType;
-        return new \CURLFile($this->realFilePath, $mimeType, $this->filename);
+        return new CURLFile($this->realFilePath, $mimeType, $this->filename);
     }
 
     /**
