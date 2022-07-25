@@ -86,7 +86,9 @@ class MockHelper
     public static function getFileWrapper(): MockFileWrapper
     {
         if (!isset(self::$fileWrapper)) {
-            $filePath = realpath(__DIR__ . '\\Other\\testFile.txt');
+            $filePath = realpath(__DIR__ . '/Other/testFile.txt');
+            var_dump(__DIR__);
+            var_dump($filePath);
             self::$fileWrapper = MockFileWrapper::createFromPath($filePath, 'text/plain', 'My Text');
         }
         return self::$fileWrapper;
