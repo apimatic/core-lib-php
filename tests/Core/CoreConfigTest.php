@@ -13,6 +13,10 @@ use CoreLib\Core\Response\Context;
 use CoreLib\Core\Response\CoreException;
 use CoreLib\Tests\Mocking\MockHelper;
 use CoreLib\Tests\Mocking\Other\MockClass;
+use CoreLib\Tests\Mocking\Types\MockApiResponse;
+use CoreLib\Tests\Mocking\Types\MockContext;
+use CoreLib\Tests\Mocking\Types\MockRequest;
+use CoreLib\Tests\Mocking\Types\MockResponse;
 use PHPUnit\Framework\TestCase;
 
 class CoreConfigTest extends TestCase
@@ -30,45 +34,5 @@ class CoreConfigTest extends TestCase
         $this->assertEquals([], $response->getHeaders());
         $this->assertEquals('{"res":"This is raw body"}', $response->getRawBody());
         $this->assertEquals(["res" => "This is raw body"], $response->getBody());
-    }
-
-    public function testConverter()
-    {
-        $converter = MockHelper::getCoreConfig()->getConverter();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $response = MockHelper::getResponse();
-        $context = new Context($request, $response);
-        $exception = new CoreException('Error Occurred', $request, $response);
-
-        $mockVal = $request->convert($converter);
-        $this->assertInstanceOf(MockClass::class, $mockVal);
-        $this->assertEquals(RequestMethod::GET, $mockVal->body[0]);
-        $this->assertEquals('some/path', $mockVal->body[1]);
-        $this->assertEquals([], $mockVal->body[2]);
-        $this->assertEquals([], $mockVal->body[3]);
-        $this->assertEquals(null, $mockVal->body[4]);
-        $this->assertEquals(RetryOption::USE_GLOBAL_SETTINGS, $mockVal->body[5]);
-
-        $mockVal = $response->convert($converter);
-        $this->assertInstanceOf(MockClass::class, $mockVal);
-        $this->assertEquals(200, $mockVal->body[0]);
-        $this->assertEquals([], $mockVal->body[1]);
-        $this->assertEquals('{"res":"This is raw body"}', $mockVal->body[2]);
-        $this->assertEquals(["res" => "This is raw body"], $mockVal->body[3]);
-
-        $mockVal = $context->convert($converter);
-        $this->assertInstanceOf(MockClass::class, $mockVal);
-        $this->assertInstanceOf(RequestInterface::class, $mockVal->body[0]);
-        $this->assertInstanceOf(ResponseInterface::class, $mockVal->body[1]);
-
-        $mockVal = $exception->convert($converter);
-        $this->assertInstanceOf(MockClass::class, $mockVal);
-        $this->assertInstanceOf(RequestInterface::class, $mockVal->body[0]);
-        $this->assertInstanceOf(ResponseInterface::class, $mockVal->body[1]);
-
-        $mockVal = $context->convertIntoApiResponse(["alpha", "beta"], $converter);
-        $this->assertInstanceOf(MockClass::class, $mockVal);
-        $this->assertInstanceOf(ContextInterface::class, $mockVal->body[0]);
-        $this->assertEquals(["alpha", "beta"], $mockVal->body[1]);
     }
 }

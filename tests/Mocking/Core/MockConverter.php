@@ -8,43 +8,51 @@ use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Tests\Mocking\Other\MockClass;
+use CoreLib\Tests\Mocking\Types\MockApiResponse;
+use CoreLib\Tests\Mocking\Types\MockContext;
+use CoreLib\Tests\Mocking\Types\MockRequest;
+use CoreLib\Tests\Mocking\Types\MockResponse;
 
 class MockConverter implements ConverterInterface
 {
     public function createApiException(CoreExceptionInterface $exception): MockClass
     {
-        return new MockClass($exception->getRequest(), $exception->getResponse());
-    }
-
-    public function createHttpContext(ContextInterface $context): MockClass
-    {
-        return new MockClass($context->getRequest(), $context->getResponse());
-    }
-
-    public function createHttpRequest(RequestInterface $request): MockClass
-    {
         return new MockClass(
-            $request->getHttpMethod(),
-            $request->getQueryUrl(),
-            $request->getHeaders(),
-            $request->getParameters(),
-            $request->getBody(),
-            $request->getRetryOption()
+            $this->createHttpRequest($exception->getRequest()),
+            $this->createHttpResponse($exception->getResponse())
         );
     }
 
-    public function createHttpResponse(ResponseInterface $response): MockClass
+    public function createHttpContext(ContextInterface $context): MockContext
     {
-        return new MockClass(
+        return new MockContext(
+            $this->createHttpRequest($context->getRequest()),
+            $this->createHttpResponse($context->getResponse())
+        );
+    }
+
+    public function createHttpRequest(RequestInterface $request): MockRequest
+    {
+        return new MockRequest(
+            $request->getHttpMethod(),
+            $request->getHeaders(),
+            $request->getQueryUrl(),
+            $request->getParameters()
+        );
+    }
+
+    public function createHttpResponse(ResponseInterface $response): MockResponse
+    {
+        return new MockResponse(
             $response->getStatusCode(),
             $response->getHeaders(),
-            $response->getRawBody(),
-            $response->getBody()
+            $response->getRawBody()
         );
     }
 
-    public function createApiResponse(ContextInterface $context, $deserializedBody): MockClass
+    public function createApiResponse(ContextInterface $context, $deserializedBody): MockApiResponse
     {
-        return new MockClass($context, $deserializedBody);
+        $decodedBody = $context->getResponse()->getBody();
+        return MockApiResponse::createFromContext($decodedBody, $deserializedBody, $this->createHttpContext($context));
     }
 }

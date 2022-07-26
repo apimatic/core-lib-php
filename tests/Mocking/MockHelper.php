@@ -12,6 +12,7 @@ use CoreLib\Tests\Mocking\Core\MockHttpClient;
 use CoreLib\Tests\Mocking\Core\Response\MockResponse;
 use CoreLib\Tests\Mocking\Types\MockCallback;
 use CoreLib\Tests\Mocking\Types\MockFileWrapper;
+use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Types\CallbackCatcher;
 
 class MockHelper
@@ -27,7 +28,7 @@ class MockHelper
     private static $response;
 
     /**
-     * @var MockCallback
+     * @var MockResponse
      */
     private static $callback;
 
@@ -37,7 +38,7 @@ class MockHelper
     private static $callbackCatcher;
 
     /**
-     * @var MockFileWrapper
+     * @var MockApiResponse
      */
     private static $fileWrapper;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CoreLib\Tests\Mocking\Types;
 
-use CoreLib\Types\Sdk\CoreCallback;
+use CoreLib\Types\Sdk\CoreResponse;
 
-class MockCallback extends CoreCallback
+class MockResponse extends CoreResponse
 {
 }
