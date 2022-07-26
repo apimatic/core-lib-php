@@ -12,6 +12,8 @@ class TemplateParam extends Parameter
     {
         return new self($key, $value);
     }
+
+    private $encode = true;
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'template');
@@ -29,6 +31,12 @@ class TemplateParam extends Parameter
         return $this;
     }
 
+    public function dontEncode(): self
+    {
+        $this->encode = false;
+        return $this;
+    }
+
     public function typeGroup(string $typeGroup, array $serializerMethods = []): self
     {
         parent::typeGroup($typeGroup, $serializerMethods);
@@ -38,6 +46,6 @@ class TemplateParam extends Parameter
     public function apply(RequestSetterInterface $request): void
     {
         parent::validate();
-        $request->addTemplate($this->key, $this->value);
+        $request->addTemplate($this->key, $this->value, $this->encode);
     }
 }

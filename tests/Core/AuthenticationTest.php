@@ -13,11 +13,9 @@ class AuthenticationTest extends TestCase
 {
     public function testHeaderAuth()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth = Auth::or('header')->withAuthManagers($authManagers);
-        $auth->validate();
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or('header');
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -31,18 +29,15 @@ class AuthenticationTest extends TestCase
         $this->expectExceptionMessage("Missing required auth credentials:" .
             "\n-> Missing required header field: authorization");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or('headerWithNull')->withAuthManagers($authManagers);
-        $auth->validate();
+        $auth = Auth::or('headerWithNull');
+        MockHelper::getCoreConfig()->validateAuth($auth);
     }
 
     public function testHeaderOrQueryAuth()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or('header', 'query')->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or('header', 'query');
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -53,11 +48,9 @@ class AuthenticationTest extends TestCase
 
     public function testHeaderWithMissingFieldOrQueryAuth()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth = Auth::or('headerWithNull', 'query')->withAuthManagers($authManagers);
-        $auth->validate();
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or('headerWithNull', 'query');
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([], $request->getHeaders());
         $this->assertEquals('some/path?token=someAuthToken&authorization=accessToken', $request->getQueryUrl());
@@ -70,18 +63,15 @@ class AuthenticationTest extends TestCase
             "\n-> Missing required header field: authorization" .
             "\n-> Missing required query field: token");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or('headerWithNull', 'queryWithNull')->withAuthManagers($authManagers);
-        $auth->validate();
+        $auth = Auth::or('headerWithNull', 'queryWithNull');
+        MockHelper::getCoreConfig()->validateAuth($auth);
     }
 
     public function testHeaderAndQueryAuth()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::and('header', 'query')->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::and('header', 'query');
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -95,9 +85,8 @@ class AuthenticationTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required header field: authorization");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::and('headerWithNull', 'query')->withAuthManagers($authManagers);
-        $auth->validate();
+        $auth = Auth::and('headerWithNull', 'query');
+        MockHelper::getCoreConfig()->validateAuth($auth);
     }
 
     public function testHeaderAndQueryAuthWithMissingFields()
@@ -105,18 +94,15 @@ class AuthenticationTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required header field: authorization");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::and('headerWithNull', 'queryWithNull')->withAuthManagers($authManagers);
-        $auth->validate();
+        $auth = Auth::and('headerWithNull', 'queryWithNull');
+        MockHelper::getCoreConfig()->validateAuth($auth);
     }
 
     public function testFormOrHeaderAndQueryAuthWithMissingFields()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or('form', Auth::and('header', 'queryWithNull'))->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or('form', Auth::and('header', 'queryWithNull'));
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -128,11 +114,9 @@ class AuthenticationTest extends TestCase
 
     public function testFormOrHeaderOrQueryAuthWithMissingFields()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or('form', Auth::or('header', 'queryWithNull'))->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or('form', Auth::or('header', 'queryWithNull'));
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -147,12 +131,9 @@ class AuthenticationTest extends TestCase
 
     public function testFormAndHeaderWithNullOrHeaderOrQueryWithNull()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::or(Auth::and('form', 'headerWithNull'), Auth::or('header', 'queryWithNull'))
-            ->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::or(Auth::and('form', 'headerWithNull'), Auth::or('header', 'queryWithNull'));
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([], $request->getParameters());
         $this->assertEquals([
@@ -164,12 +145,9 @@ class AuthenticationTest extends TestCase
 
     public function testFormOrHeaderWithNullAndHeaderOrQueryWithNull()
     {
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::and(Auth::or('form', 'headerWithNull', 'formWithNull'), Auth::or('header', 'queryWithNull'))
-            ->withAuthManagers($authManagers);
-        $auth->validate();
-        $request = new Request(RequestMethod::GET, 'some/path');
-        $auth->apply($request);
+        $request = new Request('some/path');
+        $auth = Auth::and(Auth::or('form', 'headerWithNull', 'formWithNull'), Auth::or('header', 'queryWithNull'));
+        MockHelper::getCoreConfig()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
             'token' => 'someAuthToken',
@@ -187,10 +165,8 @@ class AuthenticationTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required query field: token");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        $auth = Auth::and(Auth::or('form', 'headerWithNull'), Auth::and('header', 'queryWithNull'))
-            ->withAuthManagers($authManagers);
-        $auth->validate();
+        $auth = Auth::and(Auth::or('form', 'headerWithNull'), Auth::and('header', 'queryWithNull'));
+        MockHelper::getCoreConfig()->validateAuth($auth);
     }
 
     public function testInvalidAuthName()
@@ -198,7 +174,6 @@ class AuthenticationTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("AuthManager not found with name: \"myAuth\"");
 
-        $authManagers = MockHelper::getCoreConfig()->getAuthManagers();
-        Auth::or('myAuth')->withAuthManagers($authManagers);
+        MockHelper::getCoreConfig()->validateAuth(Auth::or('myAuth'));
     }
 }

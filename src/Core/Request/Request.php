@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request;
 
+use CoreDesign\Core\BodyFormat;
 use CoreDesign\Core\Request\RequestArraySerialization;
+use CoreDesign\Core\Request\RequestMethod;
 use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Http\RetryOption;
 use CoreDesign\Sdk\ConverterInterface;
@@ -12,26 +14,25 @@ use CoreLib\Utils\JsonHelper;
 
 class Request implements RequestSetterInterface
 {
-    private $httpMethod;
     private $queryUrl;
+    private $requestMethod = RequestMethod::GET;
     private $headers = [];
     private $parameters = [];
     private $body;
+    private $bodyFormat;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
 
     /**
-     * @param string $httpMethod
      * @param string $queryUrl
      */
-    public function __construct(string $httpMethod, string $queryUrl)
+    public function __construct(string $queryUrl)
     {
-        $this->httpMethod = $httpMethod;
         $this->queryUrl = $queryUrl;
     }
 
     public function getHttpMethod(): string
     {
-        return $this->httpMethod;
+        return $this->requestMethod;
     }
 
     public function getQueryUrl(): string
@@ -51,12 +52,27 @@ class Request implements RequestSetterInterface
 
     public function getBody()
     {
+        if ($this->bodyFormat == BodyFormat::JSON) {
+            JsonHelper::serialize($this->body);
+        } elseif ($this->bodyFormat == BodyFormat::XML) {
+            // TODO: serialize with XML serializer
+        }
         return $this->body;
     }
 
     public function getRetryOption(): string
     {
         return $this->retryOption;
+    }
+
+    public function setHttpMethod(string $requestMethod): void
+    {
+        $this->requestMethod = $requestMethod;
+    }
+
+    public function appendPath(string $path): void
+    {
+        $this->queryUrl .= $path;
     }
 
     /**
@@ -103,6 +119,7 @@ class Request implements RequestSetterInterface
      */
     public function addFormParam(string $key, $value, string $arrayFormat = RequestArraySerialization::INDEXED): void
     {
+        $this->bodyFormat = null;
         if (empty($this->parameters)) {
             $this->body = '';
         } else {
@@ -162,10 +179,11 @@ class Request implements RequestSetterInterface
         return implode($separatorFormat ? '' : '&', $r);
     }
 
-    public function addBodyParam(string $key, $value, bool $wrapInObject = true): void
+    public function addBodyParam(string $key, $value, bool $wrapObject = true, string $format = BodyFormat::JSON): void
     {
         $this->parameters = [];
-        if (!$wrapInObject) {
+        $this->bodyFormat = $format;
+        if (!$wrapObject) {
             $this->body = $value;
             return;
         }

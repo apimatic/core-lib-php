@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request\Parameters;
 
+use CoreDesign\Core\BodyFormat;
 use CoreDesign\Core\Request\RequestSetterInterface;
 
 class BodyParam extends Parameter
@@ -12,6 +13,9 @@ class BodyParam extends Parameter
     {
         return new self($key, $value);
     }
+
+    private $format = BodyFormat::JSON;
+    private $wrapInObject = false;
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'body');
@@ -35,9 +39,21 @@ class BodyParam extends Parameter
         return $this;
     }
 
+    public function wrapInObject(): self
+    {
+        $this->wrapInObject = true;
+        return $this;
+    }
+
+    public function format(string $format): self
+    {
+        $this->format = $format;
+        return $this;
+    }
+
     public function apply(RequestSetterInterface $request): void
     {
         parent::validate();
-        $request->addBodyParam($this->key, $this->value);
+        $request->addBodyParam($this->key, $this->value, $this->wrapInObject, $this->format);
     }
 }

@@ -4,12 +4,17 @@ namespace CoreLib\Tests\Mocking;
 
 use CoreLib\Core\CoreConfig;
 use CoreLib\Core\CoreConfigBuilder;
+use CoreLib\Core\Request\Parameters\HeaderParam;
+use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Tests\Mocking\Authentication\FormAuthManager;
 use CoreLib\Tests\Mocking\Authentication\HeaderAuthManager;
 use CoreLib\Tests\Mocking\Authentication\QueryAuthManager;
 use CoreLib\Tests\Mocking\Core\MockConverter;
 use CoreLib\Tests\Mocking\Core\MockHttpClient;
 use CoreLib\Tests\Mocking\Core\Response\MockResponse;
+use CoreLib\Tests\Mocking\Other\MockChild1;
+use CoreLib\Tests\Mocking\Other\MockChild2;
+use CoreLib\Tests\Mocking\Other\MockClass;
 use CoreLib\Tests\Mocking\Types\MockCallback;
 use CoreLib\Tests\Mocking\Types\MockFileWrapper;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
@@ -45,8 +50,19 @@ class MockHelper
     public static function getCoreConfig(): CoreConfig
     {
         if (!isset(self::$coreConfig)) {
-            self::$coreConfig = CoreConfigBuilder::init(new MockHttpClient())
+            $coreConfigBuilder = CoreConfigBuilder::init(new MockHttpClient())
                 ->converter(new MockConverter())
+                ->apiCallback(self::getCallbackCatcher())
+                ->serverUrls([
+                    'Server1' => 'my/path/{one}',
+                    'Server2' => 'my/path/{two}'
+                ], 'Server1')
+                ->globalConfig(
+                    TemplateParam::init('one', 'v1')->dontEncode(),
+                    TemplateParam::init('two', 'v2')->dontEncode(),
+                    HeaderParam::init('additionalHead1', 'headVal1'),
+                    HeaderParam::init('additionalHead2', 'headVal2')
+                )
                 ->authManagers([
                     "header" => new HeaderAuthManager('someAuthToken', 'accessToken'),
                     "headerWithNull" => new HeaderAuthManager('someAuthToken', null),
@@ -55,7 +71,20 @@ class MockHelper
                     "form" => new FormAuthManager('someAuthToken', 'accessToken'),
                     "formWithNull" => new FormAuthManager('newAuthToken', null)
                 ])
-                ->build();
+                ->userAgent("{language}|{version}|{engine}|{engine-version}|{os-info}")
+                ->userAgentConfig([
+                    '{language}' => 'my lang',
+                    '{version}' => '1.*.*'
+                ])
+                ->inheritedModels([
+                    MockClass::class => [
+                        MockChild1::class,
+                        MockChild2::class
+                    ]
+                ])
+                ->additionalPropertiesMethodName('addAdditionalProperty');
+            self::$coreConfig = $coreConfigBuilder->build();
+            self::$coreConfig = $coreConfigBuilder->build();
         }
         return self::$coreConfig;
     }

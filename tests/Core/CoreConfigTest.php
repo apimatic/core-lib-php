@@ -26,7 +26,7 @@ class CoreConfigTest extends TestCase
         $httpClient = MockHelper::getCoreConfig()->getHttpClient();
         $this->assertInstanceOf(HttpClientInterface::class, $httpClient);
 
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $response = $httpClient->execute($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);

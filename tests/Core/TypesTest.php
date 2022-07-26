@@ -20,7 +20,7 @@ class TypesTest extends TestCase
 {
     public function testChildOfCoreRequest()
     {
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $sdkRequest = $request->convert(MockHelper::getCoreConfig()->getConverter());
 
         $this->assertInstanceOf(MockRequest::class, $sdkRequest);
@@ -48,7 +48,7 @@ class TypesTest extends TestCase
 
     public function testChildOfCoreContext()
     {
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response);
         $sdkContext = $context->convert(MockHelper::getCoreConfig()->getConverter());
@@ -60,7 +60,7 @@ class TypesTest extends TestCase
 
     public function testChildOfCoreApiResponse()
     {
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response);
         $sdkApiResponse = $context->convertIntoApiResponse(
@@ -78,7 +78,7 @@ class TypesTest extends TestCase
     }
     public function testCoreExceptionConverter()
     {
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $response = MockHelper::getResponse();
         $exception = new CoreException('Error Occurred', $request, $response);
         $sdkException = $exception->convert(MockHelper::getCoreConfig()->getConverter());
@@ -91,7 +91,7 @@ class TypesTest extends TestCase
     public function testCallbackCatcher()
     {
         $callback = MockHelper::getCallbackCatcher();
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $this->assertNull($callback->getOnBeforeRequest());
         $callback->callOnBeforeWithConversion($request, MockHelper::getCoreConfig()->getConverter());
 
@@ -120,7 +120,7 @@ class TypesTest extends TestCase
         $this->assertNotNull($callback->getOnBeforeRequest());
         $this->assertNotNull($callback->getOnAfterRequest());
 
-        $request = new Request(RequestMethod::GET, 'some/path');
+        $request = new Request('some/path');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response);
 

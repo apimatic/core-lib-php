@@ -2,21 +2,17 @@
 
 namespace CoreLib\Tests\Mocking\Other;
 
-class MockClass
+class MockChild2 extends MockClass
 {
     /**
-     * @var array
+     * @var string
      */
-    public $body;
+    public $childBody;
 
-    public $additionalProperties = [];
-
-    /**
-     * @param mixed ...$body
-     */
-    public function __construct(...$body)
+    public function __construct($childBody, ...$body)
     {
-        $this->body = $body;
+        $this->childBody = $childBody;
+        parent::__construct($body);
     }
 
     /**
