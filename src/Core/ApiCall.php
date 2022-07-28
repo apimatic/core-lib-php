@@ -44,8 +44,8 @@ class ApiCall
         $request = $this->requestBuilder->build($this->coreConfig);
         $this->coreConfig->beforeRequest($request);
         $response = $this->coreConfig->getHttpClient()->execute($request);
-        $context = new Context($request, $response);
+        $context = new Context($request, $response, $this->coreConfig);
         $this->coreConfig->afterResponse($context);
-        return $this->responseHandler->validate($context);
+        return $this->responseHandler->getResponse($context);
     }
 }

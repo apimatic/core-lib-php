@@ -31,21 +31,36 @@ class TemplateParam extends Parameter
         return $this;
     }
 
+    public function strictType(string $strictType, array $serializerMethods = []): self
+    {
+        parent::strictType($strictType, $serializerMethods);
+        return $this;
+    }
+
     public function dontEncode(): self
     {
         $this->encode = false;
         return $this;
     }
 
-    public function typeGroup(string $typeGroup, array $serializerMethods = []): self
-    {
-        parent::typeGroup($typeGroup, $serializerMethods);
-        return $this;
-    }
-
     public function apply(RequestSetterInterface $request): void
     {
-        parent::validate();
-        $request->addTemplate($this->key, $this->value, $this->encode);
+        if (!$this->validated) {
+            return;
+        }
+        if (is_object($this->value)) {
+            $this->value = (array) $this->value;
+        }
+        if (is_null($this->value)) {
+            $replaceValue = '';
+        } elseif (is_array($this->value)) {
+            $val = array_map('strval', $this->value);
+            $val = $this->encode ? array_map('urlencode', $val) : $val;
+            $replaceValue = implode("/", $val);
+        } else {
+            $val = strval($this->value);
+            $replaceValue = $this->encode ? urlencode($val) : $val;
+        }
+        $request->addTemplate($this->key, $replaceValue);
     }
 }

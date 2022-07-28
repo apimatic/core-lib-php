@@ -4,14 +4,24 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request\Parameters;
 
+use Closure;
 use CoreDesign\Core\Request\ParamInterface;
+use CoreDesign\Core\Request\TypeValidatorInterface;
+use Exception;
 use InvalidArgumentException;
 
 abstract class Parameter implements ParamInterface
 {
     protected $key;
     protected $value;
+    protected $validated = false;
     private $valueMissing = false;
+    private $serializationError;
+    /**
+     * @var string|null
+     */
+    private $paramStrictType;
+    private $typeGroupSerializers = [];
     private $typeName;
 
     public function __construct(string $key, $value, string $typeName)
@@ -19,6 +29,11 @@ abstract class Parameter implements ParamInterface
         $this->key = $key;
         $this->value = $value;
         $this->typeName = $typeName;
+    }
+
+    private function getName(): string
+    {
+        return $this->key == '' ? $this->typeName : $this->key;
     }
 
     public function required()
@@ -30,21 +45,41 @@ abstract class Parameter implements ParamInterface
 
     public function serializeBy(callable $serializerMethod)
     {
-        // TODO: Implement serializeBy() method.
+        try {
+            $this->value = Closure::fromCallable($serializerMethod)($this->value);
+        } catch (Exception $e) {
+            $this->serializationError = new InvalidArgumentException("Unable to serialize field: " .
+                "{$this->getName()}, Due to:\n{$e->getMessage()}");
+        }
     }
 
-    public function typeGroup(string $typeGroup, array $serializerMethods = [])
+    /**
+     * @param string   $strictType        Strict single type i.e. string, ModelName, etc. or group of types
+     *                                    in string format i.e. oneof(...), anyof(...)
+     * @param string[] $serializerMethods Methods required for the serialization of specific types in
+     *                                    in the provided strict types/type, should be an array in the format:
+     *                                    ['path/to/method argumentType', ...]. Default: []
+     */
+    public function strictType(string $strictType, array $serializerMethods = [])
     {
-        // TODO: Implement typeGroup() method.
+        $this->paramStrictType = $strictType;
+        $this->typeGroupSerializers = $serializerMethods;
     }
 
     /**
      * @throws InvalidArgumentException
      */
-    public function validate(): void
+    public function validate(TypeValidatorInterface $validator): void
     {
         if ($this->valueMissing) {
-            throw new InvalidArgumentException("Missing required $this->typeName field: $this->key");
+            throw new InvalidArgumentException("Missing required $this->typeName field: {$this->getName()}");
         }
+        if (isset($this->serializationError)) {
+            throw $this->serializationError;
+        }
+        if (isset($this->paramStrictType)) {
+            $this->value = $validator->verifyTypes($this->value, $this->paramStrictType, $this->typeGroupSerializers);
+        }
+        $this->validated = true;
     }
 }

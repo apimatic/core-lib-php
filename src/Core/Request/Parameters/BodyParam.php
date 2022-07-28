@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request\Parameters;
 
-use CoreDesign\Core\BodyFormat;
 use CoreDesign\Core\Request\RequestSetterInterface;
 
 class BodyParam extends Parameter
 {
-    public static function init(string $key, $value): self
+    public static function init($value, ?string $key = null): self
     {
         return new self($key, $value);
     }
 
-    private $format = BodyFormat::JSON;
-    private $wrapInObject = false;
-    private function __construct(string $key, $value)
+    private $bodyFormatSetter;
+    private $bodyKey;
+
+    private function __construct(?string $key, $value)
     {
-        parent::__construct($key, $value, 'body');
+        parent::__construct('', $value, 'body');
+        $this->bodyKey = $key;
+        $this->bodyFormatSetter = function (RequestSetterInterface $request): void {
+            $request->setBodyAsJson();
+        };
     }
 
     public function required(): self
@@ -33,27 +37,25 @@ class BodyParam extends Parameter
         return $this;
     }
 
-    public function typeGroup(string $typeGroup, array $serializerMethods = []): self
+    public function strictType(string $strictType, array $serializerMethods = []): self
     {
-        parent::typeGroup($typeGroup, $serializerMethods);
+        parent::strictType($strictType, $serializerMethods);
         return $this;
     }
 
-    public function wrapInObject(): self
+    public function xml(string $rootName): self
     {
-        $this->wrapInObject = true;
-        return $this;
-    }
-
-    public function format(string $format): self
-    {
-        $this->format = $format;
+        $this->bodyFormatSetter = function (RequestSetterInterface $request) use ($rootName): void {
+            $request->setBodyAsXml($rootName);
+        };
         return $this;
     }
 
     public function apply(RequestSetterInterface $request): void
     {
-        parent::validate();
-        $request->addBodyParam($this->key, $this->value, $this->wrapInObject, $this->format);
+        if ($this->validated) {
+            $request->addBodyParam($this->value, $this->bodyKey);
+            ($this->bodyFormatSetter)($request);
+        }
     }
 }

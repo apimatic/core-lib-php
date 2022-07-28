@@ -29,15 +29,16 @@ class HeaderParam extends Parameter
         return $this;
     }
 
-    public function typeGroup(string $typeGroup, array $serializerMethods = []): self
+    public function strictType(string $strictType, array $serializerMethods = []): self
     {
-        parent::typeGroup($typeGroup, $serializerMethods);
+        parent::strictType($strictType, $serializerMethods);
         return $this;
     }
 
     public function apply(RequestSetterInterface $request): void
     {
-        parent::validate();
-        $request->addHeader($this->key, $this->value);
+        if ($this->validated) {
+            $request->addHeader($this->key, $this->value);
+        }
     }
 }

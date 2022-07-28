@@ -9,7 +9,6 @@ use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Http\HttpClientInterface;
 use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Core\Request\Parameters\HeaderParam;
-use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
@@ -73,7 +72,12 @@ class CoreConfigBuilder
     /**
      * @var string|null
      */
-    private $additionalPropertiesMethodName;
+    private $additionalPropMethodName;
+
+    /**
+     * @var string|null
+     */
+    private $modelNamespace;
 
     private function __construct(HttpClientInterface $httpClient)
     {
@@ -147,7 +151,13 @@ class CoreConfigBuilder
 
     public function additionalPropertiesMethodName(string $additionalPropertiesMethodName): self
     {
-        $this->additionalPropertiesMethodName = $additionalPropertiesMethodName;
+        $this->additionalPropMethodName = $additionalPropertiesMethodName;
+        return $this;
+    }
+
+    public function modelNamespace(string $modelNamespace): self
+    {
+        $this->modelNamespace = $modelNamespace;
         return $this;
     }
 
@@ -174,7 +184,7 @@ class CoreConfigBuilder
     public function build(): CoreConfig
     {
         $this->addUserAgentToGlobalHeaders();
-        $jsonHelper = new JsonHelper($this->inheritedModels, $this->additionalPropertiesMethodName);
+        $jsonHelper = new JsonHelper($this->inheritedModels, $this->additionalPropMethodName, $this->modelNamespace);
         return new CoreConfig(
             $this->httpClient,
             $this->converter,

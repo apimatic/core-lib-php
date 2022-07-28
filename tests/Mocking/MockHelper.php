@@ -17,7 +17,6 @@ use CoreLib\Tests\Mocking\Other\MockChild2;
 use CoreLib\Tests\Mocking\Other\MockClass;
 use CoreLib\Tests\Mocking\Types\MockCallback;
 use CoreLib\Tests\Mocking\Types\MockFileWrapper;
-use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Types\CallbackCatcher;
 
 class MockHelper
@@ -33,7 +32,7 @@ class MockHelper
     private static $response;
 
     /**
-     * @var MockResponse
+     * @var MockCallback
      */
     private static $callback;
 
@@ -43,7 +42,7 @@ class MockHelper
     private static $callbackCatcher;
 
     /**
-     * @var MockApiResponse
+     * @var MockFileWrapper
      */
     private static $fileWrapper;
 
@@ -82,8 +81,11 @@ class MockHelper
                         MockChild2::class
                     ]
                 ])
-                ->additionalPropertiesMethodName('addAdditionalProperty');
+                ->additionalPropertiesMethodName('addAdditionalProperty')
+                ->modelNamespace('CoreLib\\Tests\\Mocking\\Other');
             self::$coreConfig = $coreConfigBuilder->build();
+            // @phan-suppress-next-next-line PhanPluginDuplicateAdjacentStatement Following duplicated line will
+            // call `addUserAgentToGlobalHeaders` again to see test if its added again or not
             self::$coreConfig = $coreConfigBuilder->build();
         }
         return self::$coreConfig;

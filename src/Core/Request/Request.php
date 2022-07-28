@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request;
 
-use CoreDesign\Core\BodyFormat;
-use CoreDesign\Core\Request\RequestArraySerialization;
+use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\RequestMethod;
 use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Http\RetryOption;
 use CoreDesign\Sdk\ConverterInterface;
-use CoreLib\Utils\JsonHelper;
+use CoreLib\Utils\CoreHelper;
+use CoreLib\Utils\XmlSerializer;
 
 class Request implements RequestSetterInterface
 {
+    private static $xmlSerializer;
     private $queryUrl;
     private $requestMethod = RequestMethod::GET;
     private $headers = [];
     private $parameters = [];
     private $body;
     private $bodyFormat;
+    private $xmlRootName;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
 
     /**
@@ -52,10 +54,13 @@ class Request implements RequestSetterInterface
 
     public function getBody()
     {
-        if ($this->bodyFormat == BodyFormat::JSON) {
-            JsonHelper::serialize($this->body);
-        } elseif ($this->bodyFormat == BodyFormat::XML) {
-            // TODO: serialize with XML serializer
+        if ($this->bodyFormat == Format::JSON) {
+            return CoreHelper::serialize($this->body);
+        } elseif ($this->bodyFormat == Format::XML) {
+            if (is_null(self::$xmlSerializer)) {
+                self::$xmlSerializer = new XmlSerializer([]);
+            }
+            return self::$xmlSerializer->serialize($this->xmlRootName, $this->body);
         }
         return $this->body;
     }
@@ -86,29 +91,9 @@ class Request implements RequestSetterInterface
         $this->headers[$key] = $value;
     }
 
-    public function addTemplate(string $key, $value, bool $encode = true): void
+    public function addTemplate(string $key, $value): void
     {
-        if (is_object($value)) {
-            $value = (array) $value;
-        }
-        if (is_null($value)) {
-            $replaceValue = '';
-        } elseif (is_array($value)) {
-            $val = array_map('strval', $value);
-            $val = $encode ? array_map('urlencode', $val) : $val;
-            $replaceValue = implode("/", $val);
-        } else {
-            $val = strval($value);
-            $replaceValue = $encode ? urlencode($val) : $val;
-        }
-        $this->queryUrl = str_replace("{{$key}}", $replaceValue, $this->queryUrl);
-    }
-
-    public function addQuery(string $key, $value, string $arrayFormat = RequestArraySerialization::INDEXED): void
-    {
-        $hasParams = (strrpos($this->queryUrl, '?') > 0);
-        $this->queryUrl .= (($hasParams) ? '&' : '?');
-        $this->queryUrl .= $this->httpBuildQuery([$key => $value], $arrayFormat);
+        $this->queryUrl = str_replace("{{$key}}", $value, $this->queryUrl);
     }
 
     /**
@@ -117,73 +102,21 @@ class Request implements RequestSetterInterface
      * @param string $key  key for the parameter
      * @param mixed $value value of the parameter
      */
-    public function addFormParam(string $key, $value, string $arrayFormat = RequestArraySerialization::INDEXED): void
+    public function addFormParam(string $key, $value, string $encodedBody): void
     {
         $this->bodyFormat = null;
         if (empty($this->parameters)) {
-            $this->body = '';
+            $this->body = $encodedBody;
         } else {
-            $this->body .= '&';
+            $this->body .= "&$encodedBody";
         }
         $this->parameters[$key] = $value;
-        $this->body .= $this->httpBuildQuery([$key => $value], $arrayFormat);
     }
 
-    /**
-     * Generate URL-encoded query string from the giving list of parameters.
-     *
-     * @param  array  $data   Input data to be encoded
-     * @param  string $parent Parent name accessor
-     *
-     * @return string Url encoded query string
-     */
-    private function httpBuildQuery(array $data, string $format, string $parent = ''): string
-    {
-        if ($format == RequestArraySerialization::INDEXED) {
-            return http_build_query($data);
-        }
-        $separatorFormat = in_array($format, [
-            RequestArraySerialization::TSV,
-            RequestArraySerialization::PSV,
-            RequestArraySerialization::CSV
-        ], true);
-        $keyPostfix = ($format == RequestArraySerialization::UN_INDEXED) ? '[]' : '';
-        $innerArray = !empty($parent);
-        $innerAssociativeArray = $innerArray && JsonHelper::isAssociative($data);
-        $first = true;
-        $separator = substr($format, strpos($format, ':'));
-        $r = [];
-        foreach ($data as $k => $v) {
-            if ($innerArray) {
-                if (is_numeric($k) && is_scalar($v)) {
-                    $k = $parent . $keyPostfix;
-                } else {
-                    $k = $parent . "[$k]";
-                }
-            }
-            if (is_array($v)) {
-                $r[] = static::httpBuildQuery($v, $format, $k);
-                continue;
-            }
-            if ($separatorFormat) {
-                if ($innerAssociativeArray || $first) {
-                    $r[] = "&" . urlencode($k) . "=" . urlencode(strval($v));
-                    $first = false;
-                } else {
-                    $r[] = urlencode($separator) . urlencode(strval($v));
-                }
-            } else {
-                $r[] = urlencode($k) . "=" . urlencode(strval($v));
-            }
-        }
-        return implode($separatorFormat ? '' : '&', $r);
-    }
-
-    public function addBodyParam(string $key, $value, bool $wrapObject = true, string $format = BodyFormat::JSON): void
+    public function addBodyParam($value, ?string $key = null): void
     {
         $this->parameters = [];
-        $this->bodyFormat = $format;
-        if (!$wrapObject) {
+        if (is_null($key)) {
             $this->body = $value;
             return;
         }
@@ -192,6 +125,17 @@ class Request implements RequestSetterInterface
         } else {
             $this->body = [$key => $value];
         }
+    }
+
+    public function setBodyAsXml(string $rootName): void
+    {
+        $this->bodyFormat = Format::XML;
+        $this->xmlRootName = $rootName;
+    }
+
+    public function setBodyAsJson(): void
+    {
+        $this->bodyFormat = Format::JSON;
     }
 
     public function setRetryOption(string $retryOption): void

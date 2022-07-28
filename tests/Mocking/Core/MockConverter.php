@@ -3,7 +3,6 @@
 namespace CoreLib\Tests\Mocking\Core;
 
 use CoreDesign\Core\ContextInterface;
-use CoreDesign\Core\CoreExceptionInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Sdk\ConverterInterface;
@@ -15,11 +14,15 @@ use CoreLib\Tests\Mocking\Types\MockResponse;
 
 class MockConverter implements ConverterInterface
 {
-    public function createApiException(CoreExceptionInterface $exception): MockClass
-    {
+    public function createApiException(
+        string $message,
+        RequestInterface $request,
+        ResponseInterface $response
+    ): MockClass {
         return new MockClass(
-            $this->createHttpRequest($exception->getRequest()),
-            $this->createHttpResponse($exception->getResponse())
+            $message,
+            $this->createHttpRequest($request),
+            $this->createHttpResponse($response)
         );
     }
 

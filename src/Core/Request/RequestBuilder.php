@@ -80,6 +80,7 @@ class RequestBuilder
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         foreach ($this->parameters as $param) {
+            $param->validate($coreConfig->getJsonHelper());
             $param->apply($request);
         }
         if (isset($this->auth)) {

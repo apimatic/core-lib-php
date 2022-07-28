@@ -2,7 +2,6 @@
 
 namespace CoreLib\Tests\Core;
 
-use CoreDesign\Core\Request\RequestMethod;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\Request\Request;
 use CoreLib\Tests\Mocking\MockHelper;

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace CoreLib\Core;
 
 use CoreDesign\Core\Authentication\AuthInterface;
-use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\ParamInterface;
-use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Http\HttpClientInterface;
 use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Authentication\Auth;
-use CoreLib\Core\Request\Parameters\HeaderParam;
-use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Core\Request\Request;
+use CoreLib\Core\Response\Context;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
@@ -79,27 +76,24 @@ class CoreConfig
 
     public function validateAuth(Auth $auth): Auth
     {
-        $auth->withAuthManagers($this->authManagers)->validate();
+        $auth->withAuthManagers($this->authManagers)->validate($this->jsonHelper);
         return $auth;
     }
 
-    public function beforeRequest(RequestInterface $request)
+    public function beforeRequest(Request $request)
     {
         if (isset($this->apiCallback)) {
             $this->apiCallback->callOnBeforeWithConversion($request, $this->converter);
         }
     }
 
-    public function afterResponse(ContextInterface $context)
+    public function afterResponse(Context $context)
     {
         if (isset($this->apiCallback)) {
             $this->apiCallback->callOnAfterWithConversion($context, $this->converter);
         }
     }
 
-    /**
-     * @return JsonHelper
-     */
     public function getJsonHelper(): JsonHelper
     {
         return $this->jsonHelper;

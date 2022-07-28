@@ -7,17 +7,19 @@ namespace CoreLib\Core\Response;
 use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
-use CoreDesign\Sdk\ConverterInterface;
+use CoreLib\Core\CoreConfig;
 
 class Context implements ContextInterface
 {
     private $request;
     private $response;
+    private $coreConfig;
 
-    public function __construct(RequestInterface $request, ResponseInterface $response)
+    public function __construct(RequestInterface $request, ResponseInterface $response, CoreConfig $config)
     {
         $this->request = $request;
         $this->response = $response;
+        $this->coreConfig = $config;
     }
 
     public function getRequest(): RequestInterface
@@ -30,13 +32,18 @@ class Context implements ContextInterface
         return $this->response;
     }
 
-    public function convertIntoApiResponse($deserializedBody, ConverterInterface $converter)
+    public function getCoreConfig(): CoreConfig
     {
-        return $converter->createApiResponse($this, $deserializedBody);
+        return $this->coreConfig;
     }
 
-    public function convert(ConverterInterface $converter)
+    public function convertIntoApiResponse($deserializedBody)
     {
-        return $converter->createHttpContext($this);
+        return $this->coreConfig->getConverter()->createApiResponse($this, $deserializedBody);
+    }
+
+    public function convert()
+    {
+        return $this->coreConfig->getConverter()->createHttpContext($this);
     }
 }

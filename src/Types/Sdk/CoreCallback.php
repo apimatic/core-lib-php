@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CoreLib\Types\Sdk;
 
+use Closure;
 use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Sdk\ConverterInterface;
@@ -80,7 +81,7 @@ class CoreCallback
     public function callOnBeforeRequest($request): void
     {
         if ($this->onBeforeRequest != null) {
-            call_user_func($this->onBeforeRequest, $request);
+            Closure::fromCallable($this->onBeforeRequest)($request);
         }
     }
 
@@ -97,7 +98,7 @@ class CoreCallback
     public function callOnAfterRequest($context): void
     {
         if ($this->onAfterRequest != null) {
-            call_user_func($this->onAfterRequest, $context);
+            Closure::fromCallable($this->onAfterRequest)($context);
         }
     }
 
