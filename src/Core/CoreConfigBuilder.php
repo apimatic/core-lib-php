@@ -9,6 +9,8 @@ use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Http\HttpClientInterface;
 use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Core\Request\Parameters\HeaderParam;
+use CoreLib\Core\Response\ErrorType;
+use CoreLib\Core\Response\ResponseError;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
@@ -33,6 +35,11 @@ class CoreConfigBuilder
      * @var array<string,AuthInterface>
      */
     private $authManagers = [];
+
+    /**
+     * @var ResponseError
+     */
+    private $globalResponseError;
 
     /**
      * @var array<string,string>
@@ -97,6 +104,16 @@ class CoreConfigBuilder
     public function authManagers(array $authManagers): self
     {
         $this->authManagers = $authManagers;
+        return $this;
+    }
+
+    /**
+     * @param array<int,ErrorType> $globalErrors
+     * @return $this
+     */
+    public function globalErrors(array $globalErrors): self
+    {
+        $this->globalResponseError = new ResponseError($globalErrors);
         return $this;
     }
 
@@ -192,6 +209,7 @@ class CoreConfigBuilder
             $this->serverUrls,
             $this->defaultServer,
             $this->globalConfig,
+            $this->globalResponseError,
             $this->apiCallback,
             $jsonHelper
         );

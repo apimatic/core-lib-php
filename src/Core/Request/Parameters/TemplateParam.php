@@ -43,24 +43,25 @@ class TemplateParam extends Parameter
         return $this;
     }
 
+    private function getReplacerValue($value): string
+    {
+        if (is_object($value)) {
+            $value = (array) $value;
+        }
+        if (is_null($value)) {
+            return '';
+        } elseif (is_array($value)) {
+            $val = array_map([$this, 'getReplacerValue'], $value);
+            return implode("/", $val);
+        }
+        $val = strval($value);
+        return $this->encode ? urlencode($val) : $val;
+    }
+
     public function apply(RequestSetterInterface $request): void
     {
-        if (!$this->validated) {
-            return;
+        if ($this->validated) {
+            $request->addTemplate($this->key, $this->getReplacerValue($this->value));
         }
-        if (is_object($this->value)) {
-            $this->value = (array) $this->value;
-        }
-        if (is_null($this->value)) {
-            $replaceValue = '';
-        } elseif (is_array($this->value)) {
-            $val = array_map('strval', $this->value);
-            $val = $this->encode ? array_map('urlencode', $val) : $val;
-            $replaceValue = implode("/", $val);
-        } else {
-            $val = strval($this->value);
-            $replaceValue = $this->encode ? urlencode($val) : $val;
-        }
-        $request->addTemplate($this->key, $replaceValue);
     }
 }

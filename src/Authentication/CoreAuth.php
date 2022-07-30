@@ -7,7 +7,6 @@ namespace CoreLib\Authentication;
 use CoreDesign\Core\Authentication\AuthInterface;
 use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Core\Request\RequestSetterInterface;
-use CoreDesign\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
 class CoreAuth implements AuthInterface
@@ -26,10 +25,10 @@ class CoreAuth implements AuthInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function validate(TypeValidatorInterface $validator): void
+    public function validate(): void
     {
         foreach ($this->parameters as $param) {
-            $param->validate($validator);
+            $param->validate();
         }
         $this->isValid = true;
     }

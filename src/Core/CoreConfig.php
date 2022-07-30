@@ -11,6 +11,7 @@ use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
+use CoreLib\Core\Response\ResponseError;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
@@ -22,6 +23,7 @@ class CoreConfig
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
+    private $globalResponseError;
     private $apiCallback;
     private $jsonHelper;
 
@@ -32,6 +34,7 @@ class CoreConfig
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
+     * @param ResponseError $globalResponseError
      * @param CoreCallback|null $apiCallback
      * @param JsonHelper $jsonHelper
      */
@@ -42,6 +45,7 @@ class CoreConfig
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
+        ResponseError $globalResponseError,
         ?CoreCallback $apiCallback,
         JsonHelper $jsonHelper
     ) {
@@ -51,17 +55,24 @@ class CoreConfig
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
+        $this->globalResponseError = $globalResponseError;
         $this->apiCallback = $apiCallback;
         $this->jsonHelper = $jsonHelper;
     }
 
-    public function getGlobalRequest(?string $server): Request
+    public function getGlobalRequest(?string $server = null): Request
     {
         $request = new Request($this->serverUrls[$server ?? $this->defaultServer]);
         foreach ($this->globalConfig as $config) {
+            $config->validate();
             $config->apply($request);
         }
         return $request;
+    }
+
+    public function getGlobalError(): ResponseError
+    {
+        return $this->globalResponseError;
     }
 
     public function getHttpClient(): HttpClientInterface
@@ -76,7 +87,7 @@ class CoreConfig
 
     public function validateAuth(Auth $auth): Auth
     {
-        $auth->withAuthManagers($this->authManagers)->validate($this->jsonHelper);
+        $auth->withAuthManagers($this->authManagers)->validate();
         return $auth;
     }
 

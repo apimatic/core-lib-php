@@ -73,8 +73,12 @@ class QueryParam extends EncodedParam
             return;
         }
         $value = $this->prepareValue($this->value);
+        $query = $this->httpBuildQuery([$this->key => $value], $this->format);
+        if (empty($query)) {
+            return;
+        }
         $hasParams = (strrpos($request->getQueryUrl(), '?') > 0);
         $separator = (($hasParams) ? '&' : '?');
-        $request->appendPath($separator . $this->httpBuildQuery([$this->key => $value], $this->format));
+        $request->appendPath($separator . $query);
     }
 }

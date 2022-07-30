@@ -32,7 +32,8 @@ abstract class EncodedParam extends Parameter
             return var_export($value, true);
         } elseif ($value instanceof JsonSerializable) {
             $modelArray = $value->jsonSerialize();
-            return $modelArray instanceof stdClass ? [] : $modelArray;
+            // recursively calling this function to resolve all types in any model
+            return array_map([$this, 'prepareValue'], $modelArray instanceof stdClass ? [] : $modelArray);
         }
         return $value;
     }
@@ -59,7 +60,7 @@ abstract class EncodedParam extends Parameter
         $innerArray = !empty($parent);
         $innerAssociativeArray = $innerArray && $this->isAssociative($data);
         $first = true;
-        $separator = substr($format, strpos($format, ':'));
+        $separator = substr($format, strpos($format, ':') + 1);
         $r = [];
         foreach ($data as $k => $v) {
             if ($innerArray) {

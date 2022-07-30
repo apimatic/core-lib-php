@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request;
 
+use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Http\RetryOption;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\CoreConfig;
+use CoreLib\Utils\CoreHelper;
+use CoreLib\Utils\XmlSerializer;
 
 class RequestBuilder
 {
@@ -33,6 +36,12 @@ class RequestBuilder
      * @var ParamInterface[]
      */
     private $parameters = [];
+
+    /**
+     * @var callable
+     */
+    private $bodySerializer = [CoreHelper::class, 'serialize'];
+    private $bodyFormat = Format::JSON;
 
     /**
      * @var Auth|null
@@ -73,6 +82,33 @@ class RequestBuilder
         return $this;
     }
 
+    public function bodyXml(string $rootName): self
+    {
+        $this->bodyFormat = Format::XML;
+        $this->bodySerializer = function ($value) use ($rootName): string {
+            return (new XmlSerializer([]))->serialize($rootName, $value);
+        };
+        return $this;
+    }
+
+    public function bodyXmlArray(string $rootName, string $itemName): self
+    {
+        $this->bodyFormat = Format::XML;
+        $this->bodySerializer = function ($value) use ($rootName, $itemName): string {
+            return (new XmlSerializer([]))->serializeArray($rootName, $itemName, $value);
+        };
+        return $this;
+    }
+
+    public function bodyXmlMap(string $rootName): self
+    {
+        $this->bodyFormat = Format::XML;
+        $this->bodySerializer = function ($value) use ($rootName): string {
+            return (new XmlSerializer([]))->serializeMap($rootName, $value);
+        };
+        return $this;
+    }
+
     public function build(CoreConfig $coreConfig): Request
     {
         $request = $coreConfig->getGlobalRequest($this->server);
@@ -80,9 +116,10 @@ class RequestBuilder
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         foreach ($this->parameters as $param) {
-            $param->validate($coreConfig->getJsonHelper());
+            $param->validate();
             $param->apply($request);
         }
+        $request->setBodyFormat($this->bodyFormat, $this->bodySerializer);
         if (isset($this->auth)) {
             $coreConfig->validateAuth($this->auth)->apply($request);
         }

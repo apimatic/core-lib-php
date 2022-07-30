@@ -2,10 +2,12 @@
 
 namespace CoreLib\Tests\Mocking;
 
+use CoreLib\Core\ApiCall;
 use CoreLib\Core\CoreConfig;
 use CoreLib\Core\CoreConfigBuilder;
 use CoreLib\Core\Request\Parameters\HeaderParam;
 use CoreLib\Core\Request\Parameters\TemplateParam;
+use CoreLib\Core\Response\ErrorType;
 use CoreLib\Tests\Mocking\Authentication\FormAuthManager;
 use CoreLib\Tests\Mocking\Authentication\HeaderAuthManager;
 use CoreLib\Tests\Mocking\Authentication\QueryAuthManager;
@@ -15,6 +17,8 @@ use CoreLib\Tests\Mocking\Core\Response\MockResponse;
 use CoreLib\Tests\Mocking\Other\MockChild1;
 use CoreLib\Tests\Mocking\Other\MockChild2;
 use CoreLib\Tests\Mocking\Other\MockClass;
+use CoreLib\Tests\Mocking\Other\MockException1;
+use CoreLib\Tests\Mocking\Other\MockException2;
 use CoreLib\Tests\Mocking\Types\MockCallback;
 use CoreLib\Tests\Mocking\Types\MockFileWrapper;
 use CoreLib\Types\CallbackCatcher;
@@ -62,6 +66,11 @@ class MockHelper
                     HeaderParam::init('additionalHead1', 'headVal1'),
                     HeaderParam::init('additionalHead2', 'headVal2')
                 )
+                ->globalErrors([
+                    400 => ErrorType::init('Exception num 1', MockException1::class),
+                    401 => ErrorType::init('Exception num 2', MockException2::class),
+                    403 => ErrorType::init('Exception num 3')
+                ])
                 ->authManagers([
                     "header" => new HeaderAuthManager('someAuthToken', 'accessToken'),
                     "headerWithNull" => new HeaderAuthManager('someAuthToken', null),
@@ -89,6 +98,11 @@ class MockHelper
             self::$coreConfig = $coreConfigBuilder->build();
         }
         return self::$coreConfig;
+    }
+
+    public static function newApiCall(): ApiCall
+    {
+        return new ApiCall(self::getCoreConfig());
     }
 
     public static function getResponse(): MockResponse

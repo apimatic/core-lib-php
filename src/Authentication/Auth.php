@@ -7,7 +7,6 @@ namespace CoreLib\Authentication;
 use CoreDesign\Core\Authentication\AuthGroup;
 use CoreDesign\Core\Authentication\AuthInterface;
 use CoreDesign\Core\Request\RequestSetterInterface;
-use CoreDesign\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
 class Auth implements AuthInterface
@@ -73,13 +72,13 @@ class Auth implements AuthInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function validate(TypeValidatorInterface $validator): void
+    public function validate(): void
     {
         $success = empty($this->authGroups);
         $errors = '';
         foreach ($this->authGroups as $authGroup) {
             try {
-                $authGroup->validate($validator);
+                $authGroup->validate();
                 if ($this->groupType == AuthGroup::OR) {
                     $success = true;
                 }

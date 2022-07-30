@@ -18,13 +18,14 @@ class ApiCall
     private $requestBuilder;
 
     /**
-     * @var ResponseHandler|null
+     * @var ResponseHandler
      */
     private $responseHandler;
 
     public function __construct(CoreConfig $coreConfig)
     {
         $this->coreConfig = $coreConfig;
+        $this->responseHandler = ResponseHandler::init();
     }
 
     public function requestBuilder(RequestBuilder $requestBuilder): self
@@ -42,6 +43,7 @@ class ApiCall
     public function execute()
     {
         $request = $this->requestBuilder->build($this->coreConfig);
+        $request->addAcceptHeader($this->responseHandler->getFormat());
         $this->coreConfig->beforeRequest($request);
         $response = $this->coreConfig->getHttpClient()->execute($request);
         $context = new Context($request, $response, $this->coreConfig);

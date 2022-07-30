@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace CoreLib\Utils;
 
 use apimatic\jsonmapper\JsonMapper;
-use CoreDesign\Core\Request\TypeValidatorInterface;
 use Exception;
 use InvalidArgumentException;
 
-class JsonHelper implements TypeValidatorInterface
+class JsonHelper
 {
     /**
      * @var JsonMapper
      */
-    private $jsonMapper;
+    private static $jsonMapper;
 
     /**
      * @var string
@@ -28,9 +27,9 @@ class JsonHelper implements TypeValidatorInterface
      */
     public function __construct(array $inheritedModel, ?string $additionalPropertiesMethodName, string $modelNamespace)
     {
-        $this->jsonMapper = new JsonMapper();
-        $this->jsonMapper->arChildClasses = $inheritedModel;
-        $this->jsonMapper->sAdditionalPropertiesCollectionMethod = $additionalPropertiesMethodName;
+        self::$jsonMapper = new JsonMapper();
+        self::$jsonMapper->arChildClasses = $inheritedModel;
+        self::$jsonMapper->sAdditionalPropertiesCollectionMethod = $additionalPropertiesMethodName;
         $this->namespace = $modelNamespace;
     }
 
@@ -44,10 +43,10 @@ class JsonHelper implements TypeValidatorInterface
      * @return mixed Returns validated and serialized $value
      * @throws InvalidArgumentException
      */
-    public function verifyTypes($value, string $strictType, array $serializationMethods = [])
+    public static function verifyTypes($value, string $strictType, array $serializationMethods = [])
     {
         try {
-            return $this->jsonMapper->checkTypeGroupFor($strictType, $value, $serializationMethods);
+            return self::$jsonMapper->checkTypeGroupFor($strictType, $value, $serializationMethods);
         } catch (Exception $e) {
             throw new InvalidArgumentException($e->getMessage());
         }
@@ -55,7 +54,7 @@ class JsonHelper implements TypeValidatorInterface
 
     /**
      * @param mixed  $value     Value to be mapped by the class
-     * @param string $classname Name of the class to map
+     * @param string $classname Name of the class inclusive of its namespace
      * @param int    $dimension Greater than 0 if trying to map an array of
      *                          class with some dimensions, Default: 0
      * @return mixed Returns the mapped $value
@@ -63,8 +62,8 @@ class JsonHelper implements TypeValidatorInterface
      */
     public function mapClass($value, string $classname, int $dimension = 0)
     {
-        return $dimension <= 0 ? $this->jsonMapper->mapClass($value, "$this->namespace\\$classname")
-            : $this->jsonMapper->mapClassArray($value, "$this->namespace\\$classname", $dimension);
+        return $dimension <= 0 ? self::$jsonMapper->mapClass($value, $classname)
+            : self::$jsonMapper->mapClassArray($value, $classname, $dimension);
     }
 
     /**
@@ -78,6 +77,6 @@ class JsonHelper implements TypeValidatorInterface
      */
     public function mapTypes($value, string $typeGroup, array $deserializers = [])
     {
-        return $this->jsonMapper->mapFor($value, $typeGroup, $this->namespace, $deserializers);
+        return self::$jsonMapper->mapFor($value, $typeGroup, $this->namespace, $deserializers);
     }
 }

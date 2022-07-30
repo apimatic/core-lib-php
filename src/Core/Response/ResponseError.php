@@ -4,42 +4,50 @@ namespace CoreLib\Core\Response;
 
 class ResponseError
 {
-    /**
-     * @var array<int, string[]>
-     */
-    private $errors = [];
+    private $errors;
 
     /**
      * @var bool
      */
-    private $throwApiException = true;
+    private $throwException = true;
 
-    public function addError(int $errorCode, string $errorClass, string $errorDescription): void
+    /**
+     * @param $errors array<int,ErrorType>
+     */
+    public function __construct(array $errors = [])
     {
-        $this->errors[$errorCode] = [$errorClass, $errorDescription];
+        $this->errors = $errors;
     }
 
-    public function throwApiException(bool $throwApiException): void
+    public function addError(int $errorCode, ErrorType $error): void
     {
-        $this->throwApiException = $throwApiException;
+        $this->errors[$errorCode] = $error;
+    }
+
+    public function throwException(bool $shouldThrow): void
+    {
+        $this->throwException = $shouldThrow;
+    }
+
+    public function mergeFrom(self $error): self
+    {
+        $this->errors = array_merge($this->errors, $error->errors);
+        $this->throwException = $error->throwException;
+        return $this;
     }
 
     public function throw(Context $context)
     {
-        if (!$this->throwApiException) {
+        if (!$this->throwException) {
             return;
         }
         $response = $context->getResponse();
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return;
         }
-        $body = $response->getBody();
         $error = $this->errors[$response->getStatusCode()];
-        if (isset($error, $body)) {
-            $body->reason = $error[1];
-            $body->request = $context->getRequest();
-            $body->response = $response;
-            throw $context->getCoreConfig()->getJsonHelper()->mapClass($body, $error[0]);
+        if (isset($error)) {
+            $error->throw($context);
         }
         throw $context->getCoreConfig()->getConverter()->createApiException(
             'Invalid Response.',

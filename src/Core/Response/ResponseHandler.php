@@ -8,7 +8,7 @@ use CoreDesign\Core\Format;
 
 class ResponseHandler
 {
-    public static function init(string $format = Format::JSON): self
+    public static function init(string $format = Format::SCALAR): self
     {
         return new self($format);
     }
@@ -29,15 +29,15 @@ class ResponseHandler
         $this->responseMultiType = new ResponseMultiType();
     }
 
-    public function throwErrorOn(int $statusCode, string $exceptionClass, string $description): self
+    public function throwErrorOn(int $statusCode, ErrorType $error): self
     {
-        $this->responseError->addError($statusCode, $exceptionClass, $description);
+        $this->responseError->addError($statusCode, $error);
         return $this;
     }
 
     public function returnApiResponse(): self
     {
-        $this->responseError->throwApiException(false);
+        $this->responseError->throwException(false);
         $this->useApiResponse = true;
         return $this;
     }
@@ -69,13 +69,18 @@ class ResponseHandler
         return $this;
     }
 
+    public function getFormat(): string
+    {
+        return $this->format;
+    }
+
     /**
      * @param Context $context
      * @return mixed
      */
     public function getResponse(Context $context)
     {
-        $this->responseError->throw($context);
+        $context->throwErrorFrom($this->responseError);
         $response = $this->deserializableType->getFrom($context);
         $response = $response ?? $this->responseType->getFrom($context, $this->format);
         $response = $response ?? $this->responseMultiType->getFrom($context, $this->format);

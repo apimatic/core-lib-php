@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request;
 
+use Closure;
 use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\RequestMethod;
 use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Http\RetryOption;
 use CoreDesign\Sdk\ConverterInterface;
-use CoreLib\Utils\CoreHelper;
-use CoreLib\Utils\XmlSerializer;
+use CoreLib\Types\Sdk\CoreFileWrapper;
 
 class Request implements RequestSetterInterface
 {
-    private static $xmlSerializer;
     private $queryUrl;
     private $requestMethod = RequestMethod::GET;
     private $headers = [];
     private $parameters = [];
     private $body;
-    private $bodyFormat;
-    private $xmlRootName;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
 
     /**
@@ -54,20 +51,19 @@ class Request implements RequestSetterInterface
 
     public function getBody()
     {
-        if ($this->bodyFormat == Format::JSON) {
-            return CoreHelper::serialize($this->body);
-        } elseif ($this->bodyFormat == Format::XML) {
-            if (is_null(self::$xmlSerializer)) {
-                self::$xmlSerializer = new XmlSerializer([]);
-            }
-            return self::$xmlSerializer->serialize($this->xmlRootName, $this->body);
-        }
         return $this->body;
     }
 
     public function getRetryOption(): string
     {
         return $this->retryOption;
+    }
+
+    public function addAcceptHeader(string $accept): void
+    {
+        if ($accept !== Format::SCALAR) {
+            $this->addHeader('Accept', $accept);
+        }
     }
 
     public function setHttpMethod(string $requestMethod): void
@@ -104,7 +100,6 @@ class Request implements RequestSetterInterface
      */
     public function addFormParam(string $key, $value, string $encodedBody): void
     {
-        $this->bodyFormat = null;
         if (empty($this->parameters)) {
             $this->body = $encodedBody;
         } else {
@@ -127,15 +122,27 @@ class Request implements RequestSetterInterface
         }
     }
 
-    public function setBodyAsXml(string $rootName): void
+    public function setBodyFormat(string $format, callable $serializer): void
     {
-        $this->bodyFormat = Format::XML;
-        $this->xmlRootName = $rootName;
-    }
-
-    public function setBodyAsJson(): void
-    {
-        $this->bodyFormat = Format::JSON;
+        if (!empty($this->parameters)) {
+            // if request contains form parameters then remove content-type
+            if (array_key_exists('content-type', $this->headers)) {
+                unset($this->headers['content-type']);
+            }
+            return;
+        }
+        if (!array_key_exists('content-type', $this->headers)) {
+            // if request has body, and content-type header is not already added
+            // then add content-type, based on type and format of body
+            if ($this->body instanceof CoreFileWrapper) {
+                $this->addHeader('content-type', 'application/octet-stream');
+            } elseif ($format == Format::JSON && !is_object($this->body) && !is_array($this->body)) {
+                $this->addHeader('content-type', Format::SCALAR);
+            } else {
+                $this->addHeader('content-type', $format);
+            }
+        }
+        $this->body = Closure::fromCallable($serializer)($this->body);
     }
 
     public function setRetryOption(string $retryOption): void

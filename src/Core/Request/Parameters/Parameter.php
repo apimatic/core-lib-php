@@ -6,9 +6,9 @@ namespace CoreLib\Core\Request\Parameters;
 
 use Closure;
 use CoreDesign\Core\Request\ParamInterface;
-use CoreDesign\Core\Request\TypeValidatorInterface;
-use Exception;
+use CoreLib\Utils\JsonHelper;
 use InvalidArgumentException;
+use Throwable;
 
 abstract class Parameter implements ParamInterface
 {
@@ -47,7 +47,7 @@ abstract class Parameter implements ParamInterface
     {
         try {
             $this->value = Closure::fromCallable($serializerMethod)($this->value);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->serializationError = new InvalidArgumentException("Unable to serialize field: " .
                 "{$this->getName()}, Due to:\n{$e->getMessage()}");
         }
@@ -69,7 +69,7 @@ abstract class Parameter implements ParamInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function validate(TypeValidatorInterface $validator): void
+    public function validate(): void
     {
         if ($this->valueMissing) {
             throw new InvalidArgumentException("Missing required $this->typeName field: {$this->getName()}");
@@ -78,7 +78,7 @@ abstract class Parameter implements ParamInterface
             throw $this->serializationError;
         }
         if (isset($this->paramStrictType)) {
-            $this->value = $validator->verifyTypes($this->value, $this->paramStrictType, $this->typeGroupSerializers);
+            $this->value = JsonHelper::verifyTypes($this->value, $this->paramStrictType, $this->typeGroupSerializers);
         }
         $this->validated = true;
     }

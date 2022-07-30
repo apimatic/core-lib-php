@@ -11,6 +11,7 @@ use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockContext;
 use CoreLib\Tests\Mocking\Types\MockRequest;
 use CoreLib\Tests\Mocking\Types\MockResponse;
+use CoreLib\Utils\CoreHelper;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
@@ -79,9 +80,9 @@ class TypesTest extends TestCase
             ->createApiException('Error Occurred', $request, $response);
 
         $this->assertInstanceOf(MockClass::class, $sdkException);
-        $this->assertEquals('Error Occurred', $sdkException->body[0]);
-        $this->assertInstanceOf(MockRequest::class, $sdkException->body[1]);
-        $this->assertInstanceOf(MockResponse::class, $sdkException->body[2]);
+        $this->assertEquals('Error Occurred', $sdkException->body['errorMessage']);
+        $this->assertInstanceOf(MockRequest::class, $sdkException->body['request']);
+        $this->assertInstanceOf(MockResponse::class, $sdkException->body['response']);
     }
 
     public function testCallbackCatcher()
@@ -131,8 +132,8 @@ class TypesTest extends TestCase
         $this->assertEquals('text/plain', $fileWrapper->getMimeType());
         $this->assertEquals('My Text', $fileWrapper->getFilename());
         $this->assertEquals(
-            'This test file is created to test CoreFileWrapper functionality',
-            $fileWrapper->getContent()
+            '"This test file is created to test CoreFileWrapper functionality"',
+            CoreHelper::serialize($fileWrapper)
         );
         $curlFile = $fileWrapper->createCurlFileInstance('application/octet-stream');
         $this->assertStringEndsWith('testFile.txt', $curlFile->getFilename());

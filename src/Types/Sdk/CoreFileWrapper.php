@@ -7,7 +7,7 @@ namespace CoreLib\Types\Sdk;
 use CURLFile;
 use SplFileObject;
 
-class CoreFileWrapper
+class CoreFileWrapper implements \JsonSerializable
 {
     /**
      * @var string
@@ -50,16 +50,14 @@ class CoreFileWrapper
     /**
      * Internal method: Do not use directly!
      */
-    public function createCurlFileInstance(string $defaultMimeType): CURLFile
+    public function createCurlFileInstance(string $defaultMimeType = 'application/octet-stream'): CURLFile
     {
         $mimeType = $this->mimeType ?? $defaultMimeType;
         return new CURLFile($this->realFilePath, $mimeType, $this->filename);
     }
 
-    /**
-     * Internal method: Do not use directly!
-     */
-    public function getContent(): ?string
+    #[\ReturnTypeWillChange] // @phan-suppress-current-line PhanUndeclaredClassAttribute for (php < 8.1)
+    public function jsonSerialize()
     {
         $thisFile = new SplFileObject($this->realFilePath);
         $content = $thisFile->fread($thisFile->getSize());

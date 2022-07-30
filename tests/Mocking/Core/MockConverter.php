@@ -19,11 +19,11 @@ class MockConverter implements ConverterInterface
         RequestInterface $request,
         ResponseInterface $response
     ): MockClass {
-        return new MockClass(
-            $message,
-            $this->createHttpRequest($request),
-            $this->createHttpResponse($response)
-        );
+        return new MockClass([
+            'errorMessage' => $message,
+            'request' => $this->createHttpRequest($request),
+            'response' => $this->createHttpResponse($response)
+        ]);
     }
 
     public function createHttpContext(ContextInterface $context): MockContext
