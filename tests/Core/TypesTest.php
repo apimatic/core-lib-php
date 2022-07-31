@@ -6,11 +6,11 @@ use CoreDesign\Core\Request\RequestMethod;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
 use CoreLib\Tests\Mocking\MockHelper;
-use CoreLib\Tests\Mocking\Other\MockClass;
+use CoreLib\Tests\Mocking\Other\MockException;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockContext;
 use CoreLib\Tests\Mocking\Types\MockRequest;
-use CoreLib\Tests\Mocking\Types\MockResponse;
+use CoreLib\Tests\Mocking\Types\MockCoreResponse;
 use CoreLib\Utils\CoreHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -38,7 +38,7 @@ class TypesTest extends TestCase
         $response = MockHelper::getResponse();
         $sdkResponse = $response->convert(MockHelper::getCoreConfig()->getConverter());
 
-        $this->assertInstanceOf(MockResponse::class, $sdkResponse);
+        $this->assertInstanceOf(MockCoreResponse::class, $sdkResponse);
         $this->assertEquals(200, $sdkResponse->getStatusCode());
         $this->assertEquals([], $sdkResponse->getHeaders());
         $this->assertEquals('{"res":"This is raw body"}', $sdkResponse->getRawBody());
@@ -53,7 +53,7 @@ class TypesTest extends TestCase
 
         $this->assertInstanceOf(MockContext::class, $sdkContext);
         $this->assertInstanceOf(MockRequest::class, $sdkContext->getRequest());
-        $this->assertInstanceOf(MockResponse::class, $sdkContext->getResponse());
+        $this->assertInstanceOf(MockCoreResponse::class, $sdkContext->getResponse());
     }
 
     public function testChildOfCoreApiResponse()
@@ -79,10 +79,10 @@ class TypesTest extends TestCase
             ->getConverter()
             ->createApiException('Error Occurred', $request, $response);
 
-        $this->assertInstanceOf(MockClass::class, $sdkException);
-        $this->assertEquals('Error Occurred', $sdkException->body['errorMessage']);
-        $this->assertInstanceOf(MockRequest::class, $sdkException->body['request']);
-        $this->assertInstanceOf(MockResponse::class, $sdkException->body['response']);
+        $this->assertInstanceOf(MockException::class, $sdkException);
+        $this->assertEquals('Error Occurred', $sdkException->getMessage());
+        $this->assertInstanceOf(MockRequest::class, $sdkException->request);
+        $this->assertInstanceOf(MockCoreResponse::class, $sdkException->response);
     }
 
     public function testCallbackCatcher()
@@ -112,7 +112,7 @@ class TypesTest extends TestCase
         });
         $callback->setOnAfterRequest(function (MockContext $sdkContext): void {
             $this->assertInstanceOf(MockRequest::class, $sdkContext->getRequest());
-            $this->assertInstanceOf(MockResponse::class, $sdkContext->getResponse());
+            $this->assertInstanceOf(MockCoreResponse::class, $sdkContext->getResponse());
         });
         $this->assertNotNull($callback->getOnBeforeRequest());
         $this->assertNotNull($callback->getOnAfterRequest());

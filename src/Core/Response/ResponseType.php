@@ -2,6 +2,7 @@
 
 namespace CoreLib\Core\Response;
 
+use Closure;
 use Exception;
 
 class ResponseType
@@ -10,6 +11,11 @@ class ResponseType
      * @var string|null
      */
     private $responseClass;
+
+    /**
+     * @var callable|null
+     */
+    private $xmlDeserializer;
 
     /**
      * @var int|null
@@ -21,21 +27,31 @@ class ResponseType
         $this->responseClass = $responseClass;
     }
 
+    public function setXmlDeserializer(callable $xmlDeserializer): void
+    {
+        $this->xmlDeserializer = $xmlDeserializer;
+    }
+
     public function setDimensions(int $dimensions): void
     {
         $this->dimensions = $dimensions;
     }
 
-    public function getFrom(Context $context, string $format)
+    public function getFrom(Context $context)
     {
         if (is_null($this->responseClass)) {
             return null;
         }
         $coreConfig = $context->getCoreConfig();
-        $responseBody = $context->getResponse()->getBody();
         try {
+            if (isset($this->xmlDeserializer)) {
+                return Closure::fromCallable($this->xmlDeserializer)(
+                    $context->getResponse()->getRawBody(),
+                    $this->responseClass
+                );
+            }
             return $coreConfig->getJsonHelper()
-                ->mapClass($responseBody, $this->responseClass, $this->dimensions);
+                ->mapClass($context->getResponse()->getBody(), $this->responseClass, $this->dimensions);
         } catch (Exception $e) {
             throw $coreConfig->getConverter()
                 ->createApiException($e->getMessage(), $context->getRequest(), $context->getResponse());

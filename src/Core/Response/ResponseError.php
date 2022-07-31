@@ -4,6 +4,9 @@ namespace CoreLib\Core\Response;
 
 class ResponseError
 {
+    /**
+     * @var array<string,ErrorType>
+     */
     private $errors;
 
     /**
@@ -11,15 +14,7 @@ class ResponseError
      */
     private $throwException = true;
 
-    /**
-     * @param $errors array<int,ErrorType>
-     */
-    public function __construct(array $errors = [])
-    {
-        $this->errors = $errors;
-    }
-
-    public function addError(int $errorCode, ErrorType $error): void
+    public function addError(string $errorCode, ErrorType $error): void
     {
         $this->errors[$errorCode] = $error;
     }
@@ -27,13 +22,6 @@ class ResponseError
     public function throwException(bool $shouldThrow): void
     {
         $this->throwException = $shouldThrow;
-    }
-
-    public function mergeFrom(self $error): self
-    {
-        $this->errors = array_merge($this->errors, $error->errors);
-        $this->throwException = $error->throwException;
-        return $this;
     }
 
     public function throw(Context $context)
@@ -45,9 +33,9 @@ class ResponseError
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return;
         }
-        $error = $this->errors[$response->getStatusCode()];
-        if (isset($error)) {
-            $error->throw($context);
+        $statusCode = strval($response->getStatusCode());
+        if (isset($this->errors[$statusCode])) {
+            $this->errors[$statusCode]->throw($context);
         }
         throw $context->getCoreConfig()->getConverter()->createApiException(
             'Invalid Response.',

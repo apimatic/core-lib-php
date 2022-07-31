@@ -11,7 +11,8 @@ use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
-use CoreLib\Core\Response\ResponseError;
+use CoreLib\Core\Response\ErrorType;
+use CoreLib\Core\Response\ResponseHandler;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
@@ -23,7 +24,7 @@ class CoreConfig
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
-    private $globalResponseError;
+    private $globalErrors;
     private $apiCallback;
     private $jsonHelper;
 
@@ -34,7 +35,7 @@ class CoreConfig
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
-     * @param ResponseError $globalResponseError
+     * @param array<int,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
      * @param JsonHelper $jsonHelper
      */
@@ -45,7 +46,7 @@ class CoreConfig
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
-        ResponseError $globalResponseError,
+        array $globalErrors,
         ?CoreCallback $apiCallback,
         JsonHelper $jsonHelper
     ) {
@@ -55,7 +56,7 @@ class CoreConfig
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
-        $this->globalResponseError = $globalResponseError;
+        $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
         $this->jsonHelper = $jsonHelper;
     }
@@ -70,9 +71,13 @@ class CoreConfig
         return $request;
     }
 
-    public function getGlobalError(): ResponseError
+    public function getGlobalResponseHandler(): ResponseHandler
     {
-        return $this->globalResponseError;
+        $responseHandler = new ResponseHandler();
+        foreach ($this->globalErrors as $key => $error) {
+            $responseHandler->throwErrorOn($key, $error);
+        }
+        return $responseHandler;
     }
 
     public function getHttpClient(): HttpClientInterface

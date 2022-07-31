@@ -12,6 +12,7 @@ class MockResponse implements ResponseInterface
 {
     private $body;
     private $rawBody;
+    private $statusCode = 200;
     public function __construct(?RequestInterface $request = null)
     {
         if (is_null($request)) {
@@ -28,9 +29,14 @@ class MockResponse implements ResponseInterface
         $this->rawBody = CoreHelper::serialize($this->body);
     }
 
+    public function setStatusCode(int $statusCode): void
+    {
+        $this->statusCode = $statusCode;
+    }
+
     public function getStatusCode(): int
     {
-        return 200;
+        return $this->statusCode;
     }
 
     public function getHeaders(): array
@@ -38,9 +44,20 @@ class MockResponse implements ResponseInterface
         return [];
     }
 
+    public function setRawBody($rawBody): void
+    {
+        $this->rawBody = $rawBody;
+    }
+
     public function getRawBody(): string
     {
         return $this->rawBody ?? '{"res":"This is raw body"}';
+    }
+
+    public function setBody($body): void
+    {
+        $this->body = (is_object($body) || is_array($body)) ? (object)(array) $body : $body;
+        $this->rawBody = CoreHelper::serialize($body);
     }
 
     public function getBody()

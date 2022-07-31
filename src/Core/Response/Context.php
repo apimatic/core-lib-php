@@ -37,13 +37,6 @@ class Context implements ContextInterface
         return $this->coreConfig;
     }
 
-    public function throwErrorFrom(ResponseError $error)
-    {
-        $this->coreConfig->getGlobalError()
-            ->mergeFrom($error)
-            ->throw($this);
-    }
-
     public function convertIntoApiResponse($deserializedBody)
     {
         return $this->coreConfig->getConverter()->createApiResponse($this, $deserializedBody);

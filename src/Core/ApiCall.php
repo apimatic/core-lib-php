@@ -25,7 +25,7 @@ class ApiCall
     public function __construct(CoreConfig $coreConfig)
     {
         $this->coreConfig = $coreConfig;
-        $this->responseHandler = ResponseHandler::init();
+        $this->responseHandler = $coreConfig->getGlobalResponseHandler();
     }
 
     public function requestBuilder(RequestBuilder $requestBuilder): self

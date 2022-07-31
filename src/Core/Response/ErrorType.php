@@ -21,13 +21,14 @@ class ErrorType
     {
         $response = $context->getResponse();
         $body = $response->getBody();
+        $converter = $context->getCoreConfig()->getConverter();
         if (isset($this->className, $body)) {
             $body->reason = $this->description;
-            $body->request = $context->getRequest();
-            $body->response = $response;
+            $body->request = $converter->createHttpRequest($context->getRequest());
+            $body->response = $converter->createHttpResponse($response);
             throw $context->getCoreConfig()->getJsonHelper()->mapClass($body, $this->className);
         }
-        throw $context->getCoreConfig()->getConverter()->createApiException(
+        throw $converter->createApiException(
             $this->description,
             $context->getRequest(),
             $response

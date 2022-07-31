@@ -6,6 +6,6 @@ namespace CoreLib\Tests\Mocking\Types;
 
 use CoreLib\Types\Sdk\CoreResponse;
 
-class MockResponse extends CoreResponse
+class MockCoreResponse extends CoreResponse
 {
 }

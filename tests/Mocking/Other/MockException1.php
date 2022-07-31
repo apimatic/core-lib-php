@@ -2,14 +2,8 @@
 
 namespace CoreLib\Tests\Mocking\Other;
 
-use Exception;
-
-class MockException1 extends Exception implements \Throwable
+class MockException1 extends MockException
 {
-    public $reason;
-    public $request;
-    public $response;
-
     /**
      * @var MockClass
      */

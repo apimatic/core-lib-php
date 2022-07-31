@@ -6,11 +6,11 @@ use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Sdk\ConverterInterface;
-use CoreLib\Tests\Mocking\Other\MockClass;
+use CoreLib\Tests\Mocking\Other\MockException;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockContext;
 use CoreLib\Tests\Mocking\Types\MockRequest;
-use CoreLib\Tests\Mocking\Types\MockResponse;
+use CoreLib\Tests\Mocking\Types\MockCoreResponse;
 
 class MockConverter implements ConverterInterface
 {
@@ -18,12 +18,8 @@ class MockConverter implements ConverterInterface
         string $message,
         RequestInterface $request,
         ResponseInterface $response
-    ): MockClass {
-        return new MockClass([
-            'errorMessage' => $message,
-            'request' => $this->createHttpRequest($request),
-            'response' => $this->createHttpResponse($response)
-        ]);
+    ): MockException {
+        return new MockException($message, $this->createHttpRequest($request), $this->createHttpResponse($response));
     }
 
     public function createHttpContext(ContextInterface $context): MockContext
@@ -44,9 +40,9 @@ class MockConverter implements ConverterInterface
         );
     }
 
-    public function createHttpResponse(ResponseInterface $response): MockResponse
+    public function createHttpResponse(ResponseInterface $response): MockCoreResponse
     {
-        return new MockResponse(
+        return new MockCoreResponse(
             $response->getStatusCode(),
             $response->getHeaders(),
             $response->getRawBody()

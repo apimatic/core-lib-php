@@ -13,7 +13,7 @@ class MockContext extends CoreContext
         return $this->request;
     }
 
-    public function getResponse(): MockResponse
+    public function getResponse(): MockCoreResponse
     {
         return $this->response;
     }

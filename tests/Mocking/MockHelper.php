@@ -8,6 +8,7 @@ use CoreLib\Core\CoreConfigBuilder;
 use CoreLib\Core\Request\Parameters\HeaderParam;
 use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Core\Response\ErrorType;
+use CoreLib\Core\Response\ResponseHandler;
 use CoreLib\Tests\Mocking\Authentication\FormAuthManager;
 use CoreLib\Tests\Mocking\Authentication\HeaderAuthManager;
 use CoreLib\Tests\Mocking\Authentication\QueryAuthManager;
@@ -103,6 +104,11 @@ class MockHelper
     public static function newApiCall(): ApiCall
     {
         return new ApiCall(self::getCoreConfig());
+    }
+
+    public static function globalResponseHandler(): ResponseHandler
+    {
+        return self::getCoreConfig()->getGlobalResponseHandler();
     }
 
     public static function getResponse(): MockResponse

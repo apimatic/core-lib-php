@@ -8,11 +8,12 @@ use CoreLib\Utils\XmlSerializer;
 class MockClass implements \JsonSerializable
 {
     public $body;
-    public $additionalProperties = [];
     public function __construct(array $body)
     {
         $this->body = $body;
     }
+
+    public $additionalProperties = [];
 
     /**
      * Add a property to this model.

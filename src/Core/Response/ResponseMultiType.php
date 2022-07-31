@@ -26,7 +26,7 @@ class ResponseMultiType
         $this->deserializers = $deserializers;
     }
 
-    public function getFrom(Context $context, string $format)
+    public function getFrom(Context $context)
     {
         if (is_null($this->typeGroup)) {
             return null;
