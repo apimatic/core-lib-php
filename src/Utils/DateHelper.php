@@ -38,10 +38,8 @@ class DateHelper
     {
         if (is_null($date)) {
             return null;
-        } elseif ($date instanceof DateTime) {
-            return $date->format(static::SIMPLE_DATE);
         }
-        throw new InvalidArgumentException('Not a valid DateTime object.');
+        return $date->format(static::SIMPLE_DATE);
     }
 
     /**
@@ -168,10 +166,8 @@ class DateHelper
     {
         if (is_null($date)) {
             return null;
-        } elseif ($date instanceof DateTime) {
-            return $date->setTimeZone(new DateTimeZone('GMT'))->format(static::RFC1123);
         }
-        throw new InvalidArgumentException('Not a valid DateTime object.');
+        return $date->setTimeZone(new DateTimeZone('GMT'))->format(static::RFC1123);
     }
 
     /**
@@ -298,10 +294,8 @@ class DateHelper
     {
         if (is_null($date)) {
             return null;
-        } elseif ($date instanceof DateTime) {
-            return $date->setTimeZone(new DateTimeZone('UTC'))->format(static::RFC3339);
         }
-        throw new InvalidArgumentException('Not a valid DateTime object.');
+        return $date->setTimeZone(new DateTimeZone('UTC'))->format(static::RFC3339);
     }
 
     /**
@@ -348,7 +342,7 @@ class DateHelper
             return null;
         }
         // Check for timezone information and append it if missing
-        if (!(substr($date, strlen($date) - 1) == 'Z' || strpos($date, '+') !== false)) {
+        if (substr($date, strlen($date) - 1) !== 'Z' && strpos($date, '+') === false) {
             $date .= 'Z';
         }
 
@@ -441,10 +435,8 @@ class DateHelper
     {
         if (is_null($date)) {
             return null;
-        } elseif ($date instanceof DateTime) {
-            return $date->getTimestamp();
         }
-        throw new InvalidArgumentException('Not a valid DateTime object.');
+        return $date->getTimestamp();
     }
 
     /**
@@ -487,7 +479,7 @@ class DateHelper
      */
     public static function fromUnixTimestamp(?string $date): ?DateTime
     {
-        if (is_null($date)) {
+        if (empty($date)) {
             return null;
         }
         $x = DateTime::createFromFormat("U", $date);
