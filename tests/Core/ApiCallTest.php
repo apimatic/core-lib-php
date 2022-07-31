@@ -574,7 +574,7 @@ class ApiCallTest extends TestCase
             ->getResponse($context);
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute"],
+            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result->body
         );
     }
@@ -601,7 +601,7 @@ class ApiCallTest extends TestCase
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result[0]);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute"],
+            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result[0]->body
         );
     }
@@ -628,7 +628,7 @@ class ApiCallTest extends TestCase
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result['mockClass']);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute"],
+            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result['mockClass']->body
         );
     }

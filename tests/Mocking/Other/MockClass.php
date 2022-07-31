@@ -57,6 +57,7 @@ class MockClass implements \JsonSerializable
         $body[] = $serializer->fromElement($element, 'new1', 'string');
         $body[] = $serializer->fromElementToMap($element, 'new2', 'array');
         $body[] = $serializer->fromAttribute($element, 'attr', 'string');
+        $body[] = $serializer->fromAttribute($element, 'attrNull', '?string');
 
         return new self($body);
     }
