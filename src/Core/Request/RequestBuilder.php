@@ -116,7 +116,7 @@ class RequestBuilder
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         foreach ($this->parameters as $param) {
-            $param->validate();
+            $param->validate(CoreConfig::getJsonHelper($coreConfig));
             $param->apply($request);
         }
         $request->setBodyFormat($this->bodyFormat, $this->bodySerializer);

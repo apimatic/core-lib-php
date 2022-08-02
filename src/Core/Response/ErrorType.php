@@ -2,6 +2,8 @@
 
 namespace CoreLib\Core\Response;
 
+use CoreLib\Core\CoreConfig;
+
 class ErrorType
 {
     public static function init(string $description, ?string $className = null): self
@@ -21,12 +23,12 @@ class ErrorType
     {
         $response = $context->getResponse();
         $body = $response->getBody();
-        $converter = $context->getCoreConfig()->getConverter();
+        $converter = CoreConfig::getConverter($context->getCoreConfig());
         if (isset($this->className, $body)) {
             $body->reason = $this->description;
             $body->request = $converter->createHttpRequest($context->getRequest());
             $body->response = $converter->createHttpResponse($response);
-            throw $context->getCoreConfig()->getJsonHelper()->mapClass($body, $this->className);
+            throw CoreConfig::getJsonHelper($context->getCoreConfig())->mapClass($body, $this->className);
         }
         throw $converter->createApiException(
             $this->description,

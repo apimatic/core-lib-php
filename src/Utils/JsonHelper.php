@@ -5,32 +5,36 @@ declare(strict_types=1);
 namespace CoreLib\Utils;
 
 use apimatic\jsonmapper\JsonMapper;
+use CoreDesign\Core\Request\TypeValidatorInterface;
 use Exception;
 use InvalidArgumentException;
 
-class JsonHelper
+/**
+ * Internal class: Do not use directly!
+ */
+class JsonHelper implements TypeValidatorInterface
 {
     /**
-     * @var JsonMapper
+     * @var JsonMapper|null
      */
-    private static $jsonMapper;
+    private $jsonMapper;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $namespace;
+    private $defaultNamespace;
 
     /**
      * @param array<string,string[]> $inheritedModel
-     * @param string|null $additionalPropertiesMethodName
-     * @param string $modelNamespace
+     * @param string|null $additionalPropsMethodName
+     * @param string|null $defaultNamespace
      */
-    public function __construct(array $inheritedModel, ?string $additionalPropertiesMethodName, string $modelNamespace)
+    public function __construct(array $inheritedModel, ?string $additionalPropsMethodName, ?string $defaultNamespace)
     {
-        self::$jsonMapper = new JsonMapper();
-        self::$jsonMapper->arChildClasses = $inheritedModel;
-        self::$jsonMapper->sAdditionalPropertiesCollectionMethod = $additionalPropertiesMethodName;
-        $this->namespace = $modelNamespace;
+        $this->jsonMapper = new JsonMapper();
+        $this->jsonMapper->arChildClasses = $inheritedModel;
+        $this->jsonMapper->sAdditionalPropertiesCollectionMethod = $additionalPropsMethodName;
+        $this->defaultNamespace = $defaultNamespace;
     }
 
     /**
@@ -43,10 +47,10 @@ class JsonHelper
      * @return mixed Returns validated and serialized $value
      * @throws InvalidArgumentException
      */
-    public static function verifyTypes($value, string $strictType, array $serializationMethods = [])
+    public function verifyTypes($value, string $strictType, array $serializationMethods = [])
     {
         try {
-            return self::$jsonMapper->checkTypeGroupFor($strictType, $value, $serializationMethods);
+            return $this->jsonMapper->checkTypeGroupFor($strictType, $value, $serializationMethods);
         } catch (Exception $e) {
             throw new InvalidArgumentException($e->getMessage());
         }
@@ -62,8 +66,8 @@ class JsonHelper
      */
     public function mapClass($value, string $classname, int $dimension = 0)
     {
-        return $dimension <= 0 ? self::$jsonMapper->mapClass($value, $classname)
-            : self::$jsonMapper->mapClassArray($value, $classname, $dimension);
+        return $dimension <= 0 ? $this->jsonMapper->mapClass($value, $classname)
+            : $this->jsonMapper->mapClassArray($value, $classname, $dimension);
     }
 
     /**
@@ -77,6 +81,6 @@ class JsonHelper
      */
     public function mapTypes($value, string $typeGroup, array $deserializers = [])
     {
-        return self::$jsonMapper->mapFor($value, $typeGroup, $this->namespace, $deserializers);
+        return $this->jsonMapper->mapFor($value, $typeGroup, $this->defaultNamespace, $deserializers);
     }
 }

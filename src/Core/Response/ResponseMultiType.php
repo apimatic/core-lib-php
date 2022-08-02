@@ -2,6 +2,7 @@
 
 namespace CoreLib\Core\Response;
 
+use CoreLib\Core\CoreConfig;
 use Exception;
 
 class ResponseMultiType
@@ -34,10 +35,13 @@ class ResponseMultiType
         $coreConfig = $context->getCoreConfig();
         $responseBody = $context->getResponse()->getBody();
         try {
-            return $coreConfig->getJsonHelper()
-                ->mapTypes($responseBody, $this->typeGroup, $this->deserializers);
+            return CoreConfig::getJsonHelper($context->getCoreConfig())->mapTypes(
+                $responseBody,
+                $this->typeGroup,
+                $this->deserializers
+            );
         } catch (Exception $e) {
-            throw $coreConfig->getConverter()
+            throw CoreConfig::getConverter($coreConfig)
                 ->createApiException($e->getMessage(), $context->getRequest(), $context->getResponse());
         }
     }

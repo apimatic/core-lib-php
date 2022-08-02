@@ -204,13 +204,13 @@ class CoreConfigBuilder
         return new CoreConfig(
             $this->httpClient,
             $this->converter,
+            $jsonHelper,
             $this->authManagers,
             $this->serverUrls,
             $this->defaultServer,
             $this->globalConfig,
             $this->globalErrors,
-            $this->apiCallback,
-            $jsonHelper
+            $this->apiCallback
         );
     }
 }

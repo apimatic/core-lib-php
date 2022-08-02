@@ -22,12 +22,28 @@ class CoreHelper
     /**
      * Deserialize a Json string
      *
-     * @param string $json A valid Json string
+     * @param string|null $json A valid Json string
      *
      * @return mixed Decoded Json
      */
-    public static function deserialize(string $json)
+    public static function deserialize(?string $json, bool $associative = true)
     {
-        return json_decode($json, true);
+        return json_decode($json, $associative) ?? $json;
+    }
+
+    /**
+     * Check if an array isAssociative (has string keys)
+     *
+     * @param  array $arr A valid array
+     * @return boolean True if the array is Associative, false if it is Indexed
+     */
+    public static function isAssociative(array $arr): bool
+    {
+        foreach ($arr as $key => $value) {
+            if (is_string($key)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

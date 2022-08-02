@@ -6,7 +6,7 @@ namespace CoreLib\Core\Request\Parameters;
 
 use Closure;
 use CoreDesign\Core\Request\ParamInterface;
-use CoreLib\Utils\JsonHelper;
+use CoreDesign\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 use Throwable;
 
@@ -69,7 +69,7 @@ abstract class Parameter implements ParamInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function validate(): void
+    public function validate(TypeValidatorInterface $validator): void
     {
         if ($this->valueMissing) {
             throw new InvalidArgumentException("Missing required $this->typeName field: {$this->getName()}");
@@ -78,7 +78,11 @@ abstract class Parameter implements ParamInterface
             throw $this->serializationError;
         }
         if (isset($this->paramStrictType)) {
-            $this->value = JsonHelper::verifyTypes($this->value, $this->paramStrictType, $this->typeGroupSerializers);
+            $this->value = $validator->verifyTypes(
+                $this->value,
+                $this->paramStrictType,
+                $this->typeGroupSerializers
+            );
         }
         $this->validated = true;
     }

@@ -3,6 +3,7 @@
 namespace CoreLib\Core\Request\Parameters;
 
 use CoreDesign\Core\Request\RequestArraySerialization;
+use CoreLib\Utils\CoreHelper;
 use JsonSerializable;
 use stdClass;
 
@@ -58,7 +59,7 @@ abstract class EncodedParam extends Parameter
         ], true);
         $keyPostfix = ($format == RequestArraySerialization::UN_INDEXED) ? '[]' : '';
         $innerArray = !empty($parent);
-        $innerAssociativeArray = $innerArray && $this->isAssociative($data);
+        $innerAssociativeArray = $innerArray && CoreHelper::isAssociative($data);
         $first = true;
         $separator = substr($format, strpos($format, ':') + 1);
         $r = [];
@@ -86,21 +87,5 @@ abstract class EncodedParam extends Parameter
             }
         }
         return implode($separatorFormat ? '' : '&', $r);
-    }
-
-    /**
-     * Check if an array isAssociative (has string keys)
-     *
-     * @param  array $arr A valid array
-     * @return boolean True if the array is Associative, false if it is Indexed
-     */
-    private function isAssociative(array $arr): bool
-    {
-        foreach ($arr as $key => $value) {
-            if (is_string($key)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

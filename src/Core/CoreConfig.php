@@ -18,54 +18,73 @@ use CoreLib\Utils\JsonHelper;
 
 class CoreConfig
 {
+    private static $converter;
+    private static $jsonHelper;
+    public static function getConverter(CoreConfig $config = null): ConverterInterface
+    {
+        if (isset($config)) {
+            return $config->localConverter;
+        }
+        return self::$converter;
+    }
+    public static function getJsonHelper(CoreConfig $config = null): JsonHelper
+    {
+        if (isset($config)) {
+            return $config->localJsonHelper;
+        }
+        return self::$jsonHelper;
+    }
+
     private $httpClient;
-    private $converter;
+    private $localConverter;
+    private $localJsonHelper;
     private $authManagers;
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
     private $globalErrors;
     private $apiCallback;
-    private $jsonHelper;
 
     /**
      * @param HttpClientInterface $httpClient
      * @param ConverterInterface $converter
+     * @param JsonHelper $jsonHelper
      * @param array<string,AuthInterface> $authManagers
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
      * @param array<int,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
-     * @param JsonHelper $jsonHelper
      */
     public function __construct(
         HttpClientInterface $httpClient,
         ConverterInterface $converter,
+        JsonHelper $jsonHelper,
         array $authManagers,
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
         array $globalErrors,
-        ?CoreCallback $apiCallback,
-        JsonHelper $jsonHelper
+        ?CoreCallback $apiCallback
     ) {
         $this->httpClient = $httpClient;
-        $this->converter = $converter;
+        self::$converter = $converter;
+        $this->localConverter = $converter;
+        self::$jsonHelper = $jsonHelper;
+        $this->localJsonHelper = $jsonHelper;
         $this->authManagers = $authManagers;
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
-        $this->jsonHelper = $jsonHelper;
     }
 
     public function getGlobalRequest(?string $server = null): Request
     {
         $request = new Request($this->serverUrls[$server ?? $this->defaultServer]);
         foreach ($this->globalConfig as $config) {
-            $config->validate();
+            $config->validate(self::getJsonHelper($this));
             $config->apply($request);
         }
         return $request;
@@ -85,33 +104,23 @@ class CoreConfig
         return $this->httpClient;
     }
 
-    public function getConverter(): ConverterInterface
-    {
-        return $this->converter;
-    }
-
     public function validateAuth(Auth $auth): Auth
     {
-        $auth->withAuthManagers($this->authManagers)->validate();
+        $auth->withAuthManagers($this->authManagers)->validate(self::getJsonHelper($this));
         return $auth;
     }
 
     public function beforeRequest(Request $request)
     {
         if (isset($this->apiCallback)) {
-            $this->apiCallback->callOnBeforeWithConversion($request, $this->converter);
+            $this->apiCallback->callOnBeforeWithConversion($request, self::getConverter($this));
         }
     }
 
     public function afterResponse(Context $context)
     {
         if (isset($this->apiCallback)) {
-            $this->apiCallback->callOnAfterWithConversion($context, $this->converter);
+            $this->apiCallback->callOnAfterWithConversion($context, self::getConverter($this));
         }
-    }
-
-    public function getJsonHelper(): JsonHelper
-    {
-        return $this->jsonHelper;
     }
 }

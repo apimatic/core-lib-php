@@ -51,6 +51,11 @@ class MockHelper
      */
     private static $fileWrapper;
 
+    /**
+     * @var MockFileWrapper
+     */
+    private static $urlFileWrapper;
+
     public static function getCoreConfig(): CoreConfig
     {
         if (!isset(self::$coreConfig)) {
@@ -142,5 +147,15 @@ class MockHelper
             self::$fileWrapper = MockFileWrapper::createFromPath($filePath, 'text/plain', 'My Text');
         }
         return self::$fileWrapper;
+    }
+
+    public static function getFileWrapperFromUrl(): MockFileWrapper
+    {
+        if (!isset(self::$urlFileWrapper)) {
+            $filePath = MockFileWrapper::getDownloadedRealFilePath('https://raw.githubusercontent.com/apimatic/' .
+                'core-lib-php/master/tests/Mocking/Other/testFile.txt');
+            self::$urlFileWrapper = MockFileWrapper::createFromPath($filePath, 'text/plain', 'My Text');
+        }
+        return self::$urlFileWrapper;
     }
 }

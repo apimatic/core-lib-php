@@ -10,6 +10,22 @@ use SplFileObject;
 class CoreFileWrapper implements \JsonSerializable
 {
     /**
+     * Downloads and gets a local path to a file URL.
+     * Subsequent calls to the same URL will get the cached file.
+     *
+     * @param string $url URL of the file to download
+     * @return string Local path to the file
+     */
+    public static function getDownloadedRealFilePath(string $url): string
+    {
+        $realFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "sdktests" . sha1($url) . "tmp";
+        if (!file_exists($realFilePath)) {
+            file_put_contents($realFilePath, fopen($url, 'r'));
+        }
+        return $realFilePath;
+    }
+
+    /**
      * @var string
      */
     private $realFilePath;

@@ -39,11 +39,11 @@ class Context implements ContextInterface
 
     public function convertIntoApiResponse($deserializedBody)
     {
-        return $this->coreConfig->getConverter()->createApiResponse($this, $deserializedBody);
+        return CoreConfig::getConverter($this->coreConfig)->createApiResponse($this, $deserializedBody);
     }
 
     public function convert()
     {
-        return $this->coreConfig->getConverter()->createHttpContext($this);
+        return CoreConfig::getConverter($this->coreConfig)->createHttpContext($this);
     }
 }

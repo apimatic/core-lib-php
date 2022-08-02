@@ -3,6 +3,7 @@
 namespace CoreLib\Tests\Core;
 
 use CoreDesign\Core\Request\RequestMethod;
+use CoreLib\Core\CoreConfig;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
 use CoreLib\Tests\Mocking\MockHelper;
@@ -19,7 +20,7 @@ class TypesTest extends TestCase
     public function testChildOfCoreRequest()
     {
         $request = new Request('some/path');
-        $sdkRequest = $request->convert(MockHelper::getCoreConfig()->getConverter());
+        $sdkRequest = $request->convert(CoreConfig::getConverter(MockHelper::getCoreConfig()));
 
         $this->assertInstanceOf(MockRequest::class, $sdkRequest);
         $sdkRequest->setHttpMethod(RequestMethod::POST);
@@ -36,7 +37,7 @@ class TypesTest extends TestCase
     public function testChildOfCoreResponse()
     {
         $response = MockHelper::getResponse();
-        $sdkResponse = $response->convert(MockHelper::getCoreConfig()->getConverter());
+        $sdkResponse = $response->convert(CoreConfig::getConverter(MockHelper::getCoreConfig()));
 
         $this->assertInstanceOf(MockCoreResponse::class, $sdkResponse);
         $this->assertEquals(200, $sdkResponse->getStatusCode());
@@ -75,8 +76,7 @@ class TypesTest extends TestCase
     {
         $request = new Request('some/path');
         $response = MockHelper::getResponse();
-        $sdkException = MockHelper::getCoreConfig()
-            ->getConverter()
+        $sdkException = CoreConfig::getConverter(MockHelper::getCoreConfig())
             ->createApiException('Error Occurred', $request, $response);
 
         $this->assertInstanceOf(MockException::class, $sdkException);
@@ -90,11 +90,11 @@ class TypesTest extends TestCase
         $callback = MockHelper::getCallbackCatcher();
         $request = new Request('some/path');
         $this->assertNull($callback->getOnBeforeRequest());
-        $callback->callOnBeforeWithConversion($request, MockHelper::getCoreConfig()->getConverter());
+        $callback->callOnBeforeWithConversion($request, CoreConfig::getConverter(MockHelper::getCoreConfig()));
 
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreConfig());
-        $callback->callOnAfterWithConversion($context, MockHelper::getCoreConfig()->getConverter());
+        $callback->callOnAfterWithConversion($context, CoreConfig::getConverter(MockHelper::getCoreConfig()));
 
         $this->assertEquals($request, $callback->getRequest());
         $this->assertEquals($response, $callback->getResponse());
@@ -121,22 +121,34 @@ class TypesTest extends TestCase
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreConfig());
 
-        $callback->callOnBeforeWithConversion($request, MockHelper::getCoreConfig()->getConverter());
-        $callback->callOnAfterWithConversion($context, MockHelper::getCoreConfig()->getConverter());
+        $callback->callOnBeforeWithConversion($request, CoreConfig::getConverter(MockHelper::getCoreConfig()));
+        $callback->callOnAfterWithConversion($context, CoreConfig::getConverter(MockHelper::getCoreConfig()));
     }
 
     public function testChildOfCoreFileWrapper()
     {
         $fileWrapper = MockHelper::getFileWrapper();
-
         $this->assertEquals('text/plain', $fileWrapper->getMimeType());
         $this->assertEquals('My Text', $fileWrapper->getFilename());
         $this->assertEquals(
             '"This test file is created to test CoreFileWrapper functionality"',
             CoreHelper::serialize($fileWrapper)
         );
-        $curlFile = $fileWrapper->createCurlFileInstance('application/octet-stream');
+        $curlFile = $fileWrapper->createCurlFileInstance();
         $this->assertStringEndsWith('testFile.txt', $curlFile->getFilename());
+        $this->assertEquals('text/plain', $curlFile->getMimeType());
+        $this->assertEquals('My Text', $curlFile->getPostFilename());
+
+        $fileWrapper = MockHelper::getFileWrapperFromUrl();
+        $this->assertEquals('text/plain', $fileWrapper->getMimeType());
+        $this->assertEquals('My Text', $fileWrapper->getFilename());
+        $this->assertEquals(
+            '"This test file is created to test CoreFileWrapper functionality"',
+            CoreHelper::serialize($fileWrapper)
+        );
+        $curlFile = $fileWrapper->createCurlFileInstance();
+        $this->assertStringEndsWith('tmp', $curlFile->getFilename());
+        $this->assertStringContainsString('sdktests', $curlFile->getFilename());
         $this->assertEquals('text/plain', $curlFile->getMimeType());
         $this->assertEquals('My Text', $curlFile->getPostFilename());
     }

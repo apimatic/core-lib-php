@@ -2,6 +2,8 @@
 
 namespace CoreLib\Core\Response;
 
+use CoreLib\Core\CoreConfig;
+
 class ResponseError
 {
     /**
@@ -37,7 +39,7 @@ class ResponseError
         if (isset($this->errors[$statusCode])) {
             $this->errors[$statusCode]->throw($context);
         }
-        throw $context->getCoreConfig()->getConverter()->createApiException(
+        throw CoreConfig::getConverter($context->getCoreConfig())->createApiException(
             'Invalid Response.',
             $context->getRequest(),
             $response

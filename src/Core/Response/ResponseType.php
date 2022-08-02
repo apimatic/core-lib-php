@@ -3,6 +3,7 @@
 namespace CoreLib\Core\Response;
 
 use Closure;
+use CoreLib\Core\CoreConfig;
 use Exception;
 
 class ResponseType
@@ -50,10 +51,13 @@ class ResponseType
                     $this->responseClass
                 );
             }
-            return $coreConfig->getJsonHelper()
-                ->mapClass($context->getResponse()->getBody(), $this->responseClass, $this->dimensions);
+            return CoreConfig::getJsonHelper($context->getCoreConfig())->mapClass(
+                $context->getResponse()->getBody(),
+                $this->responseClass,
+                $this->dimensions
+            );
         } catch (Exception $e) {
-            throw $coreConfig->getConverter()
+            throw CoreConfig::getConverter($coreConfig)
                 ->createApiException($e->getMessage(), $context->getRequest(), $context->getResponse());
         }
     }

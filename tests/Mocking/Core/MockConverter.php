@@ -9,6 +9,7 @@ use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Tests\Mocking\Other\MockException;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockContext;
+use CoreLib\Tests\Mocking\Types\MockFileWrapper;
 use CoreLib\Tests\Mocking\Types\MockRequest;
 use CoreLib\Tests\Mocking\Types\MockCoreResponse;
 
@@ -53,5 +54,10 @@ class MockConverter implements ConverterInterface
     {
         $decodedBody = $context->getResponse()->getBody();
         return MockApiResponse::createFromContext($decodedBody, $deserializedBody, $this->createHttpContext($context));
+    }
+
+    public function createFileWrapper(string $realFilePath, ?string $mimeType, ?string $filename): MockFileWrapper
+    {
+        return MockFileWrapper::createFromPath($realFilePath, $mimeType, $filename);
     }
 }
