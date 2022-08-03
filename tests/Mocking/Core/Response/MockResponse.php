@@ -28,6 +28,7 @@ class MockResponse implements ResponseInterface
             'retryOption' => $request->getRetryOption()
         ]);
         $this->rawBody = CoreHelper::serialize($this->body);
+        $this->headers = ['content-type' => 'application/json'];
     }
 
     public function setStatusCode(int $statusCode): void

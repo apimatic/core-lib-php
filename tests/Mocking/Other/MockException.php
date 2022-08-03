@@ -2,11 +2,12 @@
 
 namespace CoreLib\Tests\Mocking\Other;
 
+use CoreDesign\Sdk\ExceptionInterface;
 use CoreLib\Tests\Mocking\Types\MockRequest;
 use CoreLib\Tests\Mocking\Types\MockCoreResponse;
 use Exception;
 
-class MockException extends Exception implements \Throwable
+class MockException extends Exception implements ExceptionInterface
 {
     public $request;
     public $response;

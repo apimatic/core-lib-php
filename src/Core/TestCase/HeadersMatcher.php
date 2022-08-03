@@ -29,13 +29,13 @@ class HeadersMatcher
     {
         if (!empty($this->headers)) {
             // Http headers are case-insensitive
-            $left = array_change_key_case($this->headers);
-            $right = array_change_key_case($headers);
+            $expected = array_change_key_case($this->headers);
+            $actual = array_change_key_case($headers);
             $message = "Headers do not match";
             if (!$this->allowExtra) {
                 $message = "$message strictly";
             }
-            $this->testCase->assertTrue(CoreHelper::equals($left, $right, $this->allowExtra), $message);
+            $this->testCase->assertTrue(CoreHelper::equals($expected, $actual, $this->allowExtra), $message);
         }
     }
 }

@@ -28,7 +28,7 @@ class CoreConfigTest extends TestCase
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([], $response->getHeaders());
+        $this->assertEquals(['content-type' => 'application/json'], $response->getHeaders());
         $this->assertIsObject($response->getBody());
         $this->assertEquals('{"body":{"httpMethod":"Get","queryUrl":"some\/path","headers":[],"parameters":[],' .
             '"body":null,"retryOption":"useGlobalSettings"},"additionalProperties":[]}', $response->getRawBody());

@@ -77,13 +77,13 @@ abstract class EncodedParam extends Parameter
             }
             if ($separatorFormat) {
                 if ($innerAssociativeArray || $first) {
-                    $r[] = "&" . urlencode($k) . "=" . urlencode(strval($v));
+                    $r[] = "&" . http_build_query([$k => $v]);
                     $first = false;
                 } else {
                     $r[] = urlencode($separator) . urlencode(strval($v));
                 }
             } else {
-                $r[] = urlencode($k) . "=" . urlencode(strval($v));
+                $r[] = http_build_query([$k => $v]);
             }
         }
         return implode($separatorFormat ? '' : '&', $r);

@@ -15,6 +15,7 @@ class ResponseHandler
     private $responseMultiType;
     private $responseError;
     private $useApiResponse = false;
+    private $nullOn404 = false;
 
     public function __construct()
     {
@@ -34,6 +35,12 @@ class ResponseHandler
     {
         $this->responseError->throwException(false);
         $this->useApiResponse = true;
+        return $this;
+    }
+
+    public function nullOn404(): self
+    {
+        $this->nullOn404 = true;
         return $this;
     }
 
@@ -107,6 +114,9 @@ class ResponseHandler
      */
     public function getResponse(Context $context)
     {
+        if ($this->nullOn404 && $context->getResponse()->getStatusCode() === 404) {
+            return null;
+        }
         $this->responseError->throw($context);
         $response = $this->deserializableType->getFrom($context);
         $response = $response ?? $this->responseType->getFrom($context);

@@ -229,7 +229,6 @@ class ApiCallTest extends TestCase
             'keyD[body][]*' => '24',
             'keyE[body]' => 'true',
             'keyE[body]*' => 'false',
-            'keyE[body][2]' => '',
             'keyF[body]' => 'A,B,C',
             'keyG[body]' => 'A\\tB\\tC',
             'keyH[body]' => 'A|B|C',
@@ -276,7 +275,6 @@ class ApiCallTest extends TestCase
             'keyE[body][2][body][]' => '1',
             'keyF[body]' => 'true',
             'keyF[body]*' => 'false',
-            'keyF[body][2]' => '',
             'keyG[body][innerKey1]' => 'A',
             'keyG[body][innerKey2]' => 'B'
         ], $query);
@@ -485,9 +483,18 @@ class ApiCallTest extends TestCase
         $this->assertStringContainsString(',"content-type":"text\/plain; charset=utf-8","Accept":"application\/json"' .
             '},"parameters":[],"body":null,"retryOption":"useGlobalSettings"},' .
             '"additionalProperties":[]}', $result->getBody());
-        $this->assertEquals([], $result->getHeaders());
+        $this->assertEquals(['content-type' => 'application/json'], $result->getHeaders());
         $this->assertEquals(200, $result->getStatusCode());
         $this->assertNull($result->getReasonPhrase());
+    }
+
+    public function testNullOn404()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(404);
+        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $result = MockHelper::globalResponseHandler()->nullOn404()->getResponse($context);
+        $this->assertNull($result);
     }
 
     public function testGlobalMockException()
