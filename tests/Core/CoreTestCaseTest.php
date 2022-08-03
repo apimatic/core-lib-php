@@ -20,10 +20,6 @@ use PHPUnit\Framework\TestCase;
 
 class CoreTestCaseTest extends TestCase
 {
-    /**
-     * @var CallbackCatcher
-     */
-    private static $callbackCatcher;
 
     /**
      * @var CoreConfig
@@ -32,7 +28,6 @@ class CoreTestCaseTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$callbackCatcher = new CallbackCatcher();
         self::$coreConfig = MockHelper::getCoreConfig();
     }
 
