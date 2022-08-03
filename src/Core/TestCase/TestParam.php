@@ -67,6 +67,6 @@ class TestParam
      */
     public static function localFile(string $realPath)
     {
-        return CoreConfig::getConverter()->createFileWrapper($realPath, null, null);
+        return CoreConfig::getConverter()->createFileWrapper($realPath, null, '');
     }
 }
