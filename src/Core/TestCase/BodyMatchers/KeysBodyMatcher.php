@@ -2,7 +2,6 @@
 
 namespace CoreLib\Core\TestCase\BodyMatchers;
 
-use CoreLib\Core\TestCase\TestHelper;
 use CoreLib\Utils\CoreHelper;
 
 class KeysBodyMatcher extends BodyMatcher
@@ -18,21 +17,8 @@ class KeysBodyMatcher extends BodyMatcher
     public function assert(string $rawBody)
     {
         parent::assert($rawBody);
-        if (is_array($this->expectedBody)) {
-            $this->testCase->assertTrue(
-                TestHelper::isArrayOfJsonObjectsProperSubsetOf(
-                    $this->expectedBody,
-                    CoreHelper::deserialize($rawBody),
-                    $this->allowExtra,
-                    $this->matchArrayOrder,
-                    $this->checkValues
-                ),
-                $this->defaultMessage
-            );
-            return;
-        }
         $this->testCase->assertTrue(
-            TestHelper::isProperSubsetOf(
+            CoreHelper::equals(
                 $this->expectedBody,
                 CoreHelper::deserialize($rawBody),
                 $this->allowExtra,

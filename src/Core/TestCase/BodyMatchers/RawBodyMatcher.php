@@ -7,9 +7,9 @@ use CoreLib\Utils\CoreHelper;
 
 class RawBodyMatcher extends BodyMatcher
 {
-    public static function init($expectedBody, bool $matchArrayOrder = false, bool $matchArrayCount = false): self
+    public static function init($expectedBody): self
     {
-        $matcher = new self($expectedBody, $matchArrayOrder, !$matchArrayCount);
+        $matcher = new self($expectedBody);
         $matcher->defaultMessage = 'Response body does not match exactly';
         return $matcher;
     }

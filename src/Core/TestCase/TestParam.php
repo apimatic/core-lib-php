@@ -50,7 +50,7 @@ class TestParam
      */
     public static function custom(string $json, callable $callback)
     {
-        return Closure::fromCallable($callback)(CoreHelper::deserialize($json));
+        return Closure::fromCallable($callback)(CoreHelper::deserialize($json, false));
     }
 
     /**

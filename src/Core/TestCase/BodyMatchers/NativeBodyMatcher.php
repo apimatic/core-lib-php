@@ -2,7 +2,7 @@
 
 namespace CoreLib\Core\TestCase\BodyMatchers;
 
-use CoreLib\Core\TestCase\TestHelper;
+use CoreLib\Utils\CoreHelper;
 
 class NativeBodyMatcher extends BodyMatcher
 {
@@ -34,7 +34,7 @@ class NativeBodyMatcher extends BodyMatcher
             }
         }
         $this->testCase->assertTrue(
-            TestHelper::isProperSubsetOf($this->expectedBody, $this->result, $this->allowExtra, $this->matchArrayOrder),
+            CoreHelper::equals($this->expectedBody, $this->result, $this->allowExtra, $this->matchArrayOrder),
             $this->defaultMessage
         );
     }

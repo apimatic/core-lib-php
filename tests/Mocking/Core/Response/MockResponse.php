@@ -13,6 +13,7 @@ class MockResponse implements ResponseInterface
     private $body;
     private $rawBody;
     private $statusCode = 200;
+    private $headers = [];
     public function __construct(?RequestInterface $request = null)
     {
         if (is_null($request)) {
@@ -39,9 +40,14 @@ class MockResponse implements ResponseInterface
         return $this->statusCode;
     }
 
+    public function setHeaders(array $headers)
+    {
+        $this->headers = $headers;
+    }
+
     public function getHeaders(): array
     {
-        return [];
+        return $this->headers;
     }
 
     public function setRawBody($rawBody): void

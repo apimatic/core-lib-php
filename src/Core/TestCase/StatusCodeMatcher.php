@@ -44,8 +44,8 @@ class StatusCodeMatcher
             $this->testCase->assertEquals($this->statusCode, $statusCode, "Status is not $this->statusCode");
         } elseif (isset($this->lowerStatusCode, $this->upperStatusCode)) {
             $message = "Status is not between $this->lowerStatusCode and $this->upperStatusCode";
-            $this->testCase->assertGreaterThanOrEqual($this->statusCode, $this->lowerStatusCode, $message);
-            $this->testCase->assertLessThanOrEqual($this->statusCode, $this->upperStatusCode, $message);
+            $this->testCase->assertGreaterThanOrEqual($this->lowerStatusCode, $statusCode, $message);
+            $this->testCase->assertLessThanOrEqual($this->upperStatusCode, $statusCode, $message);
         }
     }
 }

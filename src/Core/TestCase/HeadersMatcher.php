@@ -2,6 +2,7 @@
 
 namespace CoreLib\Core\TestCase;
 
+use CoreLib\Utils\CoreHelper;
 use PHPUnit\Framework\TestCase;
 
 class HeadersMatcher
@@ -34,7 +35,7 @@ class HeadersMatcher
             if (!$this->allowExtra) {
                 $message = "$message strictly";
             }
-            $this->testCase->assertTrue(TestHelper::isProperSubsetOf($left, $right, $this->allowExtra), $message);
+            $this->testCase->assertTrue(CoreHelper::equals($left, $right, $this->allowExtra), $message);
         }
     }
 }
