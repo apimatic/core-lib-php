@@ -3,6 +3,7 @@
 namespace CoreLib\Tests\Core;
 
 use CoreDesign\Core\Format;
+use CoreDesign\Core\Request\RequestArraySerialization;
 use CoreDesign\Core\Request\RequestMethod;
 use CoreDesign\Http\RetryOption;
 use CoreLib\Core\Request\Parameters\BodyParam;
@@ -138,7 +139,8 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
-                ->parameters(QueryParam::init('key', 'val 01')))
+                ->parameters(QueryParam::init('key', 'val 01'))
+                ->additionalQueryParams(null))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -154,7 +156,8 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     FormParam::init('key', 'val 01'),
                     HeaderParam::init('content-type', 'myContentTypeHeader')
-                ))
+                )
+                ->additionalFormParams(null))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -198,6 +201,10 @@ class ApiCallTest extends TestCase
 
     public function testSendMultipleQuery()
     {
+        $additionalQueryParams = [
+            'keyH' => [2,4],
+            'newKey' => 'asad'
+        ];
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
                 ->parameters(
@@ -212,7 +219,8 @@ class ApiCallTest extends TestCase
                     QueryParam::init('keyH', new MockClass(['A','B','C']))->pipeSeparated(),
                     QueryParam::init('keyI', new MockClass(['A','B', new MockClass([1])]))->pipeSeparated(),
                     QueryParam::init('keyJ', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->pipeSeparated()
-                ))
+                )
+                ->additionalQueryParams($additionalQueryParams))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -235,12 +243,19 @@ class ApiCallTest extends TestCase
             'keyI[body]' => 'A|B',
             'keyI[body][2][body]' => '1',
             'keyJ[body][innerKey1]' => 'A',
-            'keyJ[body][innerKey2]' => 'B'
+            'keyJ[body][innerKey2]' => 'B',
+            'keyH[0]' => '2',
+            'keyH[1]' => '4',
+            'newKey' => 'asad'
         ], $query);
     }
 
     public function testSendMultipleForm()
     {
+        $additionalFormParams = [
+            'keyH' => [2,4],
+            'newKey' => 'asad'
+        ];
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
                 ->parameters(
@@ -253,7 +268,8 @@ class ApiCallTest extends TestCase
                     FormParam::init('keyE', new MockClass([23, 24, new MockClass([1])]))->unIndexed(),
                     FormParam::init('keyF', new MockClass([true, false, null]))->plain(),
                     FormParam::init('keyG', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->plain()
-                ))
+                )
+                ->additionalFormParams($additionalFormParams, RequestArraySerialization::UN_INDEXED))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -276,7 +292,10 @@ class ApiCallTest extends TestCase
             'keyF[body]' => 'true',
             'keyF[body]*' => 'false',
             'keyG[body][innerKey1]' => 'A',
-            'keyG[body][innerKey2]' => 'B'
+            'keyG[body][innerKey2]' => 'B',
+            'keyH[]' => '2',
+            'keyH[]*' => '4',
+            'newKey' => 'asad'
         ], $query);
     }
 

@@ -6,9 +6,12 @@ namespace CoreLib\Core\Request;
 
 use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\ParamInterface;
+use CoreDesign\Core\Request\RequestArraySerialization;
 use CoreDesign\Http\RetryOption;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\CoreConfig;
+use CoreLib\Core\Request\Parameters\FormParam;
+use CoreLib\Core\Request\Parameters\QueryParam;
 use CoreLib\Utils\CoreHelper;
 use CoreLib\Utils\XmlSerializer;
 
@@ -78,7 +81,37 @@ class RequestBuilder
 
     public function parameters(ParamInterface ...$parameters): self
     {
-        $this->parameters = $parameters;
+        $this->parameters = array_merge($this->parameters, $parameters);
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed>|null $params
+     * @return $this
+     */
+    public function additionalQueryParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
+    {
+        if (is_null($params)) {
+            return $this;
+        }
+        foreach ($params as $key => $val) {
+            $this->parameters[] = QueryParam::init($key, $val)->format($format);
+        }
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed>|null $params
+     * @return $this
+     */
+    public function additionalFormParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
+    {
+        if (is_null($params)) {
+            return $this;
+        }
+        foreach ($params as $key => $val) {
+            $this->parameters[] = FormParam::init($key, $val)->format($format);
+        }
         return $this;
     }
 

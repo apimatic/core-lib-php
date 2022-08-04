@@ -14,6 +14,15 @@ class QueryParam extends EncodedParam
         return new self($key, $value);
     }
 
+    private const SUPPORTED_FORMATS = [
+        RequestArraySerialization::INDEXED,
+        RequestArraySerialization::UN_INDEXED,
+        RequestArraySerialization::PLAIN,
+        RequestArraySerialization::CSV,
+        RequestArraySerialization::TSV,
+        RequestArraySerialization::PSV
+    ];
+
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'query');
@@ -34,6 +43,14 @@ class QueryParam extends EncodedParam
     public function strictType(string $strictType, array $serializerMethods = []): self
     {
         parent::strictType($strictType, $serializerMethods);
+        return $this;
+    }
+
+    public function format(string $format): self
+    {
+        if (in_array($format, self::SUPPORTED_FORMATS, true)) {
+            $this->format = $format;
+        }
         return $this;
     }
 

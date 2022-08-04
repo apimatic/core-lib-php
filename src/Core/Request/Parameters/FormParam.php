@@ -15,6 +15,12 @@ class FormParam extends EncodedParam
         return new self($key, $value);
     }
 
+    private const SUPPORTED_FORMATS = [
+        RequestArraySerialization::INDEXED,
+        RequestArraySerialization::UN_INDEXED,
+        RequestArraySerialization::PLAIN
+    ];
+
     /**
      * @var array<string,string>
      */
@@ -45,6 +51,14 @@ class FormParam extends EncodedParam
     public function encodingHeader(string $key, string $value): self
     {
         $this->encodingHeaders[$key] = $value;
+        return $this;
+    }
+
+    public function format(string $format): self
+    {
+        if (in_array($format, self::SUPPORTED_FORMATS, true)) {
+            $this->format = $format;
+        }
         return $this;
     }
 
