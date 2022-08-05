@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace CoreLib\Core\Response;
 
 use CoreDesign\Core\Format;
+use CoreLib\Core\Response\Types\DeserializableType;
+use CoreLib\Core\Response\Types\ErrorType;
+use CoreLib\Core\Response\Types\ResponseMultiType;
+use CoreLib\Core\Response\Types\ResponseType;
 use CoreLib\Utils\XmlDeserializer;
 
 class ResponseHandler

@@ -1,9 +1,10 @@
 <?php
 
-namespace CoreLib\Core\Response;
+namespace CoreLib\Core\Response\Types;
 
 use Closure;
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
+use CoreLib\Core\Response\Context;
 use Throwable;
 
 class DeserializableType
@@ -26,7 +27,7 @@ class DeserializableType
         try {
             return Closure::fromCallable($this->deserializerMethod)($context->getResponse()->getBody());
         } catch (Throwable $t) {
-            throw CoreConfig::getConverter($context->getCoreConfig())
+            throw CoreClient::getConverter($context->getCoreClient())
                 ->createApiException($t->getMessage(), $context->getRequest(), $context->getResponse());
         }
     }

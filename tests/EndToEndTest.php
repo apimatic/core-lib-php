@@ -10,8 +10,8 @@ use CoreLib\Core\Request\Parameters\HeaderParam;
 use CoreLib\Core\Request\Parameters\QueryParam;
 use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Core\Request\RequestBuilder;
-use CoreLib\Core\Response\ErrorType;
 use CoreLib\Core\Response\ResponseHandler;
+use CoreLib\Core\Response\Types\ErrorType;
 use CoreLib\Core\TestCase\BodyMatchers\NativeBodyMatcher;
 use CoreLib\Core\TestCase\CoreTestCase;
 use CoreLib\Core\TestCase\TestParam;
@@ -26,12 +26,12 @@ class EndToEndTest extends TestCase
 {
     public function newApiCall(): ApiCall
     {
-        return new ApiCall(MockHelper::getCoreConfig());
+        return new ApiCall(MockHelper::getCoreClient());
     }
 
     public function globalResponseHandler(): ResponseHandler
     {
-        return MockHelper::getCoreConfig()->getGlobalResponseHandler();
+        return MockHelper::getCoreClient()->getGlobalResponseHandler();
     }
 
     /**

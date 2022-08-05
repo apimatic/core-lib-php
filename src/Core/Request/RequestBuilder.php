@@ -9,7 +9,7 @@ use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Core\Request\RequestArraySerialization;
 use CoreDesign\Http\RetryOption;
 use CoreLib\Authentication\Auth;
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
 use CoreLib\Core\Request\Parameters\FormParam;
 use CoreLib\Core\Request\Parameters\QueryParam;
 use CoreLib\Utils\CoreHelper;
@@ -142,19 +142,19 @@ class RequestBuilder
         return $this;
     }
 
-    public function build(CoreConfig $coreConfig): Request
+    public function build(CoreClient $coreClient): Request
     {
-        $request = $coreConfig->getGlobalRequest($this->server);
+        $request = $coreClient->getGlobalRequest($this->server);
         $request->appendPath($this->path);
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         foreach ($this->parameters as $param) {
-            $param->validate(CoreConfig::getJsonHelper($coreConfig));
+            $param->validate(CoreClient::getJsonHelper($coreClient));
             $param->apply($request);
         }
         $request->setBodyFormat($this->bodyFormat, $this->bodySerializer);
         if (isset($this->auth)) {
-            $coreConfig->validateAuth($this->auth)->apply($request);
+            $coreClient->validateAuth($this->auth)->apply($request);
         }
         return $request;
     }

@@ -10,6 +10,9 @@ use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
+/**
+ * Use to apply authentication parameters to the request
+ */
 class CoreAuth implements AuthInterface
 {
     private $parameters;

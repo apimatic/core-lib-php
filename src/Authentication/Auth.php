@@ -10,6 +10,9 @@ use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
+/**
+ * Use to group multiple Auth schemes with either `AND` or `OR`
+ */
 class Auth implements AuthInterface
 {
     /**

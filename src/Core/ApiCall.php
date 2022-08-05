@@ -10,7 +10,7 @@ use CoreLib\Core\Response\ResponseHandler;
 
 class ApiCall
 {
-    private $coreConfig;
+    private $coreClient;
 
     /**
      * @var RequestBuilder|null
@@ -22,10 +22,10 @@ class ApiCall
      */
     private $responseHandler;
 
-    public function __construct(CoreConfig $coreConfig)
+    public function __construct(CoreClient $coreClient)
     {
-        $this->coreConfig = $coreConfig;
-        $this->responseHandler = $coreConfig->getGlobalResponseHandler();
+        $this->coreClient = $coreClient;
+        $this->responseHandler = $coreClient->getGlobalResponseHandler();
     }
 
     public function requestBuilder(RequestBuilder $requestBuilder): self
@@ -42,12 +42,12 @@ class ApiCall
 
     public function execute()
     {
-        $request = $this->requestBuilder->build($this->coreConfig);
+        $request = $this->requestBuilder->build($this->coreClient);
         $request->addAcceptHeader($this->responseHandler->getFormat());
-        $this->coreConfig->beforeRequest($request);
-        $response = $this->coreConfig->getHttpClient()->execute($request);
-        $context = new Context($request, $response, $this->coreConfig);
-        $this->coreConfig->afterResponse($context);
+        $this->coreClient->beforeRequest($request);
+        $response = $this->coreClient->getHttpClient()->execute($request);
+        $context = new Context($request, $response, $this->coreClient);
+        $this->coreClient->afterResponse($context);
         return $this->responseHandler->getResponse($context);
     }
 }

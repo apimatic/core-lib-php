@@ -11,26 +11,26 @@ use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
-use CoreLib\Core\Response\ErrorType;
 use CoreLib\Core\Response\ResponseHandler;
+use CoreLib\Core\Response\Types\ErrorType;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
-class CoreConfig
+class CoreClient
 {
     private static $converter;
     private static $jsonHelper;
-    public static function getConverter(CoreConfig $config = null): ConverterInterface
+    public static function getConverter(CoreClient $client = null): ConverterInterface
     {
-        if (isset($config)) {
-            return $config->localConverter;
+        if (isset($client)) {
+            return $client->localConverter;
         }
         return self::$converter;
     }
-    public static function getJsonHelper(CoreConfig $config = null): JsonHelper
+    public static function getJsonHelper(CoreClient $client = null): JsonHelper
     {
-        if (isset($config)) {
-            return $config->localJsonHelper;
+        if (isset($client)) {
+            return $client->localJsonHelper;
         }
         return self::$jsonHelper;
     }

@@ -2,7 +2,8 @@
 
 namespace CoreLib\Core\Response;
 
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
+use CoreLib\Core\Response\Types\ErrorType;
 
 class ResponseError
 {
@@ -39,7 +40,7 @@ class ResponseError
         if (isset($this->errors[$statusCode])) {
             $this->errors[$statusCode]->throw($context);
         }
-        throw CoreConfig::getConverter($context->getCoreConfig())->createApiException(
+        throw CoreClient::getConverter($context->getCoreClient())->createApiException(
             'Invalid Response.',
             $context->getRequest(),
             $response

@@ -3,12 +3,12 @@
 namespace CoreLib\Tests\Mocking;
 
 use CoreLib\Core\ApiCall;
-use CoreLib\Core\CoreConfig;
-use CoreLib\Core\CoreConfigBuilder;
+use CoreLib\Core\CoreClient;
+use CoreLib\Core\CoreClientBuilder;
 use CoreLib\Core\Request\Parameters\HeaderParam;
 use CoreLib\Core\Request\Parameters\TemplateParam;
-use CoreLib\Core\Response\ErrorType;
 use CoreLib\Core\Response\ResponseHandler;
+use CoreLib\Core\Response\Types\ErrorType;
 use CoreLib\Tests\Mocking\Authentication\FormAuthManager;
 use CoreLib\Tests\Mocking\Authentication\HeaderAuthManager;
 use CoreLib\Tests\Mocking\Authentication\QueryAuthManager;
@@ -27,9 +27,9 @@ use CoreLib\Types\CallbackCatcher;
 class MockHelper
 {
     /**
-     * @var CoreConfig
+     * @var CoreClient
      */
-    private static $coreConfig;
+    private static $coreClient;
 
     /**
      * @var MockResponse
@@ -56,10 +56,10 @@ class MockHelper
      */
     private static $urlFileWrapper;
 
-    public static function getCoreConfig(): CoreConfig
+    public static function getCoreClient(): CoreClient
     {
-        if (!isset(self::$coreConfig)) {
-            $coreConfigBuilder = CoreConfigBuilder::init(new MockHttpClient())
+        if (!isset(self::$coreClient)) {
+            $coreClientBuilder = CoreClientBuilder::init(new MockHttpClient())
                 ->converter(new MockConverter())
                 ->apiCallback(self::getCallbackCatcher())
                 ->serverUrls([
@@ -98,22 +98,22 @@ class MockHelper
                 ])
                 ->additionalPropertiesMethodName('addAdditionalProperty')
                 ->modelNamespace('CoreLib\\Tests\\Mocking\\Other');
-            self::$coreConfig = $coreConfigBuilder->build();
+            self::$coreClient = $coreClientBuilder->build();
             // @phan-suppress-next-next-line PhanPluginDuplicateAdjacentStatement Following duplicated line will
             // call `addUserAgentToGlobalHeaders` again to see test if its added again or not
-            self::$coreConfig = $coreConfigBuilder->build();
+            self::$coreClient = $coreClientBuilder->build();
         }
-        return self::$coreConfig;
+        return self::$coreClient;
     }
 
     public static function newApiCall(): ApiCall
     {
-        return new ApiCall(self::getCoreConfig());
+        return new ApiCall(self::getCoreClient());
     }
 
     public static function globalResponseHandler(): ResponseHandler
     {
-        return self::getCoreConfig()->getGlobalResponseHandler();
+        return self::getCoreClient()->getGlobalResponseHandler();
     }
 
     public static function getResponse(): MockResponse

@@ -1,9 +1,10 @@
 <?php
 
-namespace CoreLib\Core\Response;
+namespace CoreLib\Core\Response\Types;
 
 use Closure;
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
+use CoreLib\Core\Response\Context;
 use Exception;
 
 class ResponseType
@@ -43,7 +44,7 @@ class ResponseType
         if (is_null($this->responseClass)) {
             return null;
         }
-        $coreConfig = $context->getCoreConfig();
+        $coreClient = $context->getCoreClient();
         try {
             if (isset($this->xmlDeserializer)) {
                 return Closure::fromCallable($this->xmlDeserializer)(
@@ -51,13 +52,13 @@ class ResponseType
                     $this->responseClass
                 );
             }
-            return CoreConfig::getJsonHelper($context->getCoreConfig())->mapClass(
+            return CoreClient::getJsonHelper($context->getCoreClient())->mapClass(
                 $context->getResponse()->getBody(),
                 $this->responseClass,
                 $this->dimensions
             );
         } catch (Exception $e) {
-            throw CoreConfig::getConverter($coreConfig)
+            throw CoreClient::getConverter($coreClient)
                 ->createApiException($e->getMessage(), $context->getRequest(), $context->getResponse());
         }
     }

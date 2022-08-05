@@ -9,15 +9,15 @@ use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Http\HttpClientInterface;
 use CoreDesign\Sdk\ConverterInterface;
 use CoreLib\Core\Request\Parameters\HeaderParam;
-use CoreLib\Core\Response\ErrorType;
+use CoreLib\Core\Response\Types\ErrorType;
 use CoreLib\Types\Sdk\CoreCallback;
 use CoreLib\Utils\JsonHelper;
 
-class CoreConfigBuilder
+class CoreClientBuilder
 {
     public static function init(HttpClientInterface $httpClient): self
     {
-        return new CoreConfigBuilder($httpClient);
+        return new CoreClientBuilder($httpClient);
     }
 
     /**
@@ -197,11 +197,11 @@ class CoreConfigBuilder
         $this->userAgent = null;
     }
 
-    public function build(): CoreConfig
+    public function build(): CoreClient
     {
         $this->addUserAgentToGlobalHeaders();
         $jsonHelper = new JsonHelper($this->inheritedModels, $this->additionalPropMethodName, $this->modelNamespace);
-        return new CoreConfig(
+        return new CoreClient(
             $this->httpClient,
             $this->converter,
             $jsonHelper,

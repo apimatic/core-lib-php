@@ -2,7 +2,7 @@
 
 namespace CoreLib\Tests\Core;
 
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
 use CoreLib\Core\Request\Request;
 use CoreLib\Core\Response\Context;
 use CoreLib\Core\TestCase\BodyMatchers\KeysAndValuesBodyMatcher;
@@ -20,13 +20,13 @@ use PHPUnit\Framework\TestCase;
 class CoreTestCaseTest extends TestCase
 {
     /**
-     * @var CoreConfig
+     * @var CoreClient
      */
-    private static $coreConfig;
+    private static $coreClient;
 
     public static function setUpBeforeClass(): void
     {
-        self::$coreConfig = MockHelper::getCoreConfig();
+        self::$coreClient = MockHelper::getCoreClient();
     }
 
     private static function getResponse(int $status, array $headers, $body): void
@@ -35,8 +35,8 @@ class CoreTestCaseTest extends TestCase
         $response->setStatusCode($status);
         $response->setHeaders($headers);
         $response->setBody($body);
-        $context = new Context(new Request('/my/path'), $response, self::$coreConfig);
-        self::$coreConfig->afterResponse($context);
+        $context = new Context(new Request('/my/path'), $response, self::$coreClient);
+        self::$coreClient->afterResponse($context);
     }
 
     private function newTestCase($result): CoreTestCase

@@ -4,7 +4,7 @@ namespace CoreLib\Tests\Core;
 
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreDesign\Http\HttpClientInterface;
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
 use CoreLib\Core\Request\Parameters\BodyParam;
 use CoreLib\Core\Request\Parameters\FormParam;
 use CoreLib\Core\Request\Parameters\HeaderParam;
@@ -16,11 +16,11 @@ use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-class CoreConfigTest extends TestCase
+class CoreClientTest extends TestCase
 {
     public function testHttpClient()
     {
-        $httpClient = MockHelper::getCoreConfig()->getHttpClient();
+        $httpClient = MockHelper::getCoreClient()->getHttpClient();
         $this->assertInstanceOf(HttpClientInterface::class, $httpClient);
 
         $request = new Request('some/path');
@@ -36,7 +36,7 @@ class CoreConfigTest extends TestCase
 
     public function testApplyingParamsWithoutValidation()
     {
-        $request = MockHelper::getCoreConfig()->getGlobalRequest();
+        $request = MockHelper::getCoreClient()->getGlobalRequest();
         $request->appendPath('/{newKey}');
         $queryUrl = $request->getQueryUrl();
         $headers = $request->getHeaders();
@@ -72,7 +72,7 @@ class CoreConfigTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required query field: newKey");
 
-        QueryParam::init('newKey', null)->required()->validate(CoreConfig::getJsonHelper(MockHelper::getCoreConfig()));
+        QueryParam::init('newKey', null)->required()->validate(CoreClient::getJsonHelper(MockHelper::getCoreClient()));
     }
 
     public function testSerializeByQueryParamValidation()
@@ -81,7 +81,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to serialize field: newKey, Due to:\nInvalid argument found");
 
         QueryParam::init('newKey', 'someVal')->serializeBy([$this, 'fakeSerializeBy'])->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -91,7 +91,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         QueryParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -101,7 +101,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Missing required template field: newKey");
 
         TemplateParam::init('newKey', null)->required()->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -111,7 +111,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to serialize field: newKey, Due to:\nInvalid argument found");
 
         TemplateParam::init('newKey', 'someVal')->serializeBy([$this, 'fakeSerializeBy'])->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -121,7 +121,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         TemplateParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -130,7 +130,7 @@ class CoreConfigTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required form field: newKey");
 
-        FormParam::init('newKey', null)->required()->validate(CoreConfig::getJsonHelper(MockHelper::getCoreConfig()));
+        FormParam::init('newKey', null)->required()->validate(CoreClient::getJsonHelper(MockHelper::getCoreClient()));
     }
 
     public function testSerializeByFormParamValidation()
@@ -139,7 +139,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to serialize field: newKey, Due to:\nInvalid argument found");
 
         FormParam::init('newKey', 'someVal')->serializeBy([$this, 'fakeSerializeBy'])->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -149,7 +149,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         FormParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -159,7 +159,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Missing required header field: newKey");
 
         HeaderParam::init('newKey', null)->required()->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -169,7 +169,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to serialize field: newKey, Due to:\nInvalid argument found");
 
         HeaderParam::init('newKey', 'someVal')->serializeBy([$this, 'fakeSerializeBy'])->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -179,7 +179,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         HeaderParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -188,7 +188,7 @@ class CoreConfigTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Missing required body field: body");
 
-        BodyParam::init(null)->required()->validate(CoreConfig::getJsonHelper(MockHelper::getCoreConfig()));
+        BodyParam::init(null)->required()->validate(CoreClient::getJsonHelper(MockHelper::getCoreClient()));
     }
 
     public function testSerializeByBodyParamValidation()
@@ -197,7 +197,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to serialize field: body, Due to:\nInvalid argument found");
 
         BodyParam::init('someVal')->serializeBy([$this, 'fakeSerializeBy'])->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 
@@ -207,7 +207,7 @@ class CoreConfigTest extends TestCase
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         BodyParam::init('someVal')->strictType('oneof(int,bool)')->validate(
-            CoreConfig::getJsonHelper(MockHelper::getCoreConfig())
+            CoreClient::getJsonHelper(MockHelper::getCoreClient())
         );
     }
 }

@@ -13,7 +13,7 @@ use CoreLib\Core\Request\Parameters\QueryParam;
 use CoreLib\Core\Request\Parameters\TemplateParam;
 use CoreLib\Core\Request\RequestBuilder;
 use CoreLib\Core\Response\Context;
-use CoreLib\Core\Response\ErrorType;
+use CoreLib\Core\Response\Types\ErrorType;
 use CoreLib\Tests\Mocking\Core\Response\MockResponse;
 use CoreLib\Tests\Mocking\MockHelper;
 use CoreLib\Tests\Mocking\Other\MockClass;
@@ -511,7 +511,7 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(404);
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()->nullOn404()->getResponse($context);
         $this->assertNull($result);
     }
@@ -522,7 +522,7 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('Invalid Response.');
         $response = new MockResponse();
         $response->setStatusCode(500);
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()->getResponse($context);
     }
 
@@ -533,7 +533,7 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(400);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()->getResponse($context);
     }
 
@@ -543,7 +543,7 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('Exception num 3');
         $response = new MockResponse();
         $response->setStatusCode(403);
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()->getResponse($context);
     }
 
@@ -554,7 +554,7 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(403);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
             ->getResponse($context);
@@ -564,7 +564,7 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setBody("This is string");
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->getResponse($context);
         $this->assertEquals('This is string', $result);
@@ -574,7 +574,7 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setRawBody("<?xml version=\"1.0\"?>\n<root>This is string</root>\n");
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXml('string', 'root')
             ->getResponse($context);
@@ -594,7 +594,7 @@ class ApiCallTest extends TestCase
             "    <entry key=\"key2\">val2</entry>\n" .
             "  </new2>\n" .
             "</mockClass>\n");
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXml(MockClass::class, 'mockClass')
             ->getResponse($context);
@@ -620,7 +620,7 @@ class ApiCallTest extends TestCase
             "  </new2>\n" .
             "</mockClass>\n" .
             "</mockClassArray>\n");
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXmlArray(MockClass::class, 'mockClassArray', 'mockClass')
             ->getResponse($context);
@@ -647,7 +647,7 @@ class ApiCallTest extends TestCase
             "  </new2>\n" .
             "</entry>\n" .
             "</mockClassMap>\n");
-        $context = new Context(MockHelper::getCoreConfig()->getGlobalRequest(), $response, MockHelper::getCoreConfig());
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXmlMap(MockClass::class, 'mockClassMap')
             ->getResponse($context);

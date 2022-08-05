@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CoreLib\Core\TestCase;
 
 use Closure;
-use CoreLib\Core\CoreConfig;
+use CoreLib\Core\CoreClient;
 use CoreLib\Types\Sdk\CoreFileWrapper;
 use CoreLib\Utils\CoreHelper;
 use Exception;
@@ -23,7 +23,7 @@ class TestParam
      */
     public static function typeGroup(string $json, string $typeGroup, array $deserializers = [])
     {
-        return CoreConfig::getJsonHelper()->mapTypes(CoreHelper::deserialize($json, false), $typeGroup, $deserializers);
+        return CoreClient::getJsonHelper()->mapTypes(CoreHelper::deserialize($json, false), $typeGroup, $deserializers);
     }
 
     /**
@@ -40,7 +40,7 @@ class TestParam
         if (is_null($classname)) {
             return CoreHelper::deserialize($json);
         }
-        return CoreConfig::getJsonHelper()->mapClass(CoreHelper::deserialize($json, false), $classname, $dimension);
+        return CoreClient::getJsonHelper()->mapClass(CoreHelper::deserialize($json, false), $classname, $dimension);
     }
 
     /**
@@ -67,6 +67,6 @@ class TestParam
      */
     public static function localFile(string $realPath)
     {
-        return CoreConfig::getConverter()->createFileWrapper($realPath, null, '');
+        return CoreClient::getConverter()->createFileWrapper($realPath, null, '');
     }
 }
