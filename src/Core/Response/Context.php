@@ -8,18 +8,21 @@ use CoreDesign\Core\ContextInterface;
 use CoreDesign\Core\Request\RequestInterface;
 use CoreDesign\Core\Response\ResponseInterface;
 use CoreLib\Core\CoreClient;
+use CoreLib\Utils\JsonHelper;
 
 class Context implements ContextInterface
 {
     private $request;
     private $response;
-    private $coreClient;
+    private $converter;
+    private $jsonHelper;
 
     public function __construct(RequestInterface $request, ResponseInterface $response, CoreClient $client)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->coreClient = $client;
+        $this->converter = CoreClient::getConverter($client);
+        $this->jsonHelper = CoreClient::getJsonHelper($client);
     }
 
     public function getRequest(): RequestInterface
@@ -32,18 +35,25 @@ class Context implements ContextInterface
         return $this->response;
     }
 
-    public function getCoreClient(): CoreClient
+    public function getJsonHelper(): JsonHelper
     {
-        return $this->coreClient;
+        return $this->jsonHelper;
     }
 
-    public function convertIntoApiResponse($deserializedBody)
+    public function toApiException(string $errorMessage, ?string $childClass = null)
     {
-        return CoreClient::getConverter($this->coreClient)->createApiResponse($this, $deserializedBody);
+        $responseBody = $this->response->getBody();
+        if (is_null($childClass) || is_null($responseBody)) {
+            return $this->converter->createApiException($errorMessage, $this->request, $this->response);
+        }
+        $responseBody->reason = $errorMessage;
+        $responseBody->request = $this->request->convert($this->converter);
+        $responseBody->response = $this->response->convert($this->converter);
+        return $this->jsonHelper->mapClass($responseBody, $childClass);
     }
 
-    public function convert()
+    public function toApiResponse($deserializedBody)
     {
-        return CoreClient::getConverter($this->coreClient)->createHttpContext($this);
+        return $this->converter->createApiResponse($this, $deserializedBody);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Core;
+namespace CoreLib\Tests;
 
 use CoreLib\Tests\Mocking\Other\MockClass;
 use CoreLib\Utils\CoreHelper;

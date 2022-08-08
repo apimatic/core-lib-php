@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Core;
+namespace CoreLib\Tests;
 
 use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\RequestArraySerialization;
@@ -512,7 +512,7 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(404);
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()->nullOn404()->getResponse($context);
+        $result = MockHelper::globalResponseHandler()->nullOn404()->getResult($context);
         $this->assertNull($result);
     }
 
@@ -523,7 +523,7 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(500);
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResponse($context);
+        MockHelper::globalResponseHandler()->getResult($context);
     }
 
     public function testGlobalMockException1()
@@ -534,7 +534,7 @@ class ApiCallTest extends TestCase
         $response->setStatusCode(400);
         $response->setBody([]);
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResponse($context);
+        MockHelper::globalResponseHandler()->getResult($context);
     }
 
     public function testGlobalMockException3()
@@ -544,7 +544,7 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(403);
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResponse($context);
+        MockHelper::globalResponseHandler()->getResult($context);
     }
 
     public function testLocalMockException3()
@@ -557,7 +557,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
-            ->getResponse($context);
+            ->getResult($context);
     }
 
     public function testScalarResponse()
@@ -566,7 +566,7 @@ class ApiCallTest extends TestCase
         $response->setBody("This is string");
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
-            ->getResponse($context);
+            ->getResult($context);
         $this->assertEquals('This is string', $result);
     }
 
@@ -577,7 +577,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXml('string', 'root')
-            ->getResponse($context);
+            ->getResult($context);
         $this->assertEquals('This is string', $result);
     }
 
@@ -597,7 +597,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXml(MockClass::class, 'mockClass')
-            ->getResponse($context);
+            ->getResult($context);
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(
             ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
@@ -623,7 +623,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXmlArray(MockClass::class, 'mockClassArray', 'mockClass')
-            ->getResponse($context);
+            ->getResult($context);
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result[0]);
         $this->assertEquals(
@@ -650,7 +650,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         $result = MockHelper::globalResponseHandler()
             ->typeXmlMap(MockClass::class, 'mockClassMap')
-            ->getResponse($context);
+            ->getResult($context);
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result['mockClass']);
         $this->assertEquals(

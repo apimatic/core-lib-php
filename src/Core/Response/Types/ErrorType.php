@@ -2,7 +2,6 @@
 
 namespace CoreLib\Core\Response\Types;
 
-use CoreLib\Core\CoreClient;
 use CoreLib\Core\Response\Context;
 
 class ErrorType
@@ -22,19 +21,6 @@ class ErrorType
 
     public function throw(Context $context)
     {
-        $response = $context->getResponse();
-        $body = $response->getBody();
-        $converter = CoreClient::getConverter($context->getCoreClient());
-        if (isset($this->className, $body)) {
-            $body->reason = $this->description;
-            $body->request = $converter->createHttpRequest($context->getRequest());
-            $body->response = $converter->createHttpResponse($response);
-            throw CoreClient::getJsonHelper($context->getCoreClient())->mapClass($body, $this->className);
-        }
-        throw $converter->createApiException(
-            $this->description,
-            $context->getRequest(),
-            $response
-        );
+        throw $context->toApiException($this->description, $this->className);
     }
 }

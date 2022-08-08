@@ -48,6 +48,6 @@ class ApiCall
         $response = $this->coreClient->getHttpClient()->execute($request);
         $context = new Context($request, $response, $this->coreClient);
         $this->coreClient->afterResponse($context);
-        return $this->responseHandler->getResponse($context);
+        return $this->responseHandler->getResult($context);
     }
 }

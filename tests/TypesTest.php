@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Core;
+namespace CoreLib\Tests;
 
 use CoreDesign\Core\Request\RequestMethod;
 use CoreLib\Core\CoreClient;
@@ -10,8 +10,8 @@ use CoreLib\Tests\Mocking\MockHelper;
 use CoreLib\Tests\Mocking\Other\MockException;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockContext;
-use CoreLib\Tests\Mocking\Types\MockRequest;
 use CoreLib\Tests\Mocking\Types\MockCoreResponse;
+use CoreLib\Tests\Mocking\Types\MockRequest;
 use CoreLib\Utils\CoreHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -45,24 +45,12 @@ class TypesTest extends TestCase
         $this->assertEquals('{"res":"This is raw body"}', $sdkResponse->getRawBody());
     }
 
-    public function testChildOfCoreContext()
-    {
-        $request = new Request('some/path');
-        $response = MockHelper::getResponse();
-        $context = new Context($request, $response, MockHelper::getCoreClient());
-        $sdkContext = $context->convert();
-
-        $this->assertInstanceOf(MockContext::class, $sdkContext);
-        $this->assertInstanceOf(MockRequest::class, $sdkContext->getRequest());
-        $this->assertInstanceOf(MockCoreResponse::class, $sdkContext->getResponse());
-    }
-
     public function testChildOfCoreApiResponse()
     {
         $request = new Request('some/path');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
-        $sdkApiResponse = $context->convertIntoApiResponse(["alpha", "beta"]);
+        $sdkApiResponse = $context->toApiResponse(["alpha", "beta"]);
 
         $this->assertInstanceOf(MockApiResponse::class, $sdkApiResponse);
         $this->assertInstanceOf(MockRequest::class, $sdkApiResponse->getRequest());
@@ -72,12 +60,13 @@ class TypesTest extends TestCase
         $this->assertNull($sdkApiResponse->getReasonPhrase());
         $this->assertEquals(["alpha", "beta"], $sdkApiResponse->getResult());
     }
+
     public function testCoreExceptionConverter()
     {
         $request = new Request('some/path');
         $response = MockHelper::getResponse();
-        $sdkException = CoreClient::getConverter(MockHelper::getCoreClient())
-            ->createApiException('Error Occurred', $request, $response);
+        $context = new Context($request, $response, MockHelper::getCoreClient());
+        $sdkException = $context->toApiException('Error Occurred');
 
         $this->assertInstanceOf(MockException::class, $sdkException);
         $this->assertEquals('Error Occurred', $sdkException->getMessage());

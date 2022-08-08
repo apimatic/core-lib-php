@@ -116,19 +116,19 @@ class ResponseHandler
      * @param Context $context
      * @return mixed
      */
-    public function getResponse(Context $context)
+    public function getResult(Context $context)
     {
         if ($this->nullOn404 && $context->getResponse()->getStatusCode() === 404) {
             return null;
         }
         $this->responseError->throw($context);
-        $response = $this->deserializableType->getFrom($context);
-        $response = $response ?? $this->responseType->getFrom($context);
-        $response = $response ?? $this->responseMultiType->getFrom($context);
-        $response = $response ?? $context->getResponse()->getBody();
+        $result = $this->deserializableType->getFrom($context);
+        $result = $result ?? $this->responseType->getFrom($context);
+        $result = $result ?? $this->responseMultiType->getFrom($context);
+        $result = $result ?? $context->getResponse()->getBody();
         if ($this->useApiResponse) {
-            return $context->convertIntoApiResponse($response);
+            return $context->toApiResponse($result);
         }
-        return $response;
+        return $result;
     }
 }

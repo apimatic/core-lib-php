@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Core;
+namespace CoreLib\Tests;
 
 use CoreLib\Core\CoreClient;
 use CoreLib\Core\Request\Request;
