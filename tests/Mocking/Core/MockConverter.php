@@ -18,9 +18,10 @@ class MockConverter implements ConverterInterface
     public function createApiException(
         string $message,
         RequestInterface $request,
-        ResponseInterface $response
+        ?ResponseInterface $response
     ): MockException {
-        return new MockException($message, $this->createHttpRequest($request), $this->createHttpResponse($response));
+        $response = $response == null ? null : $this->createHttpResponse($response);
+        return new MockException($message, $this->createHttpRequest($request), $response);
     }
 
     public function createHttpContext(ContextInterface $context): MockContext

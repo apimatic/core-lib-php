@@ -63,8 +63,8 @@ class MockHelper
                 ->converter(new MockConverter())
                 ->apiCallback(self::getCallbackCatcher())
                 ->serverUrls([
-                    'Server1' => 'my/path/{one}',
-                    'Server2' => 'my/path/{two}'
+                    'Server1' => 'http://my/path:3000/{one}',
+                    'Server2' => 'https://my/path/{two}'
                 ], 'Server1')
                 ->globalConfig(
                     TemplateParam::init('one', 'v1')->dontEncode(),

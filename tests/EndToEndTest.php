@@ -92,11 +92,11 @@ class EndToEndTest extends TestCase
             ->expectHeaders(['content-type' => 'application/json'])
             ->allowExtraHeaders()
             ->bodyMatcher(NativeBodyMatcher::init(TestParam::object('{"body":{"httpMethod":"POST","queryUrl":' .
-                '"my\/path\/v2\/api\/path\/poster?&date+array=Fri%2C+01+Oct+2021+00%3A00%3A00+GMT%2CThu%2C+30+Sep' .
-                '+2021+00%3A00%3A00+GMT&token=someAuthToken&authorization=accessToken","headers":{"additionalHead1"' .
-                ':"headVal1","additionalHead2":"headVal2","header":1234,"token":"someAuthToken","authorization":' .
-                '"accessToken","Accept":"application\/json"},"parameters":{"form 2":{"key1":"value 1","key2":"false"' .
-                ',"key3":2.3}},"retryOption":"enableRetries"}}', MockClass::class), true))
+                '"https:\/\/my\/path\/v2\/api\/path\/poster?&date+array=Fri%2C+01+Oct+2021+00%3A00%3A00+GMT%2CThu' .
+                '%2C+30+Sep+2021+00%3A00%3A00+GMT&token=someAuthToken&authorization=accessToken","headers":{' .
+                '"additionalHead1":"headVal1","additionalHead2":"headVal2","header":1234,"token":"someAuthToken",' .
+                '"authorization":"accessToken","Accept":"application\/json"},"parameters":{"form 2":{"key1":' .
+                '"value 1","key2":"false","key3":2.3}},"retryOption":"enableRetries"}}', MockClass::class), true))
             ->assert();
     }
 }

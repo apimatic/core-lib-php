@@ -47,7 +47,7 @@ class Context implements ContextInterface
             return $this->converter->createApiException($errorMessage, $this->request, $this->response);
         }
         $responseBody->reason = $errorMessage;
-        $responseBody->request = $this->request->convert($this->converter);
+        $responseBody->request = $this->request->convert();
         $responseBody->response = $this->response->convert($this->converter);
         return $this->jsonHelper->mapClass($responseBody, $childClass);
     }

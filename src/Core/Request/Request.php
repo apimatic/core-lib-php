@@ -9,11 +9,13 @@ use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\RequestMethod;
 use CoreDesign\Core\Request\RequestSetterInterface;
 use CoreDesign\Http\RetryOption;
-use CoreDesign\Sdk\ConverterInterface;
+use CoreLib\Core\CoreClient;
 use CoreLib\Types\Sdk\CoreFileWrapper;
+use CoreLib\Utils\CoreHelper;
 
 class Request implements RequestSetterInterface
 {
+    private $converter;
     private $queryUrl;
     private $requestMethod = RequestMethod::GET;
     private $headers = [];
@@ -23,10 +25,12 @@ class Request implements RequestSetterInterface
 
     /**
      * @param string $queryUrl
+     * @param CoreClient|null $client
      */
-    public function __construct(string $queryUrl)
+    public function __construct(string $queryUrl, ?CoreClient $client = null)
     {
-        $this->queryUrl = $queryUrl;
+        $this->queryUrl = CoreHelper::validateUrl($queryUrl);
+        $this->converter = CoreClient::getConverter($client);
     }
 
     public function getHttpMethod(): string
@@ -57,6 +61,16 @@ class Request implements RequestSetterInterface
     public function getRetryOption(): string
     {
         return $this->retryOption;
+    }
+
+    public function convert()
+    {
+        return $this->converter->createHttpRequest($this);
+    }
+
+    public function toApiException(string $message)
+    {
+        return $this->converter->createApiException($message, $this, null);
     }
 
     public function addAcceptHeader(string $accept): void
@@ -148,10 +162,5 @@ class Request implements RequestSetterInterface
     public function setRetryOption(string $retryOption): void
     {
         $this->retryOption = $retryOption;
-    }
-
-    public function convert(ConverterInterface $converter)
-    {
-        return $converter->createHttpRequest($this);
     }
 }

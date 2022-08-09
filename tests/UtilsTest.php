@@ -83,6 +83,13 @@ class UtilsTest extends TestCase
         $this->assertEquals("my value", $res['key']);
     }
 
+    public function testCoreHelperValidateUrl()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Url format.');
+        CoreHelper::validateUrl('some/invalid/url/format');
+    }
+
     public function testFromSimpleDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);

@@ -12,7 +12,7 @@ class AuthenticationTest extends TestCase
 {
     public function testHeaderAuth()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or('header');
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -34,7 +34,7 @@ class AuthenticationTest extends TestCase
 
     public function testHeaderOrQueryAuth()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or('header', 'query');
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -42,17 +42,23 @@ class AuthenticationTest extends TestCase
             'token' => 'someAuthToken',
             'authorization' => 'accessToken'
         ], $request->getHeaders());
-        $this->assertEquals('some/path?token=someAuthToken&authorization=accessToken', $request->getQueryUrl());
+        $this->assertEquals(
+            'http://localhost:3000?token=someAuthToken&authorization=accessToken',
+            $request->getQueryUrl()
+        );
     }
 
     public function testHeaderWithMissingFieldOrQueryAuth()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or('headerWithNull', 'query');
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([], $request->getHeaders());
-        $this->assertEquals('some/path?token=someAuthToken&authorization=accessToken', $request->getQueryUrl());
+        $this->assertEquals(
+            'http://localhost:3000?token=someAuthToken&authorization=accessToken',
+            $request->getQueryUrl()
+        );
     }
 
     public function testHeaderOrQueryAuthWithMissingFields()
@@ -68,7 +74,7 @@ class AuthenticationTest extends TestCase
 
     public function testHeaderAndQueryAuth()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::and('header', 'query');
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -76,7 +82,10 @@ class AuthenticationTest extends TestCase
             'token' => 'someAuthToken',
             'authorization' => 'accessToken'
         ], $request->getHeaders());
-        $this->assertEquals('some/path?token=someAuthToken&authorization=accessToken', $request->getQueryUrl());
+        $this->assertEquals(
+            'http://localhost:3000?token=someAuthToken&authorization=accessToken',
+            $request->getQueryUrl()
+        );
     }
 
     public function testHeaderWithMissingFieldAndQueryAuth()
@@ -99,7 +108,7 @@ class AuthenticationTest extends TestCase
 
     public function testFormOrHeaderAndQueryAuthWithMissingFields()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or('form', Auth::and('header', 'queryWithNull'));
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -108,12 +117,12 @@ class AuthenticationTest extends TestCase
             'authorization' => 'accessToken'
         ], $request->getParameters());
         $this->assertEquals([], $request->getHeaders());
-        $this->assertEquals('some/path', $request->getQueryUrl());
+        $this->assertEquals('http://localhost:3000', $request->getQueryUrl());
     }
 
     public function testFormOrHeaderOrQueryAuthWithMissingFields()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or('form', Auth::or('header', 'queryWithNull'));
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -125,12 +134,12 @@ class AuthenticationTest extends TestCase
             'token' => 'someAuthToken',
             'authorization' => 'accessToken'
         ], $request->getHeaders());
-        $this->assertEquals('some/path', $request->getQueryUrl());
+        $this->assertEquals('http://localhost:3000', $request->getQueryUrl());
     }
 
     public function testFormAndHeaderWithNullOrHeaderOrQueryWithNull()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::or(Auth::and('form', 'headerWithNull'), Auth::or('header', 'queryWithNull'));
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -139,12 +148,12 @@ class AuthenticationTest extends TestCase
             'token' => 'someAuthToken',
             'authorization' => 'accessToken'
         ], $request->getHeaders());
-        $this->assertEquals('some/path', $request->getQueryUrl());
+        $this->assertEquals('http://localhost:3000', $request->getQueryUrl());
     }
 
     public function testFormOrHeaderWithNullAndHeaderOrQueryWithNull()
     {
-        $request = new Request('some/path');
+        $request = new Request('http://localhost:3000');
         $auth = Auth::and(Auth::or('form', 'headerWithNull', 'formWithNull'), Auth::or('header', 'queryWithNull'));
         MockHelper::getCoreClient()->validateAuth($auth)->apply($request);
 
@@ -156,7 +165,7 @@ class AuthenticationTest extends TestCase
             'token' => 'someAuthToken',
             'authorization' => 'accessToken'
         ], $request->getHeaders());
-        $this->assertEquals('some/path', $request->getQueryUrl());
+        $this->assertEquals('http://localhost:3000', $request->getQueryUrl());
     }
 
     public function testFormOrHeaderWithNullAndHeaderAndQueryWithNull()

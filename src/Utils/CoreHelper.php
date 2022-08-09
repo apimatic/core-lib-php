@@ -3,6 +3,7 @@
 namespace CoreLib\Utils;
 
 use ArrayIterator;
+use InvalidArgumentException;
 
 class CoreHelper
 {
@@ -31,6 +32,30 @@ class CoreHelper
     public static function deserialize(?string $json, bool $associative = true)
     {
         return json_decode($json, $associative) ?? $json;
+    }
+
+    /**
+     * Validates and processes the given Url to ensure safe usage with cURL.
+     * @param string $url The given Url to process
+     * @return string Pre-processed Url as string
+     * @throws InvalidArgumentException
+     */
+    public static function validateUrl(string $url): string
+    {
+        //ensure that the urls are absolute
+        $matchCount = preg_match("#^(https?://[^/]+)#", $url, $matches);
+        if ($matchCount == 0) {
+            throw new InvalidArgumentException('Invalid Url format.');
+        }
+        //get the http protocol match
+        $protocol = $matches[1];
+
+        //remove redundant forward slashes
+        $query = substr($url, strlen($protocol));
+        $query = preg_replace("#//+#", "/", $query);
+
+        //return process url
+        return $protocol . $query;
     }
 
     /**

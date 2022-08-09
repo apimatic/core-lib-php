@@ -19,8 +19,8 @@ class TypesTest extends TestCase
 {
     public function testChildOfCoreRequest()
     {
-        $request = new Request('some/path');
-        $sdkRequest = $request->convert(CoreClient::getConverter(MockHelper::getCoreClient()));
+        $request = new Request('https://localhost:3000');
+        $sdkRequest = $request->convert();
 
         $this->assertInstanceOf(MockRequest::class, $sdkRequest);
         $sdkRequest->setHttpMethod(RequestMethod::POST);
@@ -47,7 +47,7 @@ class TypesTest extends TestCase
 
     public function testChildOfCoreApiResponse()
     {
-        $request = new Request('some/path');
+        $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
         $sdkApiResponse = $context->toApiResponse(["alpha", "beta"]);
@@ -61,9 +61,9 @@ class TypesTest extends TestCase
         $this->assertEquals(["alpha", "beta"], $sdkApiResponse->getResult());
     }
 
-    public function testCoreExceptionConverter()
+    public function testCoreExceptionConverterFromContext()
     {
-        $request = new Request('some/path');
+        $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
         $sdkException = $context->toApiException('Error Occurred');
@@ -74,10 +74,21 @@ class TypesTest extends TestCase
         $this->assertInstanceOf(MockCoreResponse::class, $sdkException->response);
     }
 
+    public function testCoreExceptionConverterFromRequest()
+    {
+        $request = new Request('https://localhost:3000');
+        $sdkException = $request->toApiException('Error Occurred');
+
+        $this->assertInstanceOf(MockException::class, $sdkException);
+        $this->assertEquals('Error Occurred', $sdkException->getMessage());
+        $this->assertInstanceOf(MockRequest::class, $sdkException->request);
+        $this->assertNull($sdkException->response);
+    }
+
     public function testCallbackCatcher()
     {
         $callback = MockHelper::getCallbackCatcher();
-        $request = new Request('some/path');
+        $request = new Request('https://localhost:3000');
         $this->assertNull($callback->getOnBeforeRequest());
         $callback->callOnBeforeWithConversion($request, CoreClient::getConverter(MockHelper::getCoreClient()));
 
@@ -95,7 +106,7 @@ class TypesTest extends TestCase
         $callback->setOnBeforeRequest(function (MockRequest $sdkRequest): void {
             $this->assertInstanceOf(MockRequest::class, $sdkRequest);
             $this->assertEquals(RequestMethod::GET, $sdkRequest->getHttpMethod());
-            $this->assertEquals('some/path', $sdkRequest->getQueryUrl());
+            $this->assertEquals('https://localhost:3000', $sdkRequest->getQueryUrl());
             $this->assertEquals([], $sdkRequest->getHeaders());
             $this->assertEquals([], $sdkRequest->getParameters());
         });
@@ -106,7 +117,7 @@ class TypesTest extends TestCase
         $this->assertNotNull($callback->getOnBeforeRequest());
         $this->assertNotNull($callback->getOnAfterRequest());
 
-        $request = new Request('some/path');
+        $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
 

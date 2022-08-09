@@ -35,7 +35,7 @@ class CoreTestCaseTest extends TestCase
         $response->setStatusCode($status);
         $response->setHeaders($headers);
         $response->setBody($body);
-        $context = new Context(new Request('/my/path'), $response, self::$coreClient);
+        $context = new Context(new Request('http://my/path'), $response, self::$coreClient);
         self::$coreClient->afterResponse($context);
     }
 

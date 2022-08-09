@@ -65,7 +65,7 @@ class ApiCallTest extends TestCase
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(RequestMethod::PUT, $result->body['httpMethod']);
-        $this->assertEquals('my/path/v2/2ndServer', $result->body['queryUrl']);
+        $this->assertEquals('https://my/path/v2/2ndServer', $result->body['queryUrl']);
         $this->assertEquals('application/json', $result->body['headers']['Accept']);
         $this->assertEquals('headVal1', $result->body['headers']['additionalHead1']);
         $this->assertEquals('headVal2', $result->body['headers']['additionalHead2']);
@@ -84,7 +84,7 @@ class ApiCallTest extends TestCase
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(RequestMethod::POST, $result->body['httpMethod']);
-        $this->assertEquals('my/path/v1/simple/{tyu}', $result->body['queryUrl']);
+        $this->assertEquals('http://my/path:3000/v1/simple/{tyu}', $result->body['queryUrl']);
         $this->assertEquals('application/json', $result->body['headers']['Accept']);
         $this->assertEquals('headVal1', $result->body['headers']['additionalHead1']);
         $this->assertEquals('headVal2', $result->body['headers']['additionalHead2']);
@@ -101,7 +101,7 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $this->assertEquals('my/path/v1/simple/val+01', $result->body['queryUrl']);
+        $this->assertEquals('http://my/path:3000/v1/simple/val+01', $result->body['queryUrl']);
     }
 
     public function testSendTemplateArray()
@@ -113,7 +113,7 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $this->assertEquals('my/path/v1/simple/val+01/%2A%2Asad%26%3FN/v4', $result->body['queryUrl']);
+        $this->assertEquals('http://my/path:3000/v1/simple/val+01/%2A%2Asad%26%3FN/v4', $result->body['queryUrl']);
     }
 
     public function testSendTemplateObject()
@@ -132,7 +132,10 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $this->assertEquals('my/path/v1/simple//val+01/v4///%2A%2Asad%26%3FN/v%5E%5E', $result->body['queryUrl']);
+        $this->assertEquals(
+            'http://my/path:3000/v1/simple//val+01/v4///%2A%2Asad%26%3FN/v%5E%5E',
+            $result->body['queryUrl']
+        );
     }
 
     public function testSendSingleQuery()
@@ -496,8 +499,8 @@ class ApiCallTest extends TestCase
         $this->assertInstanceOf(MockApiResponse::class, $result);
         $this->assertInstanceOf(MockRequest::class, $result->getRequest());
         $this->assertInstanceOf(MockClass::class, $result->getResult());
-        $this->assertStringContainsString('{"body":{"httpMethod":"Post","queryUrl":"my\/path\/v1\/simple\/{tyu}"' .
-            ',"headers":{"additionalHead1":"headVal1","additionalHead2":"headVal2","user-agent":' .
+        $this->assertStringContainsString('{"body":{"httpMethod":"Post","queryUrl":"http:\/\/my\/path:3000\/v1' .
+            '\/simple\/{tyu}","headers":{"additionalHead1":"headVal1","additionalHead2":"headVal2","user-agent":' .
             '"my lang|1.*.*|', $result->getBody());
         $this->assertStringContainsString(',"content-type":"text\/plain; charset=utf-8","Accept":"application\/json"' .
             '},"parameters":[],"body":null,"retryOption":"useGlobalSettings"},' .

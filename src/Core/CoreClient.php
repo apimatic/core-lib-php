@@ -82,7 +82,7 @@ class CoreClient
 
     public function getGlobalRequest(?string $server = null): Request
     {
-        $request = new Request($this->serverUrls[$server ?? $this->defaultServer]);
+        $request = new Request($this->serverUrls[$server ?? $this->defaultServer], $this);
         foreach ($this->globalConfig as $config) {
             $config->validate(self::getJsonHelper($this));
             $config->apply($request);
