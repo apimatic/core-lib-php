@@ -248,7 +248,7 @@ class UtilsTest extends TestCase
             'C' => null], $res);
     }
 
-    public function testEquals()
+    public function testIsProperSubset()
     {
         $obj1 = CoreHelper::deserialize('{"key1":23,"key2":true,"key3":"my string"}', false);
         $obj2 = CoreHelper::deserialize('{"key1":23,"key3":"my string","key2":true,"key4":23.56}', false);
@@ -257,11 +257,15 @@ class UtilsTest extends TestCase
 
         $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj2, false)); // not allowing extra
         $this->assertTrue(CoreHelper::isProperSubset(null, null)); // both are null
-        $this->assertTrue(CoreHelper::isProperSubset($obj1, null, true, false, false)); // not equal but not checking for values
+        // not equal but not checking for values
+        $this->assertTrue(CoreHelper::isProperSubset($obj1, null, true, false, false));
         $this->assertFalse(CoreHelper::isProperSubset($obj1, 234)); // matching object with primitive
         $this->assertFalse(CoreHelper::isProperSubset($obj2, $obj1)); // actual obj missing a key
-        $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj2, true, true)); // actual obj does not follow same order
-        $this->assertFalse(CoreHelper::isProperSubset($obj4, $obj3)); // inner actual is not array like inner expected value
-        $this->assertFalse(CoreHelper::isProperSubset($obj3, $obj4)); // inner expected is not array like inner actual value
+        // actual obj does not follow same order
+        $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj2, true, true));
+        // inner actual is not array like inner expected value
+        $this->assertFalse(CoreHelper::isProperSubset($obj4, $obj3));
+        // inner expected is not array like inner actual value
+        $this->assertFalse(CoreHelper::isProperSubset($obj3, $obj4));
     }
 }
