@@ -35,7 +35,7 @@ class HeadersMatcher
             if (!$this->allowExtra) {
                 $message = "$message strictly";
             }
-            $this->testCase->assertTrue(CoreHelper::equals($expected, $actual, $this->allowExtra), $message);
+            $this->testCase->assertTrue(CoreHelper::isProperSubset($expected, $actual, $this->allowExtra), $message);
         }
     }
 }

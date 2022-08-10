@@ -88,7 +88,7 @@ class CoreHelper
      *
      * @return bool True if leftTree is a subset of rightTree
      */
-    public static function equals(
+    public static function isProperSubset(
         $left,
         $right,
         bool $allowExtra = true,
@@ -139,7 +139,7 @@ class CoreHelper
                 if (!CoreHelper::isAssociative($rightVal)) {
                     return !$checkValues;
                 }
-                if (!self::equals($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
+                if (!self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
                     return false;
                 }
             } elseif ($checkValues) {
@@ -150,7 +150,7 @@ class CoreHelper
                     if (!self::isListProperSubsetOf($leftVal, $rightVal, $allowExtra, $isOrdered)) {
                         return false;
                     }
-                } elseif (!self::equals($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
+                } elseif (!self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
                     return false;
                 }
             }

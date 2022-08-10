@@ -255,13 +255,13 @@ class UtilsTest extends TestCase
         $obj3 = [23, "my string"];
         $obj4 = [$obj3, "my string"];
 
-        $this->assertFalse(CoreHelper::equals($obj1, $obj2, false)); // not allowing extra
-        $this->assertTrue(CoreHelper::equals(null, null)); // both are null
-        $this->assertTrue(CoreHelper::equals($obj1, null, true, false, false)); // not equal but not checking for values
-        $this->assertFalse(CoreHelper::equals($obj1, 234)); // matching object with primitive
-        $this->assertFalse(CoreHelper::equals($obj2, $obj1)); // actual obj missing a key
-        $this->assertFalse(CoreHelper::equals($obj1, $obj2, true, true)); // actual obj does not follow same order
-        $this->assertFalse(CoreHelper::equals($obj4, $obj3)); // inner actual is not array like inner expected value
-        $this->assertFalse(CoreHelper::equals($obj3, $obj4)); // inner expected is not array like inner actual value
+        $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj2, false)); // not allowing extra
+        $this->assertTrue(CoreHelper::isProperSubset(null, null)); // both are null
+        $this->assertTrue(CoreHelper::isProperSubset($obj1, null, true, false, false)); // not equal but not checking for values
+        $this->assertFalse(CoreHelper::isProperSubset($obj1, 234)); // matching object with primitive
+        $this->assertFalse(CoreHelper::isProperSubset($obj2, $obj1)); // actual obj missing a key
+        $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj2, true, true)); // actual obj does not follow same order
+        $this->assertFalse(CoreHelper::isProperSubset($obj4, $obj3)); // inner actual is not array like inner expected value
+        $this->assertFalse(CoreHelper::isProperSubset($obj3, $obj4)); // inner expected is not array like inner actual value
     }
 }

@@ -18,7 +18,7 @@ class KeysBodyMatcher extends BodyMatcher
     {
         parent::assert($rawBody);
         $this->testCase->assertTrue(
-            CoreHelper::equals(
+            CoreHelper::isProperSubset(
                 $this->expectedBody,
                 CoreHelper::deserialize($rawBody),
                 $this->allowExtra,

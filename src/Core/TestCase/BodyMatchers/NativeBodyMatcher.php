@@ -28,7 +28,7 @@ class NativeBodyMatcher extends BodyMatcher
             }
         }
         $this->testCase->assertTrue(
-            CoreHelper::equals($this->expectedBody, $this->result, $this->allowExtra, $this->matchArrayOrder),
+            CoreHelper::isProperSubset($this->expectedBody, $this->result, $this->allowExtra, $this->matchArrayOrder),
             $this->defaultMessage
         );
     }
