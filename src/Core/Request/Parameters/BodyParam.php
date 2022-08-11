@@ -8,16 +8,33 @@ use CoreDesign\Core\Request\RequestSetterInterface;
 
 class BodyParam extends Parameter
 {
-    public static function init($value, ?string $key = null): self
+    public static function init($value): self
+    {
+        return new self('', $value);
+    }
+
+    public static function initFromCollected(string $key, $value, $defaultValue = null): self
+    {
+        $instance = self::init($value);
+        $instance->pickFromCollected($defaultValue, $key);
+        return $instance;
+    }
+
+    public static function initWrapped(string $key, $value): self
     {
         return new self($key, $value);
     }
 
-    private $bodyKey;
-    private function __construct(?string $key, $value)
+    public static function initWrappedFromCollected(string $key, $value, $defaultValue = null): self
     {
-        parent::__construct('', $value, 'body');
-        $this->bodyKey = $key;
+        $instance = self::initWrapped($key, $value);
+        $instance->pickFromCollected($defaultValue);
+        return $instance;
+    }
+
+    private function __construct(string $key, $value)
+    {
+        parent::__construct($key, $value, 'body');
     }
 
     public function required(): self
@@ -41,7 +58,7 @@ class BodyParam extends Parameter
     public function apply(RequestSetterInterface $request): void
     {
         if ($this->validated) {
-            $request->addBodyParam($this->value, $this->bodyKey);
+            $request->addBodyParam($this->value, $this->key);
         }
     }
 }

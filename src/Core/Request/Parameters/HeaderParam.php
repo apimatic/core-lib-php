@@ -12,6 +12,14 @@ class HeaderParam extends Parameter
     {
         return new self($key, $value);
     }
+
+    public static function initFromCollected(string $key, $value, $defaultValue = null): self
+    {
+        $instance = self::init($key, $value);
+        $instance->pickFromCollected($defaultValue);
+        return $instance;
+    }
+
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'header');

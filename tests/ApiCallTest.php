@@ -53,6 +53,99 @@ class ApiCallTest extends TestCase
         return $key;
     }
 
+    public function testCollectedBodyParams()
+    {
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(BodyParam::initFromCollected('key1', null))
+            ->build(MockHelper::getCoreClient());
+        $this->assertNull($request->getBody());
+
+        $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(BodyParam::initFromCollected('key1', $options))
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals('true', $request->getBody());
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(
+                BodyParam::initWrappedFromCollected('key1', $options),
+                BodyParam::initWrappedFromCollected('key3', $options)
+            )
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals('{"key1":true,"key3":23}', $request->getBody());
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(BodyParam::initFromCollected('key4', $options, 'MyConstant'))
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals('MyConstant', $request->getBody());
+    }
+
+    public function testCollectedFormParams()
+    {
+        $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(
+                FormParam::initFromCollected('key1', $options),
+                FormParam::initFromCollected('key3', $options),
+                FormParam::initFromCollected('key4', $options, 'MyConstant'),
+                FormParam::initFromCollected('key2', $options, 'new string')
+            )
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals('key1=true&key3=23&key4=MyConstant&key2=some+string', $request->getBody());
+    }
+
+    public function testCollectedHeaderParams()
+    {
+        $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+            ->parameters(
+                HeaderParam::initFromCollected('key1', $options),
+                HeaderParam::initFromCollected('key3', $options),
+                HeaderParam::initFromCollected('key4', $options, 'MyConstant'),
+                HeaderParam::initFromCollected('key2', $options, 'new string')
+            )
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals(true, $request->getHeaders()['key1']);
+        $this->assertEquals('some string', $request->getHeaders()['key2']);
+        $this->assertEquals(23, $request->getHeaders()['key3']);
+        $this->assertEquals('MyConstant', $request->getHeaders()['key4']);
+    }
+
+    public function testCollectedQueryParams()
+    {
+        $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/path')
+            ->parameters(
+                QueryParam::initFromCollected('key1', $options),
+                QueryParam::initFromCollected('key3', $options),
+                QueryParam::initFromCollected('key4', $options, 'MyConstant'),
+                QueryParam::initFromCollected('key2', $options, 'new string')
+            )
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals(
+            'http://my/path:3000/v1/path?key1=true&key3=23&key4=MyConstant&key2=some+string',
+            $request->getQueryUrl()
+        );
+    }
+
+    public function testCollectedTemplateParams()
+    {
+        $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
+
+        $request = RequestBuilder::init(RequestMethod::POST, '/{key1}/{key2}/{key3}/{key4}')
+            ->parameters(
+                TemplateParam::initFromCollected('key1', $options),
+                TemplateParam::initFromCollected('key3', $options),
+                TemplateParam::initFromCollected('key4', $options, 'MyConstant'),
+                TemplateParam::initFromCollected('key2', $options, 'new string')
+            )
+            ->build(MockHelper::getCoreClient());
+        $this->assertEquals('http://my/path:3000/v1/true/some+string/23/MyConstant', $request->getQueryUrl());
+    }
+
     public function testSendWithConfig()
     {
         $result = MockHelper::newApiCall()
@@ -333,8 +426,8 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
                 ->parameters(
-                    BodyParam::init('this is string', 'key1'),
-                    BodyParam::init(new MockClass(['asad' => 'item1', 'ali' => 'item2']), 'key2')
+                    BodyParam::initWrapped('key1', 'this is string'),
+                    BodyParam::initWrapped('key2', new MockClass(['asad' => 'item1', 'ali' => 'item2']))
                 ))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -418,9 +511,9 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
                 ->parameters(
-                    BodyParam::init('this is string', 'key1'),
-                    BodyParam::init('this is item 2', 'key2'),
-                    BodyParam::init(null, 'key3')
+                    BodyParam::initWrapped('key1', 'this is string'),
+                    BodyParam::initWrapped('key2', 'this is item 2'),
+                    BodyParam::initWrapped('key3', null)
                 )
                 ->bodyXmlMap('bodyRoot'))
             ->responseHandler(MockHelper::globalResponseHandler()

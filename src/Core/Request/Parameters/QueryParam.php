@@ -14,6 +14,13 @@ class QueryParam extends EncodedParam
         return new self($key, $value);
     }
 
+    public static function initFromCollected(string $key, $value, $defaultValue = null): self
+    {
+        $instance = self::init($key, $value);
+        $instance->pickFromCollected($defaultValue);
+        return $instance;
+    }
+
     private const SUPPORTED_FORMATS = [
         RequestArraySerialization::INDEXED,
         RequestArraySerialization::UN_INDEXED,

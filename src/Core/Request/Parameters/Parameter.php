@@ -36,6 +36,16 @@ abstract class Parameter implements ParamInterface
         return $this->key == '' ? $this->typeName : $this->key;
     }
 
+    public function pickFromCollected($default, ?string $key = null)
+    {
+        $key = $key ?? $this->key;
+        if (!is_array($this->value) || !isset($this->value[$key])) {
+            $this->value = $default;
+            return;
+        }
+        $this->value = $this->value[$key];
+    }
+
     public function required()
     {
         if (is_null($this->value)) {

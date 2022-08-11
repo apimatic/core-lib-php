@@ -122,10 +122,10 @@ class Request implements RequestSetterInterface
         $this->parameters[$key] = $value;
     }
 
-    public function addBodyParam($value, ?string $key = null): void
+    public function addBodyParam($value, string $key = ''): void
     {
         $this->parameters = [];
-        if (is_null($key)) {
+        if (empty($key)) {
             $this->body = $value;
             return;
         }

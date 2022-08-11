@@ -13,6 +13,13 @@ class TemplateParam extends Parameter
         return new self($key, $value);
     }
 
+    public static function initFromCollected(string $key, $value, $defaultValue = null): self
+    {
+        $instance = self::init($key, $value);
+        $instance->pickFromCollected($defaultValue);
+        return $instance;
+    }
+
     private $encode = true;
     private function __construct(string $key, $value)
     {
@@ -47,6 +54,9 @@ class TemplateParam extends Parameter
     {
         if (is_object($value)) {
             $value = (array) $value;
+        }
+        if (is_bool($value)) {
+            $value = var_export($value, true);
         }
         if (is_null($value)) {
             return '';
