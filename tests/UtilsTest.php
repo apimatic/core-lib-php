@@ -90,6 +90,21 @@ class UtilsTest extends TestCase
         CoreHelper::validateUrl('some/invalid/url/format');
     }
 
+    public function testCoreHelperCheckValueOrValuesInList()
+    {
+        $list = ['string', 'int', 'float', '1'];
+        $this->assertTrue(CoreHelper::checkValueOrValuesInList(null, $list));
+
+        $this->assertFalse(CoreHelper::checkValueOrValuesInList(1, $list));
+        $this->assertTrue(CoreHelper::checkValueOrValuesInList('float', $list));
+
+        $this->assertFalse(CoreHelper::checkValueOrValuesInList(['int', 'unknown'], $list));
+        $this->assertTrue(CoreHelper::checkValueOrValuesInList(['float', 'int'], $list));
+
+        $this->assertFalse(CoreHelper::checkValueOrValuesInList(['int', ['float','unknown']], $list));
+        $this->assertTrue(CoreHelper::checkValueOrValuesInList(['float', ['int', 'string']], $list));
+    }
+
     public function testFromSimpleDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);

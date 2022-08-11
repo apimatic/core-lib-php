@@ -78,6 +78,29 @@ class CoreHelper
     }
 
     /**
+     * Check if all the given value or values are present in the provided list.
+     *
+     * @param mixed $value        Value to be checked, could be scalar, array, 2D array, etc.
+     * @param array $listOfValues List to be searched for values
+     * @return bool Whether given value is present in the provided list
+     */
+    public static function checkValueOrValuesInList($value, array $listOfValues): bool
+    {
+        if (is_null($value)) {
+            return true;
+        }
+        if (!is_array($value)) {
+            return in_array($value, $listOfValues, true);
+        }
+        foreach ($value as $v) {
+            if (!self::checkValueOrValuesInList($v, $listOfValues)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Recursively check whether the left value is a proper subset of the right value
      *
      * @param mixed $left        Left expected value
