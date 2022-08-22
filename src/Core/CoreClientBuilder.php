@@ -38,7 +38,7 @@ class CoreClientBuilder
     /**
      * @var array<int,ErrorType>
      */
-    private $globalErrors;
+    private $globalErrors = [];
 
     /**
      * @var array<string,string>
