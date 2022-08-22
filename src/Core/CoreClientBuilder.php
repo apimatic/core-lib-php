@@ -127,7 +127,7 @@ class CoreClientBuilder
         return $this;
     }
 
-    public function apiCallback(CoreCallback $apiCallback): self
+    public function apiCallback(?CoreCallback $apiCallback): self
     {
         $this->apiCallback = $apiCallback;
         return $this;
