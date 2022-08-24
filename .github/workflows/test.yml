@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     if: "! contains(toJSON(github.event.head_commit.message), 'skip ci')"
     strategy:
