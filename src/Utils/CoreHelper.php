@@ -101,6 +101,23 @@ class CoreHelper
     }
 
     /**
+     * Clone the given value
+     *
+     * @param mixed $value Value to be cloned.
+     * @return mixed Cloned value
+     */
+    public static function clone($value)
+    {
+        if (is_array($value)) {
+            return array_map([self::class, 'clone'], $value);
+        }
+        if (is_object($value)) {
+            return clone $value;
+        }
+        return $value;
+    }
+
+    /**
      * Recursively check whether the left value is a proper subset of the right value
      *
      * @param mixed $left        Left expected value

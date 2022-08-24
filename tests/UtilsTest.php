@@ -105,6 +105,31 @@ class UtilsTest extends TestCase
         $this->assertTrue(CoreHelper::checkValueOrValuesInList(['float', ['int', 'string']], $list));
     }
 
+    public function testCoreHelperClone()
+    {
+        $mockClass = new MockClass([]);
+        $list = ['some string', 1, [false, $mockClass]];
+
+        $newList = $list;
+        $this->assertEquals($list, $newList);
+        $newList[2][1]->addAdditionalProperty('real', 214);
+        $this->assertEquals($list, $newList);
+
+        $clonedList = CoreHelper::clone($list);
+        $this->assertEquals($list, $clonedList);
+        $clonedList[2][1]->addAdditionalProperty('newValue', 12);
+        $list[2][1]->addAdditionalProperty('real2', 14);
+        $this->assertNotEquals($list, $clonedList);
+        $this->assertEquals(
+            '["some string",1,[false,{"body":[],"real":214,"real2":14}]]',
+            CoreHelper::serialize($list)
+        );
+        $this->assertEquals(
+            '["some string",1,[false,{"body":[],"real":214,"newValue":12}]]',
+            CoreHelper::serialize($clonedList)
+        );
+    }
+
     public function testFromSimpleDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);
