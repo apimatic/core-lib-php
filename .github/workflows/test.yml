@@ -42,24 +42,24 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.composer/cache/files
-        key: php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: php-${{ matrix.php }}-composer-
+        key: ${{ matrix.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ matrix.os }}-php-${{ matrix.php }}-composer-
 
     - name: Install dependencies
       run: composer install --prefer-source
 
     - name: Fix possible style src
       run: composer lint-fix-src
+      continue-on-error: true
 
     - name: Check style src
-      if: failure()
       run: composer lint-src
 
     - name: Fix possible style test
       run: composer lint-fix-test
+      continue-on-error: true
 
     - name: Check style test
-      if: failure()
       run: composer lint-test
 
     - name: Run phan analysis
