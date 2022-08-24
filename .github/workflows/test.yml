@@ -48,8 +48,19 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-source
 
-    - name: Check code style
-      run: composer lint
+    - name: Fix possible style src
+      run: composer lint-fix-src
+
+    - name: Check style src
+      if: failure()
+      run: composer lint-src
+
+    - name: Fix possible style test
+      run: composer lint-fix-test
+
+    - name: Check style test
+      if: failure()
+      run: composer lint-test
 
     - name: Run phan analysis
       run: composer analyze
