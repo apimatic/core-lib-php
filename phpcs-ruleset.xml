@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <ruleset name="SDK-Standard">
-    <rule ref="PSR12">
-        <!-- Excluding line endings rule to avoid LF/CRLF in different OS -->
-        <exclude name="Generic.Files.LineEndings"/>
-    </rule>
+    <rule ref="PSR12"/>
     <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 </ruleset>
