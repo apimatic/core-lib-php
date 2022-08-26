@@ -19,7 +19,9 @@ use CoreLib\Tests\Mocking\MockHelper;
 use CoreLib\Tests\Mocking\Other\MockClass;
 use CoreLib\Tests\Mocking\Other\MockException;
 use CoreLib\Tests\Mocking\Other\MockException3;
+use CoreLib\Tests\Mocking\Types\MockFileWrapper;
 use CoreLib\Utils\DateHelper;
+use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class EndToEndTest extends TestCase
@@ -35,9 +37,16 @@ class EndToEndTest extends TestCase
     }
 
     /**
+     * @param string|int      $template
+     * @param DateTime[]|null $query
+     * @param int             $header
+     * @param MockFileWrapper $form1
+     * @param array           $form2
+     *
+     * @return MockClass Returning some mock class
      * @throws MockException
      */
-    public function callEndpoint($template, $query, $header, $form1, $form2): MockClass
+    public function callEndpoint($template, ?array $query, int $header, MockFileWrapper $form1, array $form2): MockClass
     {
         return $this->newApiCall()
             ->requestBuilder(RequestBuilder::init('POST', '/api/path/{sub-path}')
@@ -45,7 +54,6 @@ class EndToEndTest extends TestCase
                 ->parameters(
                     TemplateParam::init('sub-path', $template)->required()->strictType('oneof(string,int)'),
                     QueryParam::init('date array', $query)
-                        ->required()
                         ->serializeBy([DateHelper::class, 'toRfc1123DateTimeArray'])
                         ->commaSeparated(),
                     HeaderParam::init('header', $header),
