@@ -31,14 +31,16 @@ class ResponseError
         if (!$this->throwException) {
             return;
         }
-        $response = $context->getResponse();
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+        $statusCode = $context->getResponse()->getStatusCode();
+        if ($statusCode >= 200 && $statusCode <= 208) { // [200,208] = HTTP OK
             return;
         }
-        $statusCode = strval($response->getStatusCode());
-        if (isset($this->errors[$statusCode])) {
-            $this->errors[$statusCode]->throw($context);
+        if (isset($this->errors[strval($statusCode)])) {
+            $this->errors[strval($statusCode)]->throw($context);
         }
-        throw $context->toApiException('Invalid Response.');
+        if (isset($this->errors[strval(0)])) {
+            $this->errors[strval(0)]->throw($context); // throw default error (if set)
+        }
+        throw $context->toApiException('HTTP Response Not OK');
     }
 }

@@ -615,7 +615,7 @@ class ApiCallTest extends TestCase
     public function testGlobalMockException()
     {
         $this->expectException(MockException::class);
-        $this->expectExceptionMessage('Invalid Response.');
+        $this->expectExceptionMessage('HTTP Response Not OK');
         $response = new MockResponse();
         $response->setStatusCode(500);
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
@@ -653,6 +653,34 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->getResult($context);
+    }
+
+    public function testDefaultMockException1()
+    {
+        $this->expectException(MockException1::class);
+        $this->expectExceptionMessage('Default exception');
+        $response = new MockResponse();
+        $response->setStatusCode(500);
+        $response->setBody([]);
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
+        MockHelper::globalResponseHandler()
+            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn(0, ErrorType::init('Default exception', MockException1::class))
+            ->getResult($context);
+    }
+
+    public function testDefaultExceptionMessage()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage('Default exception');
+        $response = new MockResponse();
+        $response->setStatusCode(500);
+        $response->setBody([]);
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
+        MockHelper::globalResponseHandler()
+            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn(0, ErrorType::init('Default exception'))
             ->getResult($context);
     }
 
