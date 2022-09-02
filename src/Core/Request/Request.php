@@ -20,6 +20,7 @@ class Request implements RequestSetterInterface
     private $requestMethod = RequestMethod::GET;
     private $headers = [];
     private $parameters = [];
+    private $parametersToSend = [];
     private $body;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
 
@@ -55,7 +56,7 @@ class Request implements RequestSetterInterface
 
     public function getBody()
     {
-        return $this->body;
+        return empty($this->parameters) ? $this->body : $this->parametersToSend;
     }
 
     public function getRetryOption(): string
@@ -110,21 +111,19 @@ class Request implements RequestSetterInterface
      * Add or replace a single form parameter
      *
      * @param string $key  key for the parameter
-     * @param mixed $value value of the parameter
+     * @param mixed $value encoded value of the parameter
+     * @param mixed $realValue actual value of the parameter, default: encoded value
      */
-    public function addFormParam(string $key, $value, string $encodedBody): void
+    public function addFormParam(string $key, $value, $realValue = null): void
     {
-        if (empty($this->parameters)) {
-            $this->body = $encodedBody;
-        } else {
-            $this->body .= "&$encodedBody";
-        }
-        $this->parameters[$key] = $value;
+        $this->parametersToSend[$key] = $value;
+        $this->parameters[$key] = $realValue ?? $value;
     }
 
     public function addBodyParam($value, string $key = ''): void
     {
         $this->parameters = [];
+        $this->parametersToSend = [];
         if (empty($key)) {
             $this->body = $value;
             return;

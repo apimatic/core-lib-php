@@ -22,6 +22,7 @@ use CoreLib\Tests\Mocking\Other\MockException1;
 use CoreLib\Tests\Mocking\Other\MockException3;
 use CoreLib\Tests\Mocking\Types\MockApiResponse;
 use CoreLib\Tests\Mocking\Types\MockRequest;
+use CURLFile;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -92,7 +93,10 @@ class ApiCallTest extends TestCase
                 FormParam::initFromCollected('key2', $options, 'new string')
             )
             ->build(MockHelper::getCoreClient());
-        $this->assertEquals('key1=true&key3=23&key4=MyConstant&key2=some+string', $request->getBody());
+        $this->assertEquals(
+            ['key1' => 'true', 'key2' => 'some string', 'key3' => 23, 'key4' => 'MyConstant'],
+            $request->getBody()
+        );
     }
 
     public function testCollectedHeaderParams()
@@ -259,8 +263,7 @@ class ApiCallTest extends TestCase
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertArrayNotHasKey('content-type', $result->body['headers']);
-        $query = self::convertQueryIntoArray($result->body['body']);
-        $this->assertEquals(['key' => 'val 01'], $query);
+        $this->assertEquals(['key' => 'val 01'], $result->body['body']);
     }
 
     public function testSendFileForm()
@@ -272,10 +275,11 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $query = self::convertQueryIntoArray($result->body['body']);
-        $this->assertStringEndsWith('testFile.txt', $query['myFile[name]']);
-        $this->assertEquals('text/plain', $query['myFile[mime]']);
-        $this->assertEquals('My Text', $query['myFile[postname]']);
+        $file = $result->body['body']['myFile'];
+        $this->assertInstanceOf(CURLFile::class, $file);
+        $this->assertStringEndsWith('testFile.txt', $file->getFilename());
+        $this->assertEquals('text/plain', $file->getMimeType());
+        $this->assertEquals('My Text', $file->getPostFilename());
     }
 
     public function testSendFileFormWithEncodingHeader()
@@ -289,10 +293,11 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $query = self::convertQueryIntoArray($result->body['body']);
-        $this->assertStringEndsWith('testFile.txt', $query['myFile[name]']);
-        $this->assertEquals('text/plain', $query['myFile[mime]']);
-        $this->assertEquals('My Text', $query['myFile[postname]']);
+        $file = $result->body['body']['myFile'];
+        $this->assertInstanceOf(CURLFile::class, $file);
+        $this->assertStringEndsWith('testFile.txt', $file->getFilename());
+        $this->assertEquals('text/plain', $file->getMimeType());
+        $this->assertEquals('My Text', $file->getPostFilename());
     }
 
     public function testSendMultipleQuery()
@@ -370,29 +375,20 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $query = self::convertQueryIntoArray($result->body['body']);
+        $formBody = $result->body['body'];
+        $this->assertIsArray($formBody);
         $this->assertEquals([
             'key A' => 'val 1',
-            'keyB2[0]' => '2',
-            'keyB2[1]' => '4',
-            'keyB3[key1]' => '2',
-            'keyB3[key2]' => '4',
-            'keyC[body][0]' => '23',
-            'keyC[body][1]' => '24',
-            'keyC[body][2]' => 'asad',
-            'keyD[body][]' => '23',
-            'keyD[body][]*' => '24',
-            'keyE[body][]' => '23',
-            'keyE[body][]*' => '24',
-            'keyE[body][2][body][]' => '1',
-            'keyF[body]' => 'true',
-            'keyF[body]*' => 'false',
-            'keyG[body][innerKey1]' => 'A',
-            'keyG[body][innerKey2]' => 'B',
-            'keyH[]' => '2',
-            'keyH[]*' => '4',
+            'keyB2' => '0=2&1=4',
+            'keyB3' => 'key1=2&key2=4',
+            'keyC' => 'body%5B0%5D=23&body%5B1%5D=24&body%5B2%5D=asad',
+            'keyD' => 'body%5B%5D=23&body%5B%5D=24',
+            'keyE' => 'body%5B%5D=23&body%5B%5D=24&body%5B2%5D%5Bbody%5D%5B%5D=1',
+            'keyF' => 'body=true&body=false',
+            'keyG' => 'body%5BinnerKey1%5D=A&body%5BinnerKey2%5D=B',
+            'keyH' => '0=2&1=4',
             'newKey' => 'asad'
-        ], $query);
+        ], $formBody);
     }
 
     public function testSendBodyParam()

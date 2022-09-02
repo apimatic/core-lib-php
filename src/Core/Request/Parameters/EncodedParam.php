@@ -53,9 +53,9 @@ abstract class EncodedParam extends Parameter
             return http_build_query($data);
         }
         $separatorFormat = in_array($format, [
-        RequestArraySerialization::TSV,
-        RequestArraySerialization::PSV,
-        RequestArraySerialization::CSV
+            RequestArraySerialization::TSV,
+            RequestArraySerialization::PSV,
+            RequestArraySerialization::CSV
         ], true);
         $keyPostfix = ($format == RequestArraySerialization::UN_INDEXED) ? '[]' : '';
         $innerArray = !empty($parent);
@@ -64,6 +64,9 @@ abstract class EncodedParam extends Parameter
         $separator = substr($format, strpos($format, ':') + 1);
         $r = [];
         foreach ($data as $k => $v) {
+            if (is_null($v)) {
+                continue;
+            }
             if ($innerArray) {
                 if (is_numeric($k) && is_scalar($v)) {
                     $k = $parent . $keyPostfix;
