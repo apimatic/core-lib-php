@@ -20,7 +20,8 @@ class Request implements RequestSetterInterface
     private $requestMethod = RequestMethod::GET;
     private $headers = [];
     private $parameters = [];
-    private $parametersToSend = [];
+    private $parametersEncoded = [];
+    private $parametersMultipart = [];
     private $body;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
 
@@ -54,9 +55,19 @@ class Request implements RequestSetterInterface
         return $this->parameters;
     }
 
+    public function getEncodedParameters(): array
+    {
+        return $this->parametersEncoded;
+    }
+
+    public function getMultipartParameters(): array
+    {
+        return $this->parametersMultipart;
+    }
+
     public function getBody()
     {
-        return empty($this->parameters) ? $this->body : $this->parametersToSend;
+        return $this->body;
     }
 
     public function getRetryOption(): string
@@ -107,23 +118,20 @@ class Request implements RequestSetterInterface
         $this->queryUrl = str_replace("{{$key}}", $value, $this->queryUrl);
     }
 
-    /**
-     * Add or replace a single form parameter
-     *
-     * @param string $key  key for the parameter
-     * @param mixed $value encoded value of the parameter
-     * @param mixed $realValue actual value of the parameter, default: encoded value
-     */
-    public function addFormParam(string $key, $value, $realValue = null): void
+    public function addEncodedFormParam(string $key, $value, $realValue): void
     {
-        $this->parametersToSend[$key] = $value;
-        $this->parameters[$key] = $realValue ?? $value;
+        $this->parametersEncoded[$key] = $value;
+        $this->parameters[$key] = $realValue;
+    }
+
+    public function addMultipartFormParam(string $key, $value): void
+    {
+        $this->parametersMultipart[$key] = $value;
+        $this->parameters[$key] = $value;
     }
 
     public function addBodyParam($value, string $key = ''): void
     {
-        $this->parameters = [];
-        $this->parametersToSend = [];
         if (empty($key)) {
             $this->body = $value;
             return;
@@ -138,10 +146,6 @@ class Request implements RequestSetterInterface
     public function setBodyFormat(string $format, callable $serializer): void
     {
         if (!empty($this->parameters)) {
-            // if request contains form parameters then remove content-type
-            if (array_key_exists('content-type', $this->headers)) {
-                unset($this->headers['content-type']);
-            }
             return;
         }
         if (!array_key_exists('content-type', $this->headers)) {

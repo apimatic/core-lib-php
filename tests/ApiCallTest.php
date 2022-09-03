@@ -93,10 +93,20 @@ class ApiCallTest extends TestCase
                 FormParam::initFromCollected('key2', $options, 'new string')
             )
             ->build(MockHelper::getCoreClient());
-        $this->assertEquals(
-            ['key1' => 'true', 'key2' => 'some string', 'key3' => 23, 'key4' => 'MyConstant'],
-            $request->getBody()
-        );
+        $this->assertNull($request->getBody());
+        $this->assertEquals([
+            'key1' => 'true',
+            'key2' => 'some string',
+            'key3' => 23,
+            'key4' => 'MyConstant'
+        ], $request->getParameters());
+        $this->assertEquals([
+            'key1' => 'key1=true',
+            'key2' => 'key2=some+string',
+            'key3' => 'key3=23',
+            'key4' => 'key4=MyConstant'
+        ], $request->getEncodedParameters());
+        $this->assertEquals([], $request->getMultipartParameters());
     }
 
     public function testCollectedHeaderParams()
@@ -262,8 +272,11 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $this->assertArrayNotHasKey('content-type', $result->body['headers']);
-        $this->assertEquals(['key' => 'val 01'], $result->body['body']);
+        $this->assertEquals('myContentTypeHeader', $result->body['headers']['content-type']);
+        $this->assertNull($result->body['body']);
+        $this->assertEquals(['key' => 'val 01'], $result->body['parameters']);
+        $this->assertEquals(['key' => 'key=val+01'], $result->body['parametersEncoded']);
+        $this->assertEquals([], $result->body['parametersMultipart']);
     }
 
     public function testSendFileForm()
@@ -275,11 +288,13 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $file = $result->body['body']['myFile'];
+        $this->assertEquals([], $result->body['parametersEncoded']);
+        $file = $result->body['parametersMultipart']['myFile'];
         $this->assertInstanceOf(CURLFile::class, $file);
         $this->assertStringEndsWith('testFile.txt', $file->getFilename());
         $this->assertEquals('text/plain', $file->getMimeType());
         $this->assertEquals('My Text', $file->getPostFilename());
+        $this->assertEquals($file, $result->body['parameters']['myFile']);
     }
 
     public function testSendFileFormWithEncodingHeader()
@@ -293,11 +308,43 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $file = $result->body['body']['myFile'];
+        $this->assertEquals([], $result->body['parametersEncoded']);
+        $file = $result->body['parametersMultipart']['myFile'];
         $this->assertInstanceOf(CURLFile::class, $file);
         $this->assertStringEndsWith('testFile.txt', $file->getFilename());
         $this->assertEquals('text/plain', $file->getMimeType());
         $this->assertEquals('My Text', $file->getPostFilename());
+        $this->assertEquals($file, $result->body['parameters']['myFile']);
+    }
+
+    public function testSendFileFormWithOtherTypes()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->parameters(
+                    FormParam::init('myFile', MockHelper::getFileWrapper()),
+                    FormParam::init('key', 'val 01'),
+                    FormParam::init('special', ['%^&&*^?.. + @214', true])
+                ))
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertEquals([
+            'key' => 'key=val+01',
+            'special' => 'special%5B0%5D=%25%5E%26%26%2A%5E%3F..+%2B+%40214&special%5B1%5D=true'
+        ], $result->body['parametersEncoded']);
+        $this->assertEquals(1, count($result->body['parametersMultipart']));
+        $file = $result->body['parametersMultipart']['myFile'];
+        $this->assertInstanceOf(CURLFile::class, $file);
+        $this->assertStringEndsWith('testFile.txt', $file->getFilename());
+        $this->assertEquals('text/plain', $file->getMimeType());
+        $this->assertEquals('My Text', $file->getPostFilename());
+        $this->assertEquals([
+            'myFile' => $file,
+            'key' => 'val 01',
+            'special' => ['%^&&*^?.. + @214', 'true']
+        ], $result->body['parameters']);
     }
 
     public function testSendMultipleQuery()
@@ -375,20 +422,30 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $formBody = $result->body['body'];
-        $this->assertIsArray($formBody);
+        $this->assertEquals([
+            'key A' => 'key+A=val+1',
+            'keyB2' => 'keyB2%5B0%5D=2&keyB2%5B1%5D=4',
+            'keyB3' => 'keyB3%5Bkey1%5D=2&keyB3%5Bkey2%5D=4',
+            'keyC' => 'keyC%5Bbody%5D%5B0%5D=23&keyC%5Bbody%5D%5B1%5D=24&keyC%5Bbody%5D%5B2%5D=asad',
+            'keyD' => 'keyD%5Bbody%5D%5B%5D=23&keyD%5Bbody%5D%5B%5D=24',
+            'keyE' => 'keyE%5Bbody%5D%5B%5D=23&keyE%5Bbody%5D%5B%5D=24&keyE%5Bbody%5D%5B2%5D%5Bbody%5D%5B%5D=1',
+            'keyF' => 'keyF%5Bbody%5D=true&keyF%5Bbody%5D=false',
+            'keyG' => 'keyG%5Bbody%5D%5BinnerKey1%5D=A&keyG%5Bbody%5D%5BinnerKey2%5D=B',
+            'keyH' => 'keyH%5B%5D=2&keyH%5B%5D=4',
+            'newKey' => 'newKey=asad'
+        ], $result->body['parametersEncoded']);
         $this->assertEquals([
             'key A' => 'val 1',
-            'keyB2' => '0=2&1=4',
-            'keyB3' => 'key1=2&key2=4',
-            'keyC' => 'body%5B0%5D=23&body%5B1%5D=24&body%5B2%5D=asad',
-            'keyD' => 'body%5B%5D=23&body%5B%5D=24',
-            'keyE' => 'body%5B%5D=23&body%5B%5D=24&body%5B2%5D%5Bbody%5D%5B%5D=1',
-            'keyF' => 'body=true&body=false',
-            'keyG' => 'body%5BinnerKey1%5D=A&body%5BinnerKey2%5D=B',
-            'keyH' => '0=2&1=4',
+            'keyB2' => [2,4],
+            'keyB3' => ['key1' => 2,'key2' => 4],
+            'keyC' => ['body' => [23, 24,'asad']],
+            'keyD' => ['body' => [23, 24]],
+            'keyE' => ['body' => [23, 24, ['body' => [1]]]],
+            'keyF' => ['body' => ['true', 'false', null]],
+            'keyG' => ['body' => ['innerKey1' => 'A', 'innerKey2' => 'B']],
+            'keyH' => [2,4],
             'newKey' => 'asad'
-        ], $formBody);
+        ], $result->body['parameters']);
     }
 
     public function testSendBodyParam()
@@ -592,8 +649,8 @@ class ApiCallTest extends TestCase
             '\/simple\/{tyu}","headers":{"additionalHead1":"headVal1","additionalHead2":"headVal2","user-agent":' .
             '"my lang|1.*.*|', $result->getBody());
         $this->assertStringContainsString(',"content-type":"text\/plain; charset=utf-8","Accept":"application\/json"' .
-            '},"parameters":[],"body":null,"retryOption":"useGlobalSettings"},' .
-            '"additionalProperties":[]}', $result->getBody());
+            '},"parameters":[],"parametersEncoded":[],"parametersMultipart":[],"body":null,' .
+            '"retryOption":"useGlobalSettings"},"additionalProperties":[]}', $result->getBody());
         $this->assertEquals(['content-type' => 'application/json'], $result->getHeaders());
         $this->assertEquals(200, $result->getStatusCode());
         $this->assertNull($result->getReasonPhrase());

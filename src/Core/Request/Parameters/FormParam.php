@@ -92,18 +92,14 @@ class FormParam extends EncodedParam
             } else {
                 $this->value = $this->value->createCurlFileInstance();
             }
-            $request->addFormParam($this->key, $this->value);
+            $request->addMultipartFormParam($this->key, $this->value);
             return;
         }
         $this->value = $this->prepareValue($this->value);
-        if (!is_array($this->value)) {
-            $request->addFormParam($this->key, $this->value);
+        $encodedValue = $this->httpBuildQuery([$this->key => $this->value], $this->format);
+        if (empty($encodedValue)) {
             return;
         }
-        $value = $this->httpBuildQuery($this->value, $this->format);
-        if (empty($value)) {
-            return;
-        }
-        $request->addFormParam($this->key, $value, $this->value);
+        $request->addEncodedFormParam($this->key, $encodedValue, $this->value);
     }
 }

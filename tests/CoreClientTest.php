@@ -32,7 +32,8 @@ class CoreClientTest extends TestCase
         $this->assertIsObject($response->getBody());
         $this->assertEquals(
             '{"body":{"httpMethod":"Get","queryUrl":"https:\/\/some\/path","headers":[],' .
-            '"parameters":[],"body":null,"retryOption":"useGlobalSettings"},"additionalProperties":[]}',
+            '"parameters":[],"parametersEncoded":[],"parametersMultipart":[],"body":null,' .
+            '"retryOption":"useGlobalSettings"},"additionalProperties":[]}',
             $response->getRawBody()
         );
     }

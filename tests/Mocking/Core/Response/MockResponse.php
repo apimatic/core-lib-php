@@ -24,6 +24,8 @@ class MockResponse implements ResponseInterface
             'queryUrl' => $request->getQueryUrl(),
             'headers' => $request->getHeaders(),
             'parameters' => $request->getParameters(),
+            'parametersEncoded' => $request->getEncodedParameters(),
+            'parametersMultipart' => $request->getMultipartParameters(),
             'body' => $request->getBody(),
             'retryOption' => $request->getRetryOption()
         ]);

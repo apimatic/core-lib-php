@@ -152,10 +152,10 @@ class RequestBuilder
             $param->validate(CoreClient::getJsonHelper($coreClient));
             $param->apply($request);
         }
-        $request->setBodyFormat($this->bodyFormat, $this->bodySerializer);
         if (isset($this->auth)) {
             $coreClient->validateAuth($this->auth)->apply($request);
         }
+        $request->setBodyFormat($this->bodyFormat, $this->bodySerializer);
         return $request;
     }
 }
