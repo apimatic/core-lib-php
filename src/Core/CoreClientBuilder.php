@@ -127,13 +127,19 @@ class CoreClientBuilder
         return $this;
     }
 
-    public function apiCallback(?CoreCallback $apiCallback): self
+    public function apiCallback($apiCallback): self
     {
-        $this->apiCallback = $apiCallback;
+        if ($apiCallback instanceof CoreCallback) {
+            $this->apiCallback = $apiCallback;
+        }
         return $this;
     }
 
-    public function globalConfig(ParamInterface ...$globalParams): self
+    /**
+     * @param ParamInterface[] $globalParams
+     * @return $this
+     */
+    public function globalConfig(array $globalParams): self
     {
         $this->globalConfig = $globalParams;
         return $this;

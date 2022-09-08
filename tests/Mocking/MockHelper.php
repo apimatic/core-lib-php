@@ -66,12 +66,12 @@ class MockHelper
                     'Server1' => 'http://my/path:3000/{one}',
                     'Server2' => 'https://my/path/{two}'
                 ], 'Server1')
-                ->globalConfig(
+                ->globalConfig([
                     TemplateParam::init('one', 'v1')->dontEncode(),
                     TemplateParam::init('two', 'v2')->dontEncode(),
                     HeaderParam::init('additionalHead1', 'headVal1'),
                     HeaderParam::init('additionalHead2', 'headVal2')
-                )
+                ])
                 ->globalErrors([
                     400 => ErrorType::init('Exception num 1', MockException1::class),
                     401 => ErrorType::init('Exception num 2', MockException2::class),
