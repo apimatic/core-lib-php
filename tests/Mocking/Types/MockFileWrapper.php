@@ -12,9 +12,4 @@ class MockFileWrapper extends CoreFileWrapper
     {
         return new self($realFilePath, $mimeType, $filename);
     }
-
-    private function __construct(string $realFilePath, ?string $mimeType, ?string $filename)
-    {
-        parent::__construct($realFilePath, $mimeType, $filename);
-    }
 }
