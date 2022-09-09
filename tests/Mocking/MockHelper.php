@@ -152,8 +152,8 @@ class MockHelper
     public static function getFileWrapperFromUrl(): MockFileWrapper
     {
         if (!isset(self::$urlFileWrapper)) {
-            $filePath = MockFileWrapper::getDownloadedRealFilePath('https://raw.githubusercontent.com/apimatic/' .
-                'core-lib-php/master/tests/Mocking/Other/testFile.txt');
+            $filePath = MockFileWrapper::getDownloadedRealFilePath('https://gist.githubusercontent.com/asadali214' .
+                '/0a64efec5353d351818475f928c50767/raw/8ad3533799ecb4e01a753aaf04d248e6702d4947/testFile.txt');
             self::$urlFileWrapper = MockFileWrapper::createFromPath($filePath, 'text/plain', 'My Text');
         }
         return self::$urlFileWrapper;

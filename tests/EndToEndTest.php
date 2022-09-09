@@ -85,8 +85,8 @@ class EndToEndTest extends TestCase
             [DateHelper::class, 'fromRfc1123DateTimeArray']
         );
         $header = 1234;
-        $form1 = TestParam::file('https://raw.githubusercontent.com/apimatic/' .
-            'core-lib-php/master/tests/Mocking/Other/testFile.txt');
+        $form1 = TestParam::file('https://gist.githubusercontent.com/asadali214/' .
+            '0a64efec5353d351818475f928c50767/raw/8ad3533799ecb4e01a753aaf04d248e6702d4947/testFile.txt');
         $form2 = TestParam::object('{"key1":"value 1","key2":false,"key3":2.3}');
 
         $result = null;

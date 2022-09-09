@@ -71,15 +71,15 @@ class CoreTestCaseTest extends TestCase
 
     public function testFileParam()
     {
-        $file = TestParam::file('https://raw.githubusercontent.com/apimatic/' .
-            'core-lib-php/master/tests/Mocking/Other/testFile.txt');
+        $file = TestParam::file('https://gist.githubusercontent.com/asadali214/0a64efec5353d351818475f928c50767/' .
+            'raw/8ad3533799ecb4e01a753aaf04d248e6702d4947/testFile.txt');
 
         self::getResponse(200, [], $file);
 
         $this->newTestCase($file)
             ->expectStatus(200)
-            ->bodyMatcher(RawBodyMatcher::init(TestParam::file('https://raw.githubusercontent.com/apimatic/' .
-                'core-lib-php/master/tests/Mocking/Other/testFile.txt')))
+            ->bodyMatcher(RawBodyMatcher::init(TestParam::file('https://gist.githubusercontent.com/asadali214/' .
+                '0a64efec5353d351818475f928c50767/raw/8ad3533799ecb4e01a753aaf04d248e6702d4947/testFile.txt')))
             ->assert();
     }
 
