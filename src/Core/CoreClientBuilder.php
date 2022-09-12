@@ -56,6 +56,11 @@ class CoreClientBuilder
     private $globalConfig = [];
 
     /**
+     * @var ParamInterface[]
+     */
+    private $globalRuntimeConfig = [];
+
+    /**
      * @var CoreCallback|null
      */
     private $apiCallback;
@@ -135,6 +140,16 @@ class CoreClientBuilder
         return $this;
     }
 
+    /**
+     * @param ParamInterface[] $globalRuntimeConfig
+     * @return $this
+     */
+    public function globalRuntimeConfig(array $globalRuntimeConfig): self
+    {
+        $this->globalRuntimeConfig = $globalRuntimeConfig;
+        return $this;
+    }
+
     public function userAgent(string $userAgent): self
     {
         $this->userAgent = $userAgent;
@@ -188,6 +203,7 @@ class CoreClientBuilder
             $this->serverUrls,
             $this->defaultServer,
             $this->globalConfig,
+            $this->globalRuntimeConfig,
             $this->globalErrors,
             $this->apiCallback
         );

@@ -120,11 +120,13 @@ class ApiCallTest extends TestCase
                 HeaderParam::initFromCollected('key4', $options, 'MyConstant'),
                 HeaderParam::initFromCollected('key2', $options, 'new string')
             )
+            ->additionalHeaderParams(['key5' => 1234.4321])
             ->build(MockHelper::getCoreClient());
         $this->assertEquals(true, $request->getHeaders()['key1']);
         $this->assertEquals('some string', $request->getHeaders()['key2']);
         $this->assertEquals(23, $request->getHeaders()['key3']);
         $this->assertEquals('MyConstant', $request->getHeaders()['key4']);
+        $this->assertEquals(890.098, $request->getHeaders()['key5']);
     }
 
     public function testCollectedQueryParams()
@@ -182,6 +184,19 @@ class ApiCallTest extends TestCase
         $this->assertStringNotContainsString('{', $result->body['headers']['user-agent']);
     }
 
+    public function testSendWithoutContentType()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->disableContentType())
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        self::assertArrayNotHasKey('content-type', $result->body['headers']);
+        self::assertArrayNotHasKey('Accept', $result->body['headers']);
+    }
+
     public function testSendNoParams()
     {
         $result = MockHelper::newApiCall()
@@ -193,6 +208,7 @@ class ApiCallTest extends TestCase
         $this->assertEquals(RequestMethod::POST, $result->body['httpMethod']);
         $this->assertEquals('http://my/path:3000/v1/simple/{tyu}', $result->body['queryUrl']);
         $this->assertEquals('application/json', $result->body['headers']['Accept']);
+        $this->assertEquals('text/plain; charset=utf-8', $result->body['headers']['content-type']);
         $this->assertEquals('headVal1', $result->body['headers']['additionalHead1']);
         $this->assertEquals('headVal2', $result->body['headers']['additionalHead2']);
         $this->assertStringStartsWith('my lang|1.*.*|', $result->body['headers']['user-agent']);

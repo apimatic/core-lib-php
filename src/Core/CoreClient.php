@@ -42,6 +42,7 @@ class CoreClient
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
+    private $globalRuntimeConfig;
     private $globalErrors;
     private $apiCallback;
 
@@ -53,6 +54,7 @@ class CoreClient
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
+     * @param ParamInterface[] $globalRuntimeConfig
      * @param array<int,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
      */
@@ -64,6 +66,7 @@ class CoreClient
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
+        array $globalRuntimeConfig,
         array $globalErrors,
         ?CoreCallback $apiCallback
     ) {
@@ -76,6 +79,7 @@ class CoreClient
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
+        $this->globalRuntimeConfig = $globalRuntimeConfig;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
     }
@@ -97,6 +101,11 @@ class CoreClient
             $responseHandler->throwErrorOn($key, $error);
         }
         return $responseHandler;
+    }
+
+    public function getGlobalRuntimeConfig(): array
+    {
+        return $this->globalRuntimeConfig;
     }
 
     public function getHttpClient(): HttpClientInterface

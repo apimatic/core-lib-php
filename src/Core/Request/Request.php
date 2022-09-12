@@ -24,6 +24,7 @@ class Request implements RequestSetterInterface
     private $parametersMultipart = [];
     private $body;
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
+    private $allowContentType = true;
 
     /**
      * @param string $queryUrl
@@ -87,7 +88,7 @@ class Request implements RequestSetterInterface
 
     public function addAcceptHeader(string $accept): void
     {
-        if ($accept !== Format::SCALAR) {
+        if ($this->allowContentType && $accept !== Format::SCALAR) {
             $this->addHeader('Accept', $accept);
         }
     }
@@ -148,7 +149,7 @@ class Request implements RequestSetterInterface
         if (!empty($this->parameters)) {
             return;
         }
-        if (!array_key_exists('content-type', $this->headers)) {
+        if ($this->allowContentType && !array_key_exists('content-type', $this->headers)) {
             // if request has body, and content-type header is not already added
             // then add content-type, based on type and format of body
             if ($this->body instanceof CoreFileWrapper) {
@@ -165,5 +166,10 @@ class Request implements RequestSetterInterface
     public function setRetryOption(string $retryOption): void
     {
         $this->retryOption = $retryOption;
+    }
+
+    public function shouldAddContentType(bool $allowContentType): void
+    {
+        $this->allowContentType = $allowContentType;
     }
 }

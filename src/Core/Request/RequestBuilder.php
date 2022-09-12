@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CoreLib\Core\Request;
 
+use Closure;
 use CoreDesign\Core\Format;
 use CoreDesign\Core\Request\ParamInterface;
 use CoreDesign\Core\Request\RequestArraySerialization;
@@ -11,6 +12,7 @@ use CoreDesign\Http\RetryOption;
 use CoreLib\Authentication\Auth;
 use CoreLib\Core\CoreClient;
 use CoreLib\Core\Request\Parameters\FormParam;
+use CoreLib\Core\Request\Parameters\HeaderParam;
 use CoreLib\Core\Request\Parameters\QueryParam;
 use CoreLib\Utils\CoreHelper;
 use CoreLib\Utils\XmlSerializer;
@@ -30,10 +32,8 @@ class RequestBuilder
      */
     private $server;
 
-    /**
-     * @var string
-     */
     private $retryOption = RetryOption::USE_GLOBAL_SETTINGS;
+    private $allowContentType = true;
 
     /**
      * @var ParamInterface[]
@@ -69,6 +69,12 @@ class RequestBuilder
         return $this;
     }
 
+    public function disableContentType(): self
+    {
+        $this->allowContentType = false;
+        return $this;
+    }
+
     /**
      * @param Auth|string ...$auths
      * @return $this
@@ -89,14 +95,23 @@ class RequestBuilder
      * @param array<string,mixed>|null $params
      * @return $this
      */
+    public function additionalHeaderParams(?array $params): self
+    {
+        $this->appendAdditionalParams($params, function ($key, $val) {
+            return HeaderParam::init($key, $val);
+        });
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed>|null $params
+     * @return $this
+     */
     public function additionalQueryParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
     {
-        if (is_null($params)) {
-            return $this;
-        }
-        foreach ($params as $key => $val) {
-            $this->parameters[] = QueryParam::init($key, $val)->format($format);
-        }
+        $this->appendAdditionalParams($params, function ($key, $val) use ($format) {
+            return QueryParam::init($key, $val)->format($format);
+        });
         return $this;
     }
 
@@ -106,13 +121,20 @@ class RequestBuilder
      */
     public function additionalFormParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
     {
+        $this->appendAdditionalParams($params, function ($key, $val) use ($format) {
+            return FormParam::init($key, $val)->format($format);
+        });
+        return $this;
+    }
+
+    private function appendAdditionalParams(?array $params, callable $creator): void
+    {
         if (is_null($params)) {
-            return $this;
+            return;
         }
         foreach ($params as $key => $val) {
-            $this->parameters[] = FormParam::init($key, $val)->format($format);
+            $this->parameters[] = Closure::fromCallable($creator)($key, $val);
         }
-        return $this;
     }
 
     public function bodyXml(string $rootName): self
@@ -148,7 +170,8 @@ class RequestBuilder
         $request->appendPath($this->path);
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
-        foreach ($this->parameters as $param) {
+        $request->shouldAddContentType($this->allowContentType);
+        foreach (array_merge($this->parameters, $coreClient->getGlobalRuntimeConfig()) as $param) {
             $param->validate(CoreClient::getJsonHelper($coreClient));
             $param->apply($request);
         }
