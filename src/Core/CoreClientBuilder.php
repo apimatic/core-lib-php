@@ -71,19 +71,9 @@ class CoreClientBuilder
     private $userAgentConfig = [];
 
     /**
-     * @var array<string,string[]>
+     * @var JsonHelper
      */
-    private $inheritedModels = [];
-
-    /**
-     * @var string|null
-     */
-    private $additionalPropMethodName;
-
-    /**
-     * @var string|null
-     */
-    private $modelNamespace;
+    private $jsonHelper;
 
     private function __construct(HttpClientInterface $httpClient)
     {
@@ -161,25 +151,9 @@ class CoreClientBuilder
         return $this;
     }
 
-    /**
-     * @param array<string,string[]> $inheritedModels
-     * @return $this
-     */
-    public function inheritedModels(array $inheritedModels): self
+    public function jsonHelper(JsonHelper $jsonHelper): self
     {
-        $this->inheritedModels = $inheritedModels;
-        return $this;
-    }
-
-    public function additionalPropertiesMethodName(string $additionalPropertiesMethodName): self
-    {
-        $this->additionalPropMethodName = $additionalPropertiesMethodName;
-        return $this;
-    }
-
-    public function modelNamespace(string $modelNamespace): self
-    {
-        $this->modelNamespace = $modelNamespace;
+        $this->jsonHelper = $jsonHelper;
         return $this;
     }
 
@@ -206,11 +180,10 @@ class CoreClientBuilder
     public function build(): CoreClient
     {
         $this->addUserAgentToGlobalHeaders();
-        $jsonHelper = new JsonHelper($this->inheritedModels, $this->additionalPropMethodName, $this->modelNamespace);
         return new CoreClient(
             $this->httpClient,
             $this->converter,
-            $jsonHelper,
+            $this->jsonHelper,
             $this->authManagers,
             $this->serverUrls,
             $this->defaultServer,

@@ -23,6 +23,7 @@ use CoreLib\Tests\Mocking\Other\MockException2;
 use CoreLib\Tests\Mocking\Types\MockCallback;
 use CoreLib\Tests\Mocking\Types\MockFileWrapper;
 use CoreLib\Types\CallbackCatcher;
+use CoreLib\Utils\JsonHelper;
 
 class MockHelper
 {
@@ -90,14 +91,16 @@ class MockHelper
                     '{language}' => 'my lang',
                     '{version}' => '1.*.*'
                 ])
-                ->inheritedModels([
-                    MockClass::class => [
-                        MockChild1::class,
-                        MockChild2::class
-                    ]
-                ])
-                ->additionalPropertiesMethodName('addAdditionalProperty')
-                ->modelNamespace('CoreLib\\Tests\\Mocking\\Other');
+                ->jsonHelper(new JsonHelper(
+                    [
+                        MockClass::class => [
+                            MockChild1::class,
+                            MockChild2::class
+                        ]
+                    ],
+                    'addAdditionalProperty',
+                    'CoreLib\\Tests\\Mocking\\Other'
+                ));
             self::$coreClient = $coreClientBuilder->build();
             // @phan-suppress-next-next-line PhanPluginDuplicateAdjacentStatement Following duplicated line will
             // call `addUserAgentToGlobalHeaders` again to see test if its added again or not
