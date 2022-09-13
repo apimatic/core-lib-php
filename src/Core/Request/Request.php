@@ -149,7 +149,7 @@ class Request implements RequestSetterInterface
         if (!empty($this->parameters)) {
             return;
         }
-        if ($this->allowContentType && !array_key_exists('content-type', $this->headers)) {
+        if ($this->allowContentType && !array_key_exists('content-type', array_change_key_case($this->headers))) {
             // if request has body, and content-type header is not already added
             // then add content-type, based on type and format of body
             if ($this->body instanceof CoreFileWrapper) {
