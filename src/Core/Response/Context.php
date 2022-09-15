@@ -43,7 +43,7 @@ class Context implements ContextInterface
     public function toApiException(string $errorMessage, ?string $childClass = null)
     {
         $responseBody = $this->response->getBody();
-        if (is_null($childClass) || is_null($responseBody)) {
+        if (is_null($childClass) || !is_object($responseBody)) {
             return $this->converter->createApiException($errorMessage, $this->request, $this->response);
         }
         $responseBody->reason = $errorMessage;
