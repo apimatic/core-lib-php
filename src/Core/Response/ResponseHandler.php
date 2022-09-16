@@ -125,7 +125,10 @@ class ResponseHandler
         $result = $this->deserializableType->getFrom($context);
         $result = $result ?? $this->responseType->getFrom($context);
         $result = $result ?? $this->responseMultiType->getFrom($context);
-        $result = $result ?? $context->getResponse()->getBody();
+        if (is_null($result)) {
+            $responseBody = $context->getResponse()->getBody();
+            $result = is_object($responseBody) ? (array) $responseBody : $responseBody;
+        }
         if ($this->useApiResponse) {
             return $context->toApiResponse($result);
         }
