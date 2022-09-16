@@ -3,6 +3,7 @@
 namespace CoreLib\Utils;
 
 use ArrayIterator;
+use CoreLib\Types\Sdk\CoreFileWrapper;
 use InvalidArgumentException;
 
 class CoreHelper
@@ -18,6 +19,9 @@ class CoreHelper
     {
         if (is_string($value) || is_null($value)) {
             return $value;
+        }
+        if ($value instanceof CoreFileWrapper) {
+            return $value->getFileContent();
         }
         return json_encode($value);
     }

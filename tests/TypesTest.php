@@ -131,7 +131,7 @@ class TypesTest extends TestCase
         $this->assertEquals('text/plain', $fileWrapper->getMimeType());
         $this->assertEquals('My Text', $fileWrapper->getFilename());
         $this->assertEquals(
-            '"This test file is created to test CoreFileWrapper functionality"',
+            'This test file is created to test CoreFileWrapper functionality',
             CoreHelper::serialize($fileWrapper)
         );
         $curlFile = $fileWrapper->createCurlFileInstance();
@@ -143,7 +143,7 @@ class TypesTest extends TestCase
         $this->assertEquals('text/plain', $fileWrapper->getMimeType());
         $this->assertEquals('My Text', $fileWrapper->getFilename());
         $this->assertEquals(
-            '"This test file is created to test CoreFileWrapper functionality"',
+            'This test file is created to test CoreFileWrapper functionality',
             CoreHelper::serialize($fileWrapper)
         );
         $curlFile = $fileWrapper->createCurlFileInstance();

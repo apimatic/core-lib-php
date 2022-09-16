@@ -7,7 +7,7 @@ namespace CoreLib\Types\Sdk;
 use CURLFile;
 use SplFileObject;
 
-class CoreFileWrapper implements \JsonSerializable
+class CoreFileWrapper
 {
     /**
      * Downloads and gets a local path to a file URL.
@@ -72,8 +72,10 @@ class CoreFileWrapper implements \JsonSerializable
         return new CURLFile($this->realFilePath, $mimeType, $this->filename);
     }
 
-    #[\ReturnTypeWillChange] // @phan-suppress-current-line PhanUndeclaredClassAttribute for (php < 8.1)
-    public function jsonSerialize()
+    /**
+     * Internal method: Do not use directly!
+     */
+    public function getFileContent(): ?string
     {
         $thisFile = new SplFileObject($this->realFilePath);
         $content = $thisFile->fread($thisFile->getSize());

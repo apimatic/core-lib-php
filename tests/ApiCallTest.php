@@ -487,7 +487,7 @@ class ApiCallTest extends TestCase
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals('application/octet-stream', $result->body['headers']['content-type']);
-        $this->assertEquals('"This test file is created to test CoreFileWrapper functionality"', $result->body['body']);
+        $this->assertEquals('This test file is created to test CoreFileWrapper functionality', $result->body['body']);
     }
 
     public function testSendMultipleBodyParams()
