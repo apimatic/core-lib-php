@@ -402,7 +402,7 @@ class ApiCallTest extends TestCase
             'keyE[body]' => 'true',
             'keyE[body]*' => 'false',
             'keyF[body]' => 'A,B,C',
-            'keyG[body]' => 'A\\tB\\tC',
+            'keyG[body]' => "A\tB\tC",
             'keyH[body]' => 'A|B|C',
             'keyI[body]' => 'A|B',
             'keyI[body][2][body]' => '1',
