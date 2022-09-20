@@ -247,6 +247,17 @@ class CoreTestCaseTest extends TestCase
         $this->newTestCase($obj)
             ->expectStatus(200)
             ->bodyMatcher(NativeBodyMatcher::init(
+                TestParam::object('[{"0":"other value","body":{"ali":"item2","asad":"item1"}}' .
+                    ',{"body":{"key1":"item1","key3":"item3","key2":"item2"}},{"body":{"key1":"item1"' .
+                    ',"key3":"item3"}}]', MockClass::class, 1),
+                false,
+                false
+            ))
+            ->assert();
+
+        $this->newTestCase($obj)
+            ->expectStatus(200)
+            ->bodyMatcher(NativeBodyMatcher::init(
                 TestParam::object('[{"body":{"asad":"item1","ali":"item2"},"0":"other value"},' .
                     '{"body":{"key1":"item1","key2":"item2","key3":"item3"}}]', MockClass::class, 1),
                 true,
@@ -271,17 +282,22 @@ class CoreTestCaseTest extends TestCase
             ->expectStatus(200)
             ->bodyMatcher(NativeBodyMatcher::init(
                 TestParam::object('[{"0":"other value","body":{"ali":"item2","asad":"item1"}},' .
-                '{"body":{"key1":"item1","key3":"item3","key2":"item2"}}]', MockClass::class, 1),
+                    '{"body":{"key1":"item1","key3":"item3","key2":"item2"}}]', MockClass::class, 1),
                 false,
                 true
             ))
             ->assert();
+    }
+
+    public function testPrimitiveArrayParamForNative()
+    {
+        $obj = TestParam::object('["string1","string2"]');
+        self::getResponse(200, [], $obj);
 
         $this->newTestCase($obj)
             ->expectStatus(200)
             ->bodyMatcher(NativeBodyMatcher::init(
-                TestParam::object('[{"0":"other value","body":{"ali":"item2","asad":"item1"}}' .
-                    ',{"body":{"key1":"item1","key3":"item3"}}]', MockClass::class, 1),
+                TestParam::object('["string1","string2","string10","string20"]'),
                 false,
                 false
             ))

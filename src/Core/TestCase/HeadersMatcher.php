@@ -14,6 +14,12 @@ class HeadersMatcher
         $this->testCase = $testCase;
     }
 
+    /**
+     * Set an array of arrays, where inner arrays must be of length 2,
+     * i.e. index0 => headerValue, index1 => checkValueBool
+     *
+     * @param array<string,array> $headers
+     */
     public function setHeaders(array $headers): void
     {
         $this->headers = $headers;
@@ -42,7 +48,7 @@ class HeadersMatcher
         $actualKeys = array_keys($actual);
         foreach ($expected as $key => $valueArray) {
             $this->testCase->assertTrue(in_array($key, $actualKeys, true), $message);
-            if ($valueArray[1] == true) {
+            if (is_bool($valueArray[1]) && $valueArray[1]) {
                 $this->testCase->assertEquals($valueArray[0], $actual[$key], $message);
             }
         }

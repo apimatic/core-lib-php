@@ -27,8 +27,20 @@ class NativeBodyMatcher extends BodyMatcher
                 $this->defaultMessage = 'Response array values does not match in size';
             }
         }
+        $left = $this->expectedBody;
+        $right = $this->result;
+        if (
+            $this->allowExtra && is_array($left) && !CoreHelper::isAssociative($left)
+            && is_array($right) && count($left) > count($right)
+        ) {
+            // Special Array case for Native:
+            // replacing left with right, as left array has more
+            // elements and can not be proper subset of right array
+            $left = $right;
+            $right = $this->expectedBody;
+        }
         $this->testCase->assertTrue(
-            CoreHelper::isProperSubset($this->expectedBody, $this->result, $this->allowExtra, $this->matchArrayOrder),
+            CoreHelper::isProperSubset($left, $right, $this->allowExtra, $this->matchArrayOrder),
             $this->defaultMessage
         );
     }
