@@ -52,19 +52,19 @@ class CoreTestCaseTest extends TestCase
 
         $this->newTestCase($param1)
             ->expectStatus(202)
-            ->expectHeaders(['key1' => 'res/header'])
+            ->expectHeaders(['key1' => ['res/header', true]])
             ->allowExtraHeaders()
             ->assert();
 
         $this->newTestCase($param1)
             ->expectStatusRange(200, 208)
-            ->expectHeaders(['key1' => 'res/header', 'key2' => 'res/2nd'])
+            ->expectHeaders(['key1' => ['res/header', true], 'key2' => ['res/2nd', true]])
             ->bodyMatcher(RawBodyMatcher::init('This is string'))
             ->assert();
 
         $this->newTestCase($param1)
             ->expectStatusRange(200, 208)
-            ->expectHeaders(['key1' => 'res/header', 'key2' => 'res/2nd'])
+            ->expectHeaders(['key1' => ['res/header', true], 'key2' => ['res/2nd', true]])
             ->bodyMatcher(NativeBodyMatcher::init('This is string'))
             ->assert();
     }

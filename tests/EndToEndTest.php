@@ -97,7 +97,7 @@ class EndToEndTest extends TestCase
         }
         $this->newTestCase($result)
             ->expectStatusRange(200, 208)
-            ->expectHeaders(['content-type' => 'application/json'])
+            ->expectHeaders(['content-type' => ['application/json', true]])
             ->allowExtraHeaders()
             ->bodyMatcher(NativeBodyMatcher::init(TestParam::object('{"body":{"httpMethod":"POST","queryUrl":' .
                 '"https:\/\/my\/path\/v2\/api\/path\/poster?&date+array=Fri%2C+01+Oct+2021+00%3A00%3A00+GMT%2CThu' .
