@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CoreLib\Core\Request\Parameters;
 
 use CoreDesign\Core\Request\RequestArraySerialization;

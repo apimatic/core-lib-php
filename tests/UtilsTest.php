@@ -307,5 +307,9 @@ class UtilsTest extends TestCase
         $this->assertFalse(CoreHelper::isProperSubset($obj4, $obj3));
         // inner expected is not array like inner actual value
         $this->assertFalse(CoreHelper::isProperSubset($obj3, $obj4));
+        // left associative array but right not associative
+        $this->assertFalse(CoreHelper::isProperSubset($obj1, $obj3));
+        // left indexed array but right not indexed
+        $this->assertFalse(CoreHelper::isProperSubset($obj3, $obj1));
     }
 }

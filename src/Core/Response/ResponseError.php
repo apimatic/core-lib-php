@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CoreLib\Core\Response;
 
 use CoreLib\Core\Response\Types\ErrorType;

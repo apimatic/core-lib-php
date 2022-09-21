@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CoreLib\Utils;
 
 use ArrayIterator;
@@ -65,15 +67,12 @@ class CoreHelper
     /**
      * Check if an array isAssociative (has string keys)
      *
-     * @param  mixed $arr Any value to be tested for associative array
+     * @param  array $array Any value to be tested for associative array
      * @return boolean True if the array is Associative, false if it is Indexed
      */
-    public static function isAssociative($arr): bool
+    public static function isAssociative(array $array): bool
     {
-        if (!is_array($arr)) {
-            return false;
-        }
-        foreach ($arr as $key => $value) {
+        foreach ($array as $key => $value) {
             if (is_string($key)) {
                 return true;
             }
@@ -124,11 +123,13 @@ class CoreHelper
     /**
      * Recursively check whether the left value is a proper subset of the right value
      *
-     * @param mixed $left        Left expected value
-     * @param mixed $right       Right actual value
-     * @param bool  $allowExtra  Are extra elements allowed in right array?
-     * @param bool  $isOrdered   Should elements in right be compared in order to the left array?
-     * @param bool  $checkValues Check primitive values for equality?
+     * @param mixed $left          Left expected value
+     * @param mixed $right         Right actual value
+     * @param bool  $allowExtra    Are extra elements allowed in right array?
+     * @param bool  $isOrdered     Should elements in right be compared in order to the left array?
+     * @param bool  $checkValues   Check primitive values for equality?
+     * @param bool  $nativeMatcher Should check arrays natively? i.e. allowExtra can be applied
+     *                             on either $leftList or $rightList
      *
      * @return bool True if leftTree is a subset of rightTree
      */
@@ -137,27 +138,42 @@ class CoreHelper
         $right,
         bool $allowExtra = true,
         bool $isOrdered = false,
-        bool $checkValues = true
+        bool $checkValues = true,
+        bool $nativeMatcher = false
     ): bool {
-        if (is_null($left)) {
-            return !$checkValues || is_null($right);
+        $bothNull = self::checkForNull($left, $right);
+        if (isset($bothNull)) {
+            return !$checkValues || $bothNull;
         }
-        if (is_null($right)) {
-            return !$checkValues;
-        }
-        $left = is_object($left) ? (array) $left : $left;
-        $right = is_object($right) ? (array) $right : $right;
-        // If both values are primitive, check if they are equal
-        if (!is_array($left) && !is_array($right)) {
-            return !$checkValues || $left === $right;
-        }
-        // Check if one of the values is primitive and the other is not
-        if (!is_array($left) || !is_array($right)) {
-            return !$checkValues;
+        $left = self::convertObjectToArray($left);
+        $right = self::convertObjectToArray($right);
+        $bothEqualPrimitive = self::checkForPrimitive($left, $right);
+        if (isset($bothEqualPrimitive)) {
+            return !$checkValues || $bothEqualPrimitive;
         }
         // Return false if size different and checking was strict
         if (!$allowExtra && count($left) != count($right)) {
             return false;
+        }
+        if (!CoreHelper::isAssociative($left)) {
+            // If left array is indexed, right array should also be indexed
+            if (CoreHelper::isAssociative($right)) {
+                return !$checkValues;
+            }
+            if ($nativeMatcher && $allowExtra && count($left) > count($right)) {
+                // Special IndexedArray case:
+                // replacing left with right, as left array has more
+                // elements and can not be proper subset of right array
+                $tempLeft = $left;
+                $left = $right;
+                $right = $tempLeft;
+            }
+            return !$checkValues || self::isListProperSubsetOf($left, $right, $allowExtra, $isOrdered, $nativeMatcher);
+        } else {
+            // If left value is tree, right value should also be tree
+            if (!CoreHelper::isAssociative($right)) {
+                return !$checkValues;
+            }
         }
         $keyNum = 0;
         for ($iterator = new ArrayIterator($left); $iterator->valid(); $iterator->next()) {
@@ -177,38 +193,44 @@ class CoreHelper
             }
             $rightVal = $right[$key];
             $keyNum += 1;
-
-            if (CoreHelper::isAssociative($leftVal)) {
-                // If left value is tree, right value should also be tree
-                if (!CoreHelper::isAssociative($rightVal)) {
-                    return !$checkValues;
-                }
-                if (!self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
-                    return false;
-                }
-            } elseif ($checkValues) {
-                if (is_array($leftVal)) {
-                    if (!is_array($rightVal)) {
-                        return false;
-                    }
-                    if (!self::isListProperSubsetOf($leftVal, $rightVal, $allowExtra, $isOrdered)) {
-                        return false;
-                    }
-                } elseif (!self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues)) {
-                    return false;
-                }
+            if (!self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, $checkValues, $nativeMatcher)) {
+                return false;
             }
         }
         return true;
     }
 
+    private static function checkForNull($left, $right): ?bool
+    {
+        if (is_null($left) && is_null($right)) {
+            return true;
+        }
+        if (is_null($left) || is_null($right)) {
+            return false;
+        }
+        return null;
+    }
+
+    private static function checkForPrimitive($left, $right): ?bool
+    {
+        if (!is_array($left) && !is_array($right)) {
+            return $left === $right;
+        }
+        if (!is_array($left) || !is_array($right)) {
+            return false;
+        }
+        return null;
+    }
+
     /**
      * Check whether the list is a subset of another list.
      *
-     * @param array $leftList   Expected left list
-     * @param array $rightList  Right List to check
-     * @param bool  $allowExtra Are extras allowed in the right list to check?
-     * @param bool  $isOrdered  Should checking be in order?
+     * @param array $leftList      Expected left list
+     * @param array $rightList     Right List to check
+     * @param bool  $allowExtra    Are extras allowed in the right list to check?
+     * @param bool  $isOrdered     Should checking be in order?
+     * @param bool  $nativeMatcher Should check arrays natively? i.e. allowExtra can be applied
+     *                             on either $leftList or $rightList
      *
      * @return bool True if $leftList is a subset of $rightList
      */
@@ -216,16 +238,15 @@ class CoreHelper
         array $leftList,
         array $rightList,
         bool $allowExtra = true,
-        bool $isOrdered = false
+        bool $isOrdered = false,
+        bool $nativeMatcher = false
     ): bool {
         if ($isOrdered && !$allowExtra) {
             return $leftList === $rightList;
         } elseif ($isOrdered && $allowExtra) {
-            return array_slice($rightList, 0, count($leftList)) === $leftList;
-        } elseif (!$isOrdered && !$allowExtra) {
-            return count($leftList) == count($rightList) && self::intersectArrays($leftList, $rightList) == $leftList;
-        } else { // if (!$isOrdered && $allowExtra)
-            return self::intersectArrays($leftList, $rightList) == $leftList;
+            return $leftList === array_slice($rightList, 0, count($leftList));
+        } { // if (!$isOrdered && !$allowExtra) || (!$isOrdered && $allowExtra)
+            return $leftList == self::intersectArrays($leftList, $rightList, $allowExtra, $isOrdered, $nativeMatcher);
         }
     }
 
@@ -238,16 +259,33 @@ class CoreHelper
      * @return array An array containing all the values in the leftList
      *               which are also present in the rightList
      */
-    private static function intersectArrays(array $leftList, array $rightList): array
+    private static function intersectArrays(
+        array $leftList,
+        array $rightList,
+        bool $allowExtra = true,
+        bool $isOrdered = false,
+        bool $nativeMatcher = false
+    ): array {
+        $commonList = [];
+        foreach ($leftList as $leftVal) {
+            foreach ($rightList as $rightVal) {
+                if (self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, true, $nativeMatcher)) {
+                    $commonList[] = $rightVal;
+                    array_splice($rightList, array_search($rightVal, $rightList, true), 1);
+                }
+            }
+        }
+        return $commonList;
+    }
+
+    private static function convertObjectToArray($object)
     {
-        return array_map(
-            function ($param) {
-                return CoreHelper::deserialize($param);
-            },
-            array_intersect(
-                array_map([CoreHelper::class, 'serialize'], $leftList),
-                array_map([CoreHelper::class, 'serialize'], $rightList)
-            )
-        );
+        if (is_object($object)) {
+            $object = (array) $object;
+        }
+        if (is_array($object)) {
+            return array_map([self::class, 'convertObjectToArray'], $object);
+        }
+        return $object;
     }
 }

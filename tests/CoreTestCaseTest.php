@@ -269,7 +269,7 @@ class CoreTestCaseTest extends TestCase
             ->expectStatus(200)
             ->bodyMatcher(NativeBodyMatcher::init(
                 TestParam::object(
-                    '{"1":{"body":{"key2":"item2","key3":"item3"}}}',
+                    '[{"body":{"asad":"item1","ali":"item2"},"0":"other value"}]',
                     MockClass::class,
                     1
                 ),
