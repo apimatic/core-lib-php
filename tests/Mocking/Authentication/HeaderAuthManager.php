@@ -1,9 +1,9 @@
 <?php
 
-namespace CoreLib\Tests\Mocking\Authentication;
+namespace Core\Tests\Mocking\Authentication;
 
-use CoreLib\Authentication\CoreAuth;
-use CoreLib\Core\Request\Parameters\HeaderParam;
+use Core\Authentication\CoreAuth;
+use Core\Request\Parameters\HeaderParam;
 
 class HeaderAuthManager extends CoreAuth
 {

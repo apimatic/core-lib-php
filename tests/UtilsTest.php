@@ -1,12 +1,12 @@
 <?php
 
-namespace CoreLib\Tests;
+namespace Core\Tests;
 
-use CoreLib\Tests\Mocking\Other\MockClass;
-use CoreLib\Utils\CoreHelper;
-use CoreLib\Utils\DateHelper;
-use CoreLib\Utils\XmlDeserializer;
-use CoreLib\Utils\XmlSerializer;
+use Core\Tests\Mocking\Other\MockClass;
+use Core\Utils\CoreHelper;
+use Core\Utils\DateHelper;
+use Core\Utils\XmlDeserializer;
+use Core\Utils\XmlSerializer;
 use DateTime;
 use Exception;
 use InvalidArgumentException;

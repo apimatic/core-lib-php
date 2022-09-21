@@ -1,10 +1,10 @@
 <?php
 
-namespace CoreLib\Tests;
+namespace Core\Tests;
 
-use CoreLib\Authentication\Auth;
-use CoreLib\Core\Request\Request;
-use CoreLib\Tests\Mocking\MockHelper;
+use Core\Authentication\Auth;
+use Core\Request\Request;
+use Core\Tests\Mocking\MockHelper;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

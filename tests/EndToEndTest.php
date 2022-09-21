@@ -1,26 +1,26 @@
 <?php
 
-namespace CoreLib\Tests;
+namespace Core\Tests;
 
-use CoreDesign\Http\RetryOption;
-use CoreLib\Authentication\Auth;
-use CoreLib\Core\ApiCall;
-use CoreLib\Core\Request\Parameters\FormParam;
-use CoreLib\Core\Request\Parameters\HeaderParam;
-use CoreLib\Core\Request\Parameters\QueryParam;
-use CoreLib\Core\Request\Parameters\TemplateParam;
-use CoreLib\Core\Request\RequestBuilder;
-use CoreLib\Core\Response\ResponseHandler;
-use CoreLib\Core\Response\Types\ErrorType;
-use CoreLib\Core\TestCase\BodyMatchers\NativeBodyMatcher;
-use CoreLib\Core\TestCase\CoreTestCase;
-use CoreLib\Core\TestCase\TestParam;
-use CoreLib\Tests\Mocking\MockHelper;
-use CoreLib\Tests\Mocking\Other\MockClass;
-use CoreLib\Tests\Mocking\Other\MockException;
-use CoreLib\Tests\Mocking\Other\MockException3;
-use CoreLib\Tests\Mocking\Types\MockFileWrapper;
-use CoreLib\Utils\DateHelper;
+use Core\ApiCall;
+use Core\Authentication\Auth;
+use Core\Request\Parameters\FormParam;
+use Core\Request\Parameters\HeaderParam;
+use Core\Request\Parameters\QueryParam;
+use Core\Request\Parameters\TemplateParam;
+use Core\Request\RequestBuilder;
+use Core\Response\ResponseHandler;
+use Core\Response\Types\ErrorType;
+use Core\TestCase\BodyMatchers\NativeBodyMatcher;
+use Core\TestCase\CoreTestCase;
+use Core\TestCase\TestParam;
+use Core\Tests\Mocking\MockHelper;
+use Core\Tests\Mocking\Other\MockClass;
+use Core\Tests\Mocking\Other\MockException;
+use Core\Tests\Mocking\Other\MockException3;
+use Core\Tests\Mocking\Types\MockFileWrapper;
+use Core\Utils\DateHelper;
+use CoreInterfaces\Http\RetryOption;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Tests\Mocking\Types;
+namespace Core\Tests\Mocking\Types;
 
-use CoreLib\Types\Sdk\CoreResponse;
+use Core\Types\Sdk\CoreResponse;
 
 class MockCoreResponse extends CoreResponse
 {

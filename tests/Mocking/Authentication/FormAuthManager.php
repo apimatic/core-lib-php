@@ -1,9 +1,9 @@
 <?php
 
-namespace CoreLib\Tests\Mocking\Authentication;
+namespace Core\Tests\Mocking\Authentication;
 
-use CoreLib\Authentication\CoreAuth;
-use CoreLib\Core\Request\Parameters\FormParam;
+use Core\Authentication\CoreAuth;
+use Core\Request\Parameters\FormParam;
 
 class FormAuthManager extends CoreAuth
 {

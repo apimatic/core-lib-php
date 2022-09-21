@@ -1,9 +1,9 @@
 <?php
 
-namespace CoreLib\Tests\Mocking\Other;
+namespace Core\Tests\Mocking\Other;
 
-use CoreLib\Utils\XmlDeserializer;
-use CoreLib\Utils\XmlSerializer;
+use Core\Utils\XmlDeserializer;
+use Core\Utils\XmlSerializer;
 
 class MockClass implements \JsonSerializable
 {

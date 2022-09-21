@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Authentication;
+namespace Core\Authentication;
 
-use CoreDesign\Core\Authentication\AuthGroup;
-use CoreDesign\Core\Authentication\AuthInterface;
-use CoreDesign\Core\Request\RequestSetterInterface;
-use CoreDesign\Core\Request\TypeValidatorInterface;
+use CoreInterfaces\Core\Authentication\AuthGroup;
+use CoreInterfaces\Core\Authentication\AuthInterface;
+use CoreInterfaces\Core\Request\RequestSetterInterface;
+use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
 /**

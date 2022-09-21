@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types\Sdk;
+namespace Core\Types\Sdk;
 
 class CoreRequest
 {

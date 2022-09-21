@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Tests\Mocking\Types;
+namespace Core\Tests\Mocking\Types;
 
-use CoreLib\Types\Sdk\CoreFileWrapper;
+use Core\Types\Sdk\CoreFileWrapper;
 
 class MockFileWrapper extends CoreFileWrapper
 {

@@ -1,5 +1,5 @@
 {
-  "name": "apimatic/core-lib-php",
+  "name": "apimatic/core",
   "description": "Core logic and the utilities for the Apimatic's PHP SDK",
   "keywords": [
     "apimatic",
@@ -23,7 +23,7 @@
     "ext-dom": "*",
     "ext-libxml": "*",
     "apimatic/jsonmapper": "^3.0.4",
-    "apimatic/core-interfaces-php": "dev-master"
+    "apimatic/core-interfaces": "dev-master"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.5",
@@ -31,10 +31,10 @@
     "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5"
   },
   "autoload": {
-    "psr-4": { "CoreLib\\": "src/" }
+    "psr-4": { "Core\\": "src/" }
   },
   "autoload-dev": {
-    "psr-4": { "CoreLib\\Tests\\": "tests/" }
+    "psr-4": { "Core\\Tests\\": "tests/" }
   },
   "scripts": {
     "test": "phpunit --coverage-text",

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Utils;
+namespace Core\Utils;
 
 use ArrayIterator;
-use CoreLib\Types\Sdk\CoreFileWrapper;
+use Core\Types\Sdk\CoreFileWrapper;
 use InvalidArgumentException;
 
 class CoreHelper

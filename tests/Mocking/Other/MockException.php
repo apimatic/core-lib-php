@@ -1,10 +1,10 @@
 <?php
 
-namespace CoreLib\Tests\Mocking\Other;
+namespace Core\Tests\Mocking\Other;
 
-use CoreDesign\Sdk\ExceptionInterface;
-use CoreLib\Tests\Mocking\Types\MockRequest;
-use CoreLib\Tests\Mocking\Types\MockCoreResponse;
+use CoreInterfaces\Sdk\ExceptionInterface;
+use Core\Tests\Mocking\Types\MockRequest;
+use Core\Tests\Mocking\Types\MockCoreResponse;
 use Exception;
 
 class MockException extends Exception implements ExceptionInterface

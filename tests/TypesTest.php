@@ -1,18 +1,18 @@
 <?php
 
-namespace CoreLib\Tests;
+namespace Core\Tests;
 
-use CoreDesign\Core\Request\RequestMethod;
-use CoreLib\Core\CoreClient;
-use CoreLib\Core\Request\Request;
-use CoreLib\Core\Response\Context;
-use CoreLib\Tests\Mocking\MockHelper;
-use CoreLib\Tests\Mocking\Other\MockException;
-use CoreLib\Tests\Mocking\Types\MockApiResponse;
-use CoreLib\Tests\Mocking\Types\MockContext;
-use CoreLib\Tests\Mocking\Types\MockCoreResponse;
-use CoreLib\Tests\Mocking\Types\MockRequest;
-use CoreLib\Utils\CoreHelper;
+use Core\Client;
+use Core\Request\Request;
+use Core\Response\Context;
+use Core\Tests\Mocking\MockHelper;
+use Core\Tests\Mocking\Other\MockException;
+use Core\Tests\Mocking\Types\MockApiResponse;
+use Core\Tests\Mocking\Types\MockContext;
+use Core\Tests\Mocking\Types\MockCoreResponse;
+use Core\Tests\Mocking\Types\MockRequest;
+use Core\Utils\CoreHelper;
+use CoreInterfaces\Core\Request\RequestMethod;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
@@ -37,7 +37,7 @@ class TypesTest extends TestCase
     public function testChildOfCoreResponse()
     {
         $response = MockHelper::getResponse();
-        $sdkResponse = $response->convert(CoreClient::getConverter(MockHelper::getCoreClient()));
+        $sdkResponse = $response->convert(Client::getConverter(MockHelper::getCoreClient()));
 
         $this->assertInstanceOf(MockCoreResponse::class, $sdkResponse);
         $this->assertEquals(200, $sdkResponse->getStatusCode());
@@ -90,11 +90,11 @@ class TypesTest extends TestCase
         $callback = MockHelper::getCallbackCatcher();
         $request = new Request('https://localhost:3000');
         $this->assertNull($callback->getOnBeforeRequest());
-        $callback->callOnBeforeWithConversion($request, CoreClient::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getCoreClient()));
 
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
-        $callback->callOnAfterWithConversion($context, CoreClient::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getCoreClient()));
 
         $this->assertEquals($request, $callback->getRequest());
         $this->assertEquals($response, $callback->getResponse());
@@ -121,8 +121,8 @@ class TypesTest extends TestCase
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
 
-        $callback->callOnBeforeWithConversion($request, CoreClient::getConverter(MockHelper::getCoreClient()));
-        $callback->callOnAfterWithConversion($context, CoreClient::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getCoreClient()));
     }
 
     public function testChildOfCoreFileWrapper()

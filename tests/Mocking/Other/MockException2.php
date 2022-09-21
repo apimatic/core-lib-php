@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreLib\Tests\Mocking\Other;
+namespace Core\Tests\Mocking\Other;
 
 class MockException2 extends MockException
 {

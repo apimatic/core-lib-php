@@ -1,34 +1,32 @@
 <?php
 
-namespace CoreLib\Tests\Mocking;
+namespace Core\Tests\Mocking;
 
-use CoreLib\Core\ApiCall;
-use CoreLib\Core\CoreClient;
-use CoreLib\Core\CoreClientBuilder;
-use CoreLib\Core\Request\Parameters\HeaderParam;
-use CoreLib\Core\Request\Parameters\TemplateParam;
-use CoreLib\Core\Response\ResponseHandler;
-use CoreLib\Core\Response\Types\ErrorType;
-use CoreLib\Tests\Mocking\Authentication\FormAuthManager;
-use CoreLib\Tests\Mocking\Authentication\HeaderAuthManager;
-use CoreLib\Tests\Mocking\Authentication\QueryAuthManager;
-use CoreLib\Tests\Mocking\Core\MockConverter;
-use CoreLib\Tests\Mocking\Core\MockHttpClient;
-use CoreLib\Tests\Mocking\Core\Response\MockResponse;
-use CoreLib\Tests\Mocking\Other\MockChild1;
-use CoreLib\Tests\Mocking\Other\MockChild2;
-use CoreLib\Tests\Mocking\Other\MockClass;
-use CoreLib\Tests\Mocking\Other\MockException1;
-use CoreLib\Tests\Mocking\Other\MockException2;
-use CoreLib\Tests\Mocking\Types\MockCallback;
-use CoreLib\Tests\Mocking\Types\MockFileWrapper;
-use CoreLib\Types\CallbackCatcher;
-use CoreLib\Utils\JsonHelper;
+use Core\ApiCall;
+use Core\Client;
+use Core\ClientBuilder;
+use Core\Request\Parameters\HeaderParam;
+use Core\Request\Parameters\TemplateParam;
+use Core\Response\ResponseHandler;
+use Core\Response\Types\ErrorType;
+use Core\Tests\Mocking\Authentication\FormAuthManager;
+use Core\Tests\Mocking\Authentication\HeaderAuthManager;
+use Core\Tests\Mocking\Authentication\QueryAuthManager;
+use Core\Tests\Mocking\Other\MockChild1;
+use Core\Tests\Mocking\Other\MockChild2;
+use Core\Tests\Mocking\Other\MockClass;
+use Core\Tests\Mocking\Other\MockException1;
+use Core\Tests\Mocking\Other\MockException2;
+use Core\Tests\Mocking\Response\MockResponse;
+use Core\Tests\Mocking\Types\MockCallback;
+use Core\Tests\Mocking\Types\MockFileWrapper;
+use Core\Types\CallbackCatcher;
+use Core\Utils\JsonHelper;
 
 class MockHelper
 {
     /**
-     * @var CoreClient
+     * @var Client
      */
     private static $coreClient;
 
@@ -57,10 +55,10 @@ class MockHelper
      */
     private static $urlFileWrapper;
 
-    public static function getCoreClient(): CoreClient
+    public static function getCoreClient(): Client
     {
         if (!isset(self::$coreClient)) {
-            $coreClientBuilder = CoreClientBuilder::init(new MockHttpClient())
+            $coreClientBuilder = ClientBuilder::init(new MockHttpClient())
                 ->converter(new MockConverter())
                 ->apiCallback(self::getCallbackCatcher())
                 ->serverUrls([
@@ -102,7 +100,7 @@ class MockHelper
                         ]
                     ],
                     'addAdditionalProperty',
-                    'CoreLib\\Tests\\Mocking\\Other'
+                    'Core\\Tests\\Mocking\\Other'
                 ));
             self::$coreClient = $coreClientBuilder->build();
             // @phan-suppress-next-next-line PhanPluginDuplicateAdjacentStatement Following duplicated line will

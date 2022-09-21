@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types;
+namespace Core\Types;
 
-use CoreDesign\Core\ContextInterface;
-use CoreDesign\Core\Request\RequestInterface;
-use CoreDesign\Core\Response\ResponseInterface;
-use CoreDesign\Sdk\ConverterInterface;
-use CoreLib\Types\Sdk\CoreCallback;
+use CoreInterfaces\Core\ContextInterface;
+use CoreInterfaces\Core\Request\RequestInterface;
+use CoreInterfaces\Core\Response\ResponseInterface;
+use CoreInterfaces\Sdk\ConverterInterface;
+use Core\Types\Sdk\CoreCallback;
 
 class CallbackCatcher extends CoreCallback
 {

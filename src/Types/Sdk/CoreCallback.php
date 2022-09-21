@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Types\Sdk;
+namespace Core\Types\Sdk;
 
 use Closure;
-use CoreDesign\Core\ContextInterface;
-use CoreDesign\Core\Request\RequestInterface;
-use CoreDesign\Sdk\ConverterInterface;
+use CoreInterfaces\Core\ContextInterface;
+use CoreInterfaces\Core\Request\RequestInterface;
+use CoreInterfaces\Sdk\ConverterInterface;
 
 class CoreCallback
 {

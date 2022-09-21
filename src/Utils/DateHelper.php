@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Utils;
+namespace Core\Utils;
 
 use DateTime;
 use DateTimeZone;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CoreLib\Utils;
+namespace Core\Utils;
 
 use apimatic\jsonmapper\JsonMapper;
-use CoreDesign\Core\Request\TypeValidatorInterface;
+use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use Exception;
 use InvalidArgumentException;
 

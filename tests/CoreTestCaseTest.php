@@ -1,26 +1,26 @@
 <?php
 
-namespace CoreLib\Tests;
+namespace Core\Tests;
 
-use CoreLib\Core\CoreClient;
-use CoreLib\Core\Request\Request;
-use CoreLib\Core\Response\Context;
-use CoreLib\Core\TestCase\BodyMatchers\KeysAndValuesBodyMatcher;
-use CoreLib\Core\TestCase\BodyMatchers\KeysBodyMatcher;
-use CoreLib\Core\TestCase\BodyMatchers\NativeBodyMatcher;
-use CoreLib\Core\TestCase\BodyMatchers\RawBodyMatcher;
-use CoreLib\Core\TestCase\CoreTestCase;
-use CoreLib\Core\TestCase\TestParam;
-use CoreLib\Tests\Mocking\Core\Response\MockResponse;
-use CoreLib\Tests\Mocking\MockHelper;
-use CoreLib\Tests\Mocking\Other\MockClass;
-use CoreLib\Utils\DateHelper;
+use Core\Client;
+use Core\Request\Request;
+use Core\Response\Context;
+use Core\TestCase\BodyMatchers\KeysAndValuesBodyMatcher;
+use Core\TestCase\BodyMatchers\KeysBodyMatcher;
+use Core\TestCase\BodyMatchers\NativeBodyMatcher;
+use Core\TestCase\BodyMatchers\RawBodyMatcher;
+use Core\TestCase\CoreTestCase;
+use Core\TestCase\TestParam;
+use Core\Tests\Mocking\MockHelper;
+use Core\Tests\Mocking\Other\MockClass;
+use Core\Tests\Mocking\Response\MockResponse;
+use Core\Utils\DateHelper;
 use PHPUnit\Framework\TestCase;
 
 class CoreTestCaseTest extends TestCase
 {
     /**
-     * @var CoreClient
+     * @var Client
      */
     private static $coreClient;
 
