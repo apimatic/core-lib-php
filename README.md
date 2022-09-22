@@ -1,4 +1,4 @@
-# Getting Started with CoreLib PHP
+# Getting Started with Core PHP
 
 ## Introduction
 
