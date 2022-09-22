@@ -270,8 +270,9 @@ class CoreHelper
         foreach ($leftList as $leftVal) {
             foreach ($rightList as $rightVal) {
                 if (self::isProperSubset($leftVal, $rightVal, $allowExtra, $isOrdered, true, $nativeMatcher)) {
-                    $commonList[] = $rightVal;
+                    $commonList[] = $leftVal;
                     array_splice($rightList, array_search($rightVal, $rightList, true), 1);
+                    break;
                 }
             }
         }
