@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\TestCase;
 
+use Core\TestCase\BodyMatchers\BodyComparator;
 use Core\TestCase\BodyMatchers\BodyMatcher;
 use Core\Types\CallbackCatcher;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +20,7 @@ class CoreTestCase
         $this->callback = $callbackCatcher;
         $this->statusCodeMatcher = new StatusCodeMatcher($testCase);
         $this->headersMatcher = new HeadersMatcher($testCase);
-        $this->bodyMatcher = new BodyMatcher();
+        $this->bodyMatcher = new BodyMatcher(new BodyComparator());
         $this->bodyMatcher->shouldAssert = false;
         $this->bodyMatcher->set($testCase, $result);
     }

@@ -9,8 +9,7 @@ use PHPUnit\Framework\TestCase;
 class BodyMatcher
 {
     protected $expectedBody;
-    protected $matchArrayOrder;
-    protected $allowExtra;
+    protected $bodyComparator;
     protected $defaultMessage = '';
     /**
      * @var TestCase
@@ -19,11 +18,10 @@ class BodyMatcher
     public $result;
     public $shouldAssert = true;
 
-    public function __construct($expectedBody = null, bool $matchArrayOrder = false, bool $allowExtra = true)
+    public function __construct(BodyComparator $bodyComparator, $expectedBody = null)
     {
+        $this->bodyComparator = $bodyComparator;
         $this->expectedBody = $expectedBody;
-        $this->matchArrayOrder = $matchArrayOrder;
-        $this->allowExtra = $allowExtra;
     }
 
     public function set(TestCase $testCase, $result)

@@ -5,6 +5,7 @@ namespace Core\Tests;
 use Core\Client;
 use Core\Request\Request;
 use Core\Response\Context;
+use Core\TestCase\BodyMatchers\BodyComparator;
 use Core\TestCase\BodyMatchers\KeysAndValuesBodyMatcher;
 use Core\TestCase\BodyMatchers\KeysBodyMatcher;
 use Core\TestCase\BodyMatchers\NativeBodyMatcher;
@@ -14,6 +15,7 @@ use Core\TestCase\TestParam;
 use Core\Tests\Mocking\MockHelper;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Response\MockResponse;
+use Core\Utils\CoreHelper;
 use Core\Utils\DateHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -302,5 +304,33 @@ class CoreTestCaseTest extends TestCase
                 false
             ))
             ->assert();
+    }
+
+    public function testBodyComparator()
+    {
+        $obj1 = CoreHelper::deserialize('{"key1":23,"key2":true,"key3":"my string"}', false);
+        $obj1Copy = CoreHelper::deserialize('{"key1":32,"key2":true,"key3":"my string"}', false);
+        $obj2 = CoreHelper::deserialize('{"key1":23,"key3":"my string","key2":true,"key4":23.56}', false);
+        $obj3 = [23, "my string"];
+        $obj4 = [$obj3, "my string"];
+
+        $this->assertFalse((new BodyComparator(false))->compare($obj1, $obj2)); // not allowing extra
+        $this->assertTrue((new BodyComparator())->compare(null, null)); // both are null
+        // not equal but not checking for values
+        $this->assertTrue((new BodyComparator(true, false, false))->compare($obj1, null));
+        $this->assertFalse((new BodyComparator())->compare($obj1, 234)); // matching object with primitive
+        $this->assertFalse((new BodyComparator())->compare($obj2, $obj1)); // actual obj missing a key
+        // actual obj does not follow same order
+        $this->assertFalse((new BodyComparator(true, true))->compare($obj1, $obj2));
+        // inner actual is not array like inner expected value
+        $this->assertFalse((new BodyComparator())->compare($obj4, $obj3));
+        // inner expected is not array like inner actual value
+        $this->assertFalse((new BodyComparator())->compare($obj3, $obj4));
+        // inner expected value doesn't match actual expected value
+        $this->assertFalse((new BodyComparator())->compare($obj1, $obj1Copy));
+        // left associative array but right not associative
+        $this->assertFalse((new BodyComparator())->compare($obj1, $obj3));
+        // left indexed array but right not indexed
+        $this->assertFalse((new BodyComparator())->compare($obj3, $obj1));
     }
 }

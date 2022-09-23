@@ -10,7 +10,7 @@ class RawBodyMatcher extends BodyMatcher
 {
     public static function init($expectedBody): self
     {
-        $matcher = new self($expectedBody);
+        $matcher = new self(new BodyComparator(), $expectedBody);
         $matcher->defaultMessage = 'Response body does not match exactly';
         return $matcher;
     }

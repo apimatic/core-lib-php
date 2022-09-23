@@ -11,8 +11,7 @@ class KeysAndValuesBodyMatcher extends KeysBodyMatcher
         bool $matchArrayOrder = false,
         bool $matchArrayCount = false
     ): KeysBodyMatcher {
-        $matcher = parent::init($expectedBody, $matchArrayOrder, $matchArrayCount);
-        $matcher->checkValues = true;
+        $matcher = new self(new BodyComparator(!$matchArrayCount, $matchArrayOrder, true), $expectedBody);
         $matcher->defaultMessage = 'Response body does not match in keys and/or values';
         return $matcher;
     }
