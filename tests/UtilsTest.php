@@ -28,6 +28,10 @@ class UtilsTest extends TestCase
             "    <entry key=\"key2\">val2</entry>\n" .
             "  </new2>\n" .
             "</mockClass>\n", $res);
+
+        $xmlSerializer = new XMLSerializer([]);
+        $res = $xmlSerializer->serialize('root', true);
+        $this->assertEquals("<?xml version=\"1.0\"?>\n<root>true</root>\n", $res);
     }
 
     public function testXmlDeserialization()
@@ -41,6 +45,9 @@ class UtilsTest extends TestCase
         $input = "<?xml version=\"1.0\"?>\n<root>true</root>";
         $res = $xmlDeSerializer->deserialize($input, 'root', 'bool');
         $this->assertEquals(true, $res);
+        $input = "<?xml version=\"1.0\"?>\n<root>false</root>";
+        $res = $xmlDeSerializer->deserialize($input, 'root', 'bool');
+        $this->assertEquals(false, $res);
         $input = "<?xml version=\"1.0\"?>\n<root>2.3</root>";
         $res = $xmlDeSerializer->deserialize($input, 'root', 'float');
         $this->assertEquals(2.3, $res);
@@ -64,7 +71,7 @@ class UtilsTest extends TestCase
         $xmlDeSerializer->deserialize($input, 'root', 'int');
     }
 
-    public function testXmlDeserializationFailure2()
+    public function testXmlDeserializationFailureTypeBool()
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Expected value of type "bool" but got value "2.3" at XML path ' .
@@ -73,6 +80,28 @@ class UtilsTest extends TestCase
         $xmlDeSerializer = new XmlDeserializer();
         $input = "<?xml version=\"1.0\"?>\n<root>2.3</root>";
         $xmlDeSerializer->deserialize($input, 'root', 'bool');
+    }
+
+    public function testXmlDeserializationFailureTypeInt()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Expected value of type "int" but got value ""asad"" at XML path ' .
+            '"/root" during deserialization.');
+
+        $xmlDeSerializer = new XmlDeserializer();
+        $input = "<?xml version=\"1.0\"?>\n<root>\"asad\"</root>";
+        $xmlDeSerializer->deserialize($input, 'root', 'int');
+    }
+
+    public function testXmlDeserializationFailureTypeFloat()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Expected value of type "float" but got value ""asad"" at XML path ' .
+            '"/root" during deserialization.');
+
+        $xmlDeSerializer = new XmlDeserializer();
+        $input = "<?xml version=\"1.0\"?>\n<root>\"asad\"</root>";
+        $xmlDeSerializer->deserialize($input, 'root', 'float');
     }
 
     public function testCoreHelperDeserialize()
@@ -128,6 +157,18 @@ class UtilsTest extends TestCase
             '["some string",1,[false,{"body":[],"real":214,"newValue":12}]]',
             CoreHelper::serialize($clonedList)
         );
+    }
+
+    public function testCoreHelperConvertToNullableString()
+    {
+        $this->assertEquals(null, CoreHelper::convertToNullableString(false));
+        $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
+    }
+
+    public function testUserAgentParams()
+    {
+        $this->assertEquals('', CoreHelper::getOsInfo(true));
+        $this->assertEquals(['', ''], CoreHelper::getEngineInfo(true));
     }
 
     public function testFromSimpleDateFailure()

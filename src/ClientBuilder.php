@@ -7,6 +7,7 @@ namespace Core;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
+use Core\Utils\CoreHelper;
 use Core\Utils\JsonHelper;
 use CoreInterfaces\Core\Authentication\AuthInterface;
 use CoreInterfaces\Core\Request\ParamInterface;
@@ -177,10 +178,11 @@ class ClientBuilder
         if (is_null($this->userAgent)) {
             return;
         }
+        list($engineName, $engineVersion) = CoreHelper::getEngineInfo();
         $placeHolders = [
-            '{engine}' => !empty(zend_version()) ? 'Zend' : '',
-            '{engine-version}' => zend_version(),
-            '{os-info}' => PHP_OS_FAMILY !== 'Unknown' ? PHP_OS_FAMILY . '-' . php_uname('r') : '',
+            '{engine}' => $engineName,
+            '{engine-version}' => $engineVersion,
+            '{os-info}' => CoreHelper::getOsInfo(),
         ];
         $placeHolders = array_merge($placeHolders, $this->userAgentConfig);
         $this->userAgent = str_replace(

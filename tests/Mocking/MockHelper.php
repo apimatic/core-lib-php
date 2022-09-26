@@ -14,6 +14,7 @@ use Core\Tests\Mocking\Authentication\HeaderAuthManager;
 use Core\Tests\Mocking\Authentication\QueryAuthManager;
 use Core\Tests\Mocking\Other\MockChild1;
 use Core\Tests\Mocking\Other\MockChild2;
+use Core\Tests\Mocking\Other\MockChild3;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Other\MockException1;
 use Core\Tests\Mocking\Other\MockException2;
@@ -93,12 +94,7 @@ class MockHelper
                     '{version}' => '1.*.*'
                 ])
                 ->jsonHelper(new JsonHelper(
-                    [
-                        MockClass::class => [
-                            MockChild1::class,
-                            MockChild2::class
-                        ]
-                    ],
+                    [MockClass::class => [MockChild1::class, MockChild2::class, MockChild3::class]],
                     'addAdditionalProperty',
                     'Core\\Tests\\Mocking\\Other'
                 ));

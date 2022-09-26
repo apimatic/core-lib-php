@@ -32,7 +32,7 @@
   },
   "scripts": {
     "test": "phpunit --coverage-text",
-    "test-coverage": "phpunit --coverage-html=coverage",
+    "test-coverage": "phpunit --path-coverage --coverage-html=coverage",
     "analyze": "phan --allow-polyfill-parser",
     "lint-fix-src": "phpcbf --standard=phpcs-ruleset.xml src/",
     "lint-fix-test": "phpcbf --standard=phpcs-ruleset.xml tests/",

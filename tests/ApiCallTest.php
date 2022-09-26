@@ -11,6 +11,7 @@ use Core\Request\RequestBuilder;
 use Core\Response\Context;
 use Core\Response\Types\ErrorType;
 use Core\Tests\Mocking\MockHelper;
+use Core\Tests\Mocking\Other\MockChild3;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Other\MockException;
 use Core\Tests\Mocking\Other\MockException1;
@@ -18,6 +19,7 @@ use Core\Tests\Mocking\Other\MockException3;
 use Core\Tests\Mocking\Response\MockResponse;
 use Core\Tests\Mocking\Types\MockApiResponse;
 use Core\Tests\Mocking\Types\MockRequest;
+use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Format;
 use CoreInterfaces\Core\Request\RequestArraySerialization;
 use CoreInterfaces\Core\Request\RequestMethod;
@@ -382,7 +384,9 @@ class ApiCallTest extends TestCase
                     QueryParam::init('keyG', new MockClass(['A','B','C']))->tabSeparated(),
                     QueryParam::init('keyH', new MockClass(['A','B','C']))->pipeSeparated(),
                     QueryParam::init('keyI', new MockClass(['A','B', new MockClass([1])]))->pipeSeparated(),
-                    QueryParam::init('keyJ', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->pipeSeparated()
+                    QueryParam::init('keyJ', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->pipeSeparated(),
+                    QueryParam::init('keyK', new MockChild3("body", ['innerKey1' => 'A']))
+                        ->commaSeparated()
                 )
                 ->additionalQueryParams($additionalQueryParams))
             ->responseHandler(MockHelper::globalResponseHandler()
@@ -761,6 +765,16 @@ class ApiCallTest extends TestCase
         $result = MockHelper::globalResponseHandler()
             ->getResult($context);
         $this->assertEquals('This is string', $result);
+    }
+
+    public function testObjectResponse()
+    {
+        $response = new MockResponse();
+        $response->setBody(CoreHelper::deserialize('{"key":"value"}', false));
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
+        $result = MockHelper::globalResponseHandler()
+            ->getResult($context);
+        $this->assertEquals(['key' => 'value'], $result);
     }
 
     public function testTypeXmlSimple()

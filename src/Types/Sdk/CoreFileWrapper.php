@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Types\Sdk;
 
+use Core\Utils\CoreHelper;
 use CURLFile;
 use SplFileObject;
 
@@ -79,6 +80,6 @@ class CoreFileWrapper
     {
         $thisFile = new SplFileObject($this->realFilePath);
         $content = $thisFile->fread($thisFile->getSize());
-        return $content === false ? null : $content;
+        return CoreHelper::convertToNullableString($content);
     }
 }

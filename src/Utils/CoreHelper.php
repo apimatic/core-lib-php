@@ -118,4 +118,34 @@ class CoreHelper
         }
         return $value;
     }
+
+    /**
+     * @param $value false|string
+     */
+    public static function convertToNullableString($value): ?string
+    {
+        if ($value === false) {
+            return null;
+        }
+        return $value;
+    }
+
+    /**
+     * @return string[] An array where 0 => EngineName, and 1 => EngineVersion
+     */
+    public static function getEngineInfo(bool $test = false): array
+    {
+        if ($test || empty(zend_version())) {
+            return ['',''];
+        }
+        return ['Zend', zend_version()];
+    }
+
+    public static function getOsInfo(bool $test = false): string
+    {
+        if ($test || PHP_OS_FAMILY === 'Unknown') {
+            return '';
+        }
+        return PHP_OS_FAMILY . '-' . php_uname('r');
+    }
 }
