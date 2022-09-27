@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Core\Request;
 
-use Closure;
 use Core\Authentication\Auth;
 use Core\Client;
-use Core\Request\Parameters\FormParam;
-use Core\Request\Parameters\HeaderParam;
-use Core\Request\Parameters\QueryParam;
 use Core\Utils\CoreHelper;
 use Core\Utils\XmlSerializer;
 use CoreInterfaces\Core\Format;
 use CoreInterfaces\Core\Request\ParamInterface;
-use CoreInterfaces\Core\Request\RequestArraySerialization;
 use CoreInterfaces\Http\RetryOption;
 
 class RequestBuilder
@@ -91,52 +86,6 @@ class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param array<string,mixed>|null $params
-     * @return $this
-     */
-    public function additionalHeaderParams(?array $params): self
-    {
-        $this->appendAdditionalParams($params, function ($key, $val) {
-            return HeaderParam::init($key, $val);
-        });
-        return $this;
-    }
-
-    /**
-     * @param array<string,mixed>|null $params
-     * @return $this
-     */
-    public function additionalQueryParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
-    {
-        $this->appendAdditionalParams($params, function ($key, $val) use ($format) {
-            return QueryParam::init($key, $val)->format($format);
-        });
-        return $this;
-    }
-
-    /**
-     * @param array<string,mixed>|null $params
-     * @return $this
-     */
-    public function additionalFormParams(?array $params, string $format = RequestArraySerialization::INDEXED): self
-    {
-        $this->appendAdditionalParams($params, function ($key, $val) use ($format) {
-            return FormParam::init($key, $val)->format($format);
-        });
-        return $this;
-    }
-
-    private function appendAdditionalParams(?array $params, callable $creator): void
-    {
-        if (is_null($params)) {
-            return;
-        }
-        foreach ($params as $key => $val) {
-            $this->parameters[] = Closure::fromCallable($creator)($key, $val);
-        }
-    }
-
     public function bodyXml(string $rootName): self
     {
         $this->bodyFormat = Format::XML;
@@ -171,10 +120,11 @@ class RequestBuilder
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         $request->shouldAddContentType($this->allowContentType);
-        foreach (array_merge($this->parameters, $coreClient->getGlobalRuntimeConfig()) as $param) {
+        $this->parameters = array_map(function ($param) use ($coreClient, $request) {
             $param->validate(Client::getJsonHelper($coreClient));
             $param->apply($request);
-        }
+            return $param;
+        }, array_merge($this->parameters, $coreClient->getGlobalRuntimeConfig()));
         if (isset($this->auth)) {
             $coreClient->validateAuth($this->auth)->apply($request);
         }

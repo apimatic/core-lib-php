@@ -79,24 +79,26 @@ class Auth implements AuthInterface
     public function validate(TypeValidatorInterface $validator): void
     {
         $success = empty($this->authGroups);
-        $errors = '';
-        foreach ($this->authGroups as $authGroup) {
+        $errors = array_map(function ($authGroup) use ($validator, &$success) {
             try {
                 $authGroup->validate($validator);
                 if ($this->groupType == AuthGroup::OR) {
                     $success = true;
                 }
+                return false;
             } catch (InvalidArgumentException $e) {
                 if ($this->groupType == AuthGroup::AND) {
                     throw $e;
                 }
-                $errors .= "\n-> {$e->getMessage()}";
+                return $e->getMessage();
             }
+        }, $this->authGroups);
+        if ($success || $this->groupType == AuthGroup::AND) {
+            $this->isValid = true;
+            return;
         }
-        if ($this->groupType == AuthGroup::OR && !$success) {
-            throw new InvalidArgumentException("Missing required auth credentials:$errors");
-        }
-        $this->isValid = true;
+        throw new InvalidArgumentException("Missing required auth credentials:\n-> " .
+            join("\n-> ", array_filter($errors)));
     }
 
     /**
@@ -107,8 +109,9 @@ class Auth implements AuthInterface
         if (!$this->isValid) {
             return;
         }
-        foreach ($this->authGroups as $authGroup) {
+        $this->authGroups = array_map(function ($authGroup) use ($request) {
             $authGroup->apply($request);
-        }
+            return $authGroup;
+        }, $this->authGroups);
     }
 }

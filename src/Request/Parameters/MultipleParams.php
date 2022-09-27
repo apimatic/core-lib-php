@@ -2,30 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Core\Authentication;
+namespace Core\Request\Parameters;
 
-use CoreInterfaces\Core\Authentication\AuthInterface;
-use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
 use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 
-/**
- * Use to apply authentication parameters to the request
- */
-class CoreAuth implements AuthInterface
+class MultipleParams extends Parameter
 {
-    private $parameters;
-    private $isValid = false;
-
     /**
-     * @param ParamInterface ...$parameters
+     * @var Parameter[]
      */
-    public function __construct(...$parameters)
-    {
-        $this->parameters = $parameters;
-    }
+    protected $parameters;
 
+    protected function __construct(string $typeName)
+    {
+        parent::__construct('', null, $typeName);
+    }
     /**
      * @throws InvalidArgumentException
      */
@@ -35,14 +28,10 @@ class CoreAuth implements AuthInterface
             $param->validate($validator);
             return $param;
         }, $this->parameters);
-        $this->isValid = true;
     }
 
     public function apply(RequestSetterInterface $request): void
     {
-        if (!$this->isValid) {
-            return;
-        }
         $this->parameters = array_map(function ($param) use ($request) {
             $param->apply($request);
             return $param;

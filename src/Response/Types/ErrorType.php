@@ -21,8 +21,8 @@ class ErrorType
         $this->className = $className;
     }
 
-    public function throw(Context $context)
+    public function throwable(Context $context)
     {
-        throw $context->toApiException($this->description, $this->className);
+        return $context->toApiException($this->description, $this->className);
     }
 }

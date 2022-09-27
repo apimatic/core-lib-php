@@ -34,14 +34,14 @@ class ResponseError
             return;
         }
         $statusCode = $context->getResponse()->getStatusCode();
-        if ($statusCode >= 200 && $statusCode <= 208) { // [200,208] = HTTP OK
+        if ($statusCode == min(max($statusCode, 200), 208)) { // [200,208] = HTTP OK
             return;
         }
         if (isset($this->errors[strval($statusCode)])) {
-            $this->errors[strval($statusCode)]->throw($context);
+            throw $this->errors[strval($statusCode)]->throwable($context);
         }
         if (isset($this->errors[strval(0)])) {
-            $this->errors[strval(0)]->throw($context); // throw default error (if set)
+            throw $this->errors[strval(0)]->throwable($context); // throw default error (if set)
         }
         throw $context->toApiException('HTTP Response Not OK');
     }

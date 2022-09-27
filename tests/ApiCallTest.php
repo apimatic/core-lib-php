@@ -2,6 +2,8 @@
 
 namespace Core\Tests;
 
+use Core\Request\Parameters\AdditionalFormParams;
+use Core\Request\Parameters\AdditionalQueryParams;
 use Core\Request\Parameters\BodyParam;
 use Core\Request\Parameters\FormParam;
 use Core\Request\Parameters\HeaderParam;
@@ -21,7 +23,6 @@ use Core\Tests\Mocking\Types\MockApiResponse;
 use Core\Tests\Mocking\Types\MockRequest;
 use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Format;
-use CoreInterfaces\Core\Request\RequestArraySerialization;
 use CoreInterfaces\Core\Request\RequestMethod;
 use CoreInterfaces\Http\RetryOption;
 use CURLFile;
@@ -122,7 +123,6 @@ class ApiCallTest extends TestCase
                 HeaderParam::initFromCollected('key4', $options, 'MyConstant'),
                 HeaderParam::initFromCollected('key2', $options, 'new string')
             )
-            ->additionalHeaderParams(['key5' => 1234.4321])
             ->build(MockHelper::getCoreClient());
         $this->assertEquals(true, $request->getHeaders()['key1']);
         $this->assertEquals('some string', $request->getHeaders()['key2']);
@@ -195,8 +195,25 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        self::assertArrayNotHasKey('content-type', $result->body['headers']);
-        self::assertArrayNotHasKey('Accept', $result->body['headers']);
+        $this->assertArrayNotHasKey('content-type', $result->body['headers']);
+        $this->assertArrayNotHasKey('Accept', $result->body['headers']);
+
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->execute();
+        $this->assertArrayNotHasKey('Accept', $result['body']['headers']);
+    }
+
+    public function testSendWithCustomContentType()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->parameters(HeaderParam::init('content-type', 'MyContentType')))
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertEquals('MyContentType', $result->body['headers']['content-type']);
     }
 
     public function testSendNoParams()
@@ -267,8 +284,10 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
-                ->parameters(QueryParam::init('key', 'val 01'))
-                ->additionalQueryParams(null))
+                ->parameters(
+                    QueryParam::init('key', 'val 01'),
+                    AdditionalQueryParams::init(null)
+                ))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -283,9 +302,9 @@ class ApiCallTest extends TestCase
             ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
                 ->parameters(
                     FormParam::init('key', 'val 01'),
-                    HeaderParam::init('content-type', 'myContentTypeHeader')
-                )
-                ->additionalFormParams(null))
+                    HeaderParam::init('content-type', 'myContentTypeHeader'),
+                    AdditionalFormParams::init(null)
+                ))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -365,6 +384,43 @@ class ApiCallTest extends TestCase
         ], $result->body['parameters']);
     }
 
+    public function testAdditionalQuery()
+    {
+        $additionalQueryParamsUI = ['key0' => [2,4], 'key5' => 'a'];
+        $additionalQueryParamsPL = ['key1' => [2,4], 'key6' => 'b'];
+        $additionalQueryParamsC = ['key2' => [2,4], 'key7' => 'c'];
+        $additionalQueryParamsT = ['key3' => [2,4], 'key8' => 'd'];
+        $additionalQueryParamsP = ['key4' => [2,4], 'key9' => 'e'];
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->parameters(
+                    AdditionalQueryParams::init($additionalQueryParamsUI)->unIndexed(),
+                    AdditionalQueryParams::init($additionalQueryParamsPL)->plain(),
+                    AdditionalQueryParams::init($additionalQueryParamsC)->commaSeparated(),
+                    AdditionalQueryParams::init($additionalQueryParamsT)->tabSeparated(),
+                    AdditionalQueryParams::init($additionalQueryParamsP)->pipeSeparated()
+                ))
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $query = self::convertQueryIntoArray(explode('?', $result->body['queryUrl'])[1]);
+        $this->assertEquals([
+            'key0[]' => '2',
+            'key0[]*' => '4',
+            'key1' => '2',
+            'key1*' => '4',
+            'key2' => '2,4',
+            'key3' => "2\t4",
+            'key4' => '2|4',
+            'key5' => 'a',
+            'key6' => 'b',
+            'key7' => 'c',
+            'key8' => 'd',
+            'key9' => 'e',
+        ], $query);
+    }
+
     public function testSendMultipleQuery()
     {
         $additionalQueryParams = [
@@ -386,9 +442,9 @@ class ApiCallTest extends TestCase
                     QueryParam::init('keyI', new MockClass(['A','B', new MockClass([1])]))->pipeSeparated(),
                     QueryParam::init('keyJ', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->pipeSeparated(),
                     QueryParam::init('keyK', new MockChild3("body", ['innerKey1' => 'A']))
-                        ->commaSeparated()
-                )
-                ->additionalQueryParams($additionalQueryParams))
+                        ->commaSeparated(),
+                    AdditionalQueryParams::init($additionalQueryParams)
+                ))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -418,6 +474,34 @@ class ApiCallTest extends TestCase
         ], $query);
     }
 
+    public function testAdditionalForm()
+    {
+        $additionalFormParamsUI = ['key0' => [2,4], 'key2' => 'a'];
+        $additionalFormParamsPL = ['key1' => [2,4], 'key3' => 'b'];
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->parameters(
+                    AdditionalFormParams::init($additionalFormParamsUI)->unIndexed(),
+                    AdditionalFormParams::init($additionalFormParamsPL)->plain()
+                ))
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertEquals([
+            'key0' => 'key0%5B%5D=2&key0%5B%5D=4',
+            'key1' => 'key1=2&key1=4',
+            'key2' => 'key2=a',
+            'key3' => 'key3=b',
+        ], $result->body['parametersEncoded']);
+        $this->assertEquals([
+            'key0' => [2,4],
+            'key1' => [2,4],
+            'key2' => 'a',
+            'key3' => 'b',
+        ], $result->body['parameters']);
+    }
+
     public function testSendMultipleForm()
     {
         $additionalFormParams = [
@@ -435,9 +519,9 @@ class ApiCallTest extends TestCase
                     FormParam::init('keyD', new MockClass([23, 24]))->unIndexed(),
                     FormParam::init('keyE', new MockClass([23, 24, new MockClass([1])]))->unIndexed(),
                     FormParam::init('keyF', new MockClass([true, false, null]))->plain(),
-                    FormParam::init('keyG', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->plain()
-                )
-                ->additionalFormParams($additionalFormParams, RequestArraySerialization::UN_INDEXED))
+                    FormParam::init('keyG', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->plain(),
+                    AdditionalFormParams::init($additionalFormParams)->unIndexed()
+                ))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -479,6 +563,19 @@ class ApiCallTest extends TestCase
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(Format::SCALAR, $result->body['headers']['content-type']);
         $this->assertEquals('this is string', $result->body['body']);
+    }
+
+    public function testSendBodyParamObject()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+                ->parameters(BodyParam::init(new MockClass([]))))
+            ->responseHandler(MockHelper::globalResponseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertEquals(Format::JSON, $result->body['headers']['content-type']);
+        $this->assertEquals('{"body":[]}', $result->body['body']);
     }
 
     public function testSendBodyParamFile()
@@ -723,6 +820,19 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(403);
         $response->setBody([]);
+        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
+        MockHelper::globalResponseHandler()
+            ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->getResult($context);
+    }
+
+    public function testLocalMockException3WhenBodyNotObject()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage('Local exception num 3');
+        $response = new MockResponse();
+        $response->setStatusCode(403);
+        $response->setBody("some erroneous response");
         $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
         MockHelper::globalResponseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))

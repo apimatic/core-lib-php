@@ -88,9 +88,13 @@ class Request implements RequestSetterInterface
 
     public function addAcceptHeader(string $accept): void
     {
-        if ($this->allowContentType && $accept !== Format::SCALAR) {
-            $this->addHeader('Accept', $accept);
+        if (!$this->allowContentType) {
+            return;
         }
+        if ($accept == Format::SCALAR) {
+            return;
+        }
+        $this->addHeader('Accept', $accept);
     }
 
     public function setHttpMethod(string $requestMethod): void
@@ -144,22 +148,37 @@ class Request implements RequestSetterInterface
         }
     }
 
+    private function addContentType(string $format): void
+    {
+        if (!$this->allowContentType) {
+            return;
+        }
+        if (array_key_exists('content-type', array_change_key_case($this->headers))) {
+            return;
+        }
+        // if request has body, and content-type header is not already added
+        // then add content-type, based on type and format of body
+        if ($this->body instanceof CoreFileWrapper) {
+            $this->addHeader('content-type', 'application/octet-stream');
+            return;
+        }
+        if ($format != Format::JSON) {
+            $this->addHeader('content-type', $format);
+            return;
+        }
+        if (is_object($this->body) || is_array($this->body)) {
+            $this->addHeader('content-type', Format::JSON);
+            return;
+        }
+        $this->addHeader('content-type', Format::SCALAR);
+    }
+
     public function setBodyFormat(string $format, callable $serializer): void
     {
         if (!empty($this->parameters)) {
             return;
         }
-        if ($this->allowContentType && !array_key_exists('content-type', array_change_key_case($this->headers))) {
-            // if request has body, and content-type header is not already added
-            // then add content-type, based on type and format of body
-            if ($this->body instanceof CoreFileWrapper) {
-                $this->addHeader('content-type', 'application/octet-stream');
-            } elseif ($format == Format::JSON && !is_object($this->body) && !is_array($this->body)) {
-                $this->addHeader('content-type', Format::SCALAR);
-            } else {
-                $this->addHeader('content-type', $format);
-            }
-        }
+        $this->addContentType($format);
         $this->body = Closure::fromCallable($serializer)($this->body);
     }
 
