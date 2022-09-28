@@ -22,7 +22,7 @@ class StatusCodeMatcher
      * @var int|null
      */
     private $upperStatusCode;
-
+    private $assertStatusRange = false;
     private $testCase;
     public function __construct(TestCase $testCase)
     {
@@ -36,6 +36,7 @@ class StatusCodeMatcher
 
     public function setStatusRange(int $lowerStatusCode, int $upperStatusCode): void
     {
+        $this->assertStatusRange = true;
         $this->lowerStatusCode = $lowerStatusCode;
         $this->upperStatusCode = $upperStatusCode;
     }
@@ -44,10 +45,13 @@ class StatusCodeMatcher
     {
         if (isset($this->statusCode)) {
             $this->testCase->assertEquals($this->statusCode, $statusCode, "Status is not $this->statusCode");
-        } elseif (isset($this->lowerStatusCode, $this->upperStatusCode)) {
-            $message = "Status is not between $this->lowerStatusCode and $this->upperStatusCode";
-            $this->testCase->assertGreaterThanOrEqual($this->lowerStatusCode, $statusCode, $message);
-            $this->testCase->assertLessThanOrEqual($this->upperStatusCode, $statusCode, $message);
+            return;
         }
+        if (!$this->assertStatusRange) {
+            return;
+        }
+        $message = "Status is not between $this->lowerStatusCode and $this->upperStatusCode";
+        $this->testCase->assertGreaterThanOrEqual($this->lowerStatusCode, $statusCode, $message);
+        $this->testCase->assertLessThanOrEqual($this->upperStatusCode, $statusCode, $message);
     }
 }

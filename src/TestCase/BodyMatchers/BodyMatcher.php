@@ -24,6 +24,11 @@ class BodyMatcher
         $this->expectedBody = $expectedBody;
     }
 
+    public function getDefaultMessage(): string
+    {
+        return $this->defaultMessage;
+    }
+
     public function set(TestCase $testCase, $result)
     {
         $this->testCase = $testCase;
