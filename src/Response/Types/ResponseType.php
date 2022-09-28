@@ -25,21 +25,33 @@ class ResponseType
      */
     private $dimensions;
 
+    /**
+     * Sets response class to the one provided.
+     */
     public function setResponseClass(string $responseClass): void
     {
         $this->responseClass = $responseClass;
     }
 
+    /**
+     * Sets xml deserializer to the one provided.
+     */
     public function setXmlDeserializer(callable $xmlDeserializer): void
     {
         $this->xmlDeserializer = $xmlDeserializer;
     }
 
+    /**
+     * Sets dimensions of the object.
+     */
     public function setDimensions(int $dimensions): void
     {
         $this->dimensions = $dimensions;
     }
 
+    /**
+     * Returns ResponseClass from the context provided.
+     */
     public function getFrom(Context $context)
     {
         if (is_null($this->responseClass)) {

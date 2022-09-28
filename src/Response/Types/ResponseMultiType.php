@@ -19,16 +19,25 @@ class ResponseMultiType
      */
     private $deserializers = [];
 
+    /**
+     * Sets type group to the one provided.
+     */
     public function setTypeGroup(string $typeGroup): void
     {
         $this->typeGroup = $typeGroup;
     }
 
+    /**
+     * Sets deserializers array to the one provided.
+     */
     public function setDeserializers(array $deserializers): void
     {
         $this->deserializers = $deserializers;
     }
 
+    /**
+     * Returns ResponseMultiType from the body of response within the context provided.
+     */
     public function getFrom(Context $context)
     {
         if (is_null($this->typeGroup)) {

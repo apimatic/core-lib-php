@@ -29,6 +29,9 @@ class ResponseHandler
         $this->responseMultiType = new ResponseMultiType();
     }
 
+    /**
+     * Associates an ErrorType object to the statusCode provided.
+     */
     public function throwErrorOn(int $statusCode, ErrorType $error): self
     {
         $this->responseError->addError(strval($statusCode), $error);
@@ -42,18 +45,30 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Sets the nullOn404 flag.
+     */
     public function nullOn404(): self
     {
         $this->nullOn404 = true;
         return $this;
     }
 
+    /**
+     * Sets the deserializer method to the one provided, for deserializableType.
+     */
     public function deserializerMethod(callable $deserializerMethod): self
     {
         $this->deserializableType->setDeserializerMethod($deserializerMethod);
         return $this;
     }
 
+    /**
+     * Sets response type to the one provided and format to JSON.
+     *
+     * @param string $responseClass Response type class
+     * @param int $dimensions Dimensions to be provided in case of an array
+     */
     public function type(string $responseClass, int $dimensions = 0): self
     {
         $this->format = Format::JSON;
@@ -62,6 +77,12 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Sets response type to the one provided and format to XML.
+     *
+     * @param string $responseClass Response type class
+     * @param string $rootName
+     */
     public function typeXml(string $responseClass, string $rootName): self
     {
         $this->format = Format::XML;
@@ -72,6 +93,9 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Sets response type to the one provided and format to XML.
+     */
     public function typeXmlMap(string $responseClass, string $rootName): self
     {
         $this->format = Format::XML;
@@ -82,6 +106,9 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Sets response type to the one provided and format to XML.
+     */
     public function typeXmlArray(string $responseClass, string $rootName, string $itemName): self
     {
         $this->format = Format::XML;
@@ -107,12 +134,17 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Returns current set format.
+     */
     public function getFormat(): string
     {
         return $this->format;
     }
 
     /**
+     * Returns response from the context provided.
+     *
      * @param Context $context
      * @return mixed
      */

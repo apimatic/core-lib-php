@@ -20,6 +20,8 @@ class MultipleParams extends Parameter
         parent::__construct('', null, $typeName);
     }
     /**
+     * Validates all parameters of the object.
+     *
      * @throws InvalidArgumentException
      */
     public function validate(TypeValidatorInterface $validator): void
@@ -30,6 +32,9 @@ class MultipleParams extends Parameter
         }, $this->parameters);
     }
 
+    /**
+     * Applies all parameters to the request provided.
+     */
     public function apply(RequestSetterInterface $request): void
     {
         $this->parameters = array_map(function ($param) use ($request) {

@@ -24,22 +24,35 @@ class StatusCodeMatcher
     private $upperStatusCode;
 
     private $testCase;
+
+    /**
+     * Creates a new StatusCodeMatcher object.
+     */
     public function __construct(TestCase $testCase)
     {
         $this->testCase = $testCase;
     }
 
+    /**
+     * Sets statusCode of the object to the value provided.
+     */
     public function setStatusCode(int $statusCode): void
     {
         $this->statusCode = $statusCode;
     }
 
+    /**
+     * Sets an expected status code range. Used in case the test case expects a status from a range of status codes.
+     */
     public function setStatusRange(int $lowerStatusCode, int $upperStatusCode): void
     {
         $this->lowerStatusCode = $lowerStatusCode;
         $this->upperStatusCode = $upperStatusCode;
     }
 
+    /**
+     * Assert required assertions according to the properties set within the object.
+     */
     public function assert(int $statusCode)
     {
         if (isset($this->statusCode)) {

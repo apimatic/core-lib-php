@@ -46,6 +46,9 @@ abstract class Parameter implements ParamInterface
         $this->value = $this->value[$key];
     }
 
+    /**
+     * Marks the value of the parameter as required and throws an exception on validate if the value is missing.
+     */
     public function required()
     {
         if (is_null($this->value)) {
@@ -53,6 +56,11 @@ abstract class Parameter implements ParamInterface
         }
     }
 
+    /**
+     * Serializes the parameter using the method provided.
+     *
+     * @param callable $serializerMethod The method to use for serialization.
+     */
     public function serializeBy(callable $serializerMethod)
     {
         try {
@@ -77,6 +85,9 @@ abstract class Parameter implements ParamInterface
     }
 
     /**
+     * Validates if the parameter is in a valid state i.e. checks for missing value, serialization errors
+     * and strict types.
+     *
      * @throws InvalidArgumentException
      */
     public function validate(TypeValidatorInterface $validator): void

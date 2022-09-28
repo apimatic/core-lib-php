@@ -17,6 +17,9 @@ class Context implements ContextInterface
     private $converter;
     private $jsonHelper;
 
+    /**
+     * Initializes a new Context with the request, response, jsonHelper and the converter set.
+     */
     public function __construct(RequestInterface $request, ResponseInterface $response, Client $client)
     {
         $this->request = $request;
@@ -25,21 +28,33 @@ class Context implements ContextInterface
         $this->jsonHelper = Client::getJsonHelper($client);
     }
 
+    /**
+     * Returns Request object.
+     */
     public function getRequest(): RequestInterface
     {
         return $this->request;
     }
 
+    /**
+     * Returns Response object.
+     */
     public function getResponse(): ResponseInterface
     {
         return $this->response;
     }
 
+    /**
+     * Returns JsonHelper object.
+     */
     public function getJsonHelper(): JsonHelper
     {
         return $this->jsonHelper;
     }
 
+    /**
+     * Returns an ApiException with errorMessage and childClass set, if not null.
+     */
     public function toApiException(string $errorMessage, ?string $childClass = null)
     {
         $responseBody = $this->response->getBody();
@@ -52,6 +67,9 @@ class Context implements ContextInterface
         return $this->jsonHelper->mapClass($responseBody, $childClass);
     }
 
+    /**
+     * Returns a MockApiResponse object from the context and the deserializedBody provided.
+     */
     public function toApiResponse($deserializedBody)
     {
         return $this->converter->createApiResponse($this, $deserializedBody);
