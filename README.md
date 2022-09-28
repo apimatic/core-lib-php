@@ -3,7 +3,6 @@
 [![version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 [![Tests][test-badge]][test-url]
-[![License][license-badge]][license-url]
 
 ## Introduction
 
@@ -31,7 +30,7 @@ Or add it to the composer.json file manually as given below:
 [packagist-url]: https://packagist.org/packages/apimatic/core
 [packagist-version]: https://img.shields.io/packagist/v/apimatic/core.svg?style=flat
 [packagist-downloads]: https://img.shields.io/packagist/dm/apimatic/core.svg?style=flat
-[license-badge]: https://img.shields.io/badge/licence-OSL--3.0-blue
-[license-url]: https://opensource.org/licenses/OSL-3.0
 [test-badge]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml/badge.svg
 [test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
+[license-badge]: https://img.shields.io/badge/licence-OSL--3.0-blue
+[license-url]: https://opensource.org/licenses/OSL-3.0
