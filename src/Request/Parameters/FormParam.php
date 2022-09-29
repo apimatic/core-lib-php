@@ -26,7 +26,7 @@ class FormParam extends EncodedParam
 
     public function encodingHeader(string $key, string $value): self
     {
-        $this->encodingHeaders[$key] = $value;
+        $this->encodingHeaders[strtolower($key)] = $value;
         return $this;
     }
 
