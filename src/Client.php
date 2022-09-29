@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core;
 
 use Core\Authentication\Auth;
+use Core\Request\Parameters\MultipleParams;
 use Core\Request\Request;
 use Core\Response\Context;
 use Core\Response\ResponseHandler;
@@ -42,7 +43,7 @@ class Client
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
-    private $globalRuntimeConfig;
+    private $runtimeAdditionalHeaders;
     private $globalErrors;
     private $apiCallback;
 
@@ -54,7 +55,7 @@ class Client
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
-     * @param ParamInterface[] $globalRuntimeConfig
+     * @param ParamInterface[] $runtimeAdditionalHeaders
      * @param array<int,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
      */
@@ -66,7 +67,7 @@ class Client
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
-        array $globalRuntimeConfig,
+        array $runtimeAdditionalHeaders,
         array $globalErrors,
         ?CoreCallback $apiCallback
     ) {
@@ -79,7 +80,7 @@ class Client
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
-        $this->globalRuntimeConfig = $globalRuntimeConfig;
+        $this->runtimeAdditionalHeaders = $runtimeAdditionalHeaders;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
     }
@@ -103,11 +104,6 @@ class Client
         return $responseHandler;
     }
 
-    public function getGlobalRuntimeConfig(): array
-    {
-        return $this->globalRuntimeConfig;
-    }
-
     public function getHttpClient(): HttpClientInterface
     {
         return $this->httpClient;
@@ -117,6 +113,17 @@ class Client
     {
         $auth->withAuthManagers($this->authManagers)->validate(self::getJsonHelper($this));
         return $auth;
+    }
+
+    /**
+     * @param ParamInterface[] $parameters
+     */
+    public function validateParameters(array $parameters): MultipleParams
+    {
+        $parameters = array_merge($parameters, $this->runtimeAdditionalHeaders);
+        $paramGroup = new MultipleParams('parameters group');
+        $paramGroup->parameters($parameters)->validate(self::getJsonHelper($this));
+        return $paramGroup;
     }
 
     public function beforeRequest(Request $request)

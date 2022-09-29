@@ -24,7 +24,7 @@ abstract class Parameter implements ParamInterface
     private $typeGroupSerializers = [];
     private $typeName;
 
-    public function __construct(string $key, $value, string $typeName)
+    protected function __construct(string $key, $value, string $typeName)
     {
         $this->key = $key;
         $this->value = $value;
@@ -36,24 +36,25 @@ abstract class Parameter implements ParamInterface
         return $this->key == '' ? $this->typeName : $this->key;
     }
 
-    public function pickFromCollected($default, ?string $key = null)
+    public function extract(string $key, $defaultValue = null): self
     {
-        $key = $key ?? $this->key;
         if (!is_array($this->value) || !isset($this->value[$key])) {
-            $this->value = $default;
-            return;
+            $this->value = $defaultValue;
+            return $this;
         }
         $this->value = $this->value[$key];
+        return $this;
     }
 
-    public function required()
+    public function required(): self
     {
         if (is_null($this->value)) {
             $this->valueMissing = true;
         }
+        return $this;
     }
 
-    public function serializeBy(callable $serializerMethod)
+    public function serializeBy(callable $serializerMethod): self
     {
         try {
             $this->value = Closure::fromCallable($serializerMethod)($this->value);
@@ -61,6 +62,7 @@ abstract class Parameter implements ParamInterface
             $this->serializationError = new InvalidArgumentException("Unable to serialize field: " .
                 "{$this->getName()}, Due to:\n{$e->getMessage()}");
         }
+        return $this;
     }
 
     /**
@@ -70,10 +72,11 @@ abstract class Parameter implements ParamInterface
      *                                    in the provided strict types/type, should be an array in the format:
      *                                    ['path/to/method argumentType', ...]. Default: []
      */
-    public function strictType(string $strictType, array $serializerMethods = [])
+    public function strictType(string $strictType, array $serializerMethods = []): self
     {
         $this->paramStrictType = $strictType;
         $this->typeGroupSerializers = $serializerMethods;
+        return $this;
     }
 
     /**
@@ -81,6 +84,9 @@ abstract class Parameter implements ParamInterface
      */
     public function validate(TypeValidatorInterface $validator): void
     {
+        if ($this->validated) {
+            return;
+        }
         if ($this->valueMissing) {
             throw new InvalidArgumentException("Missing required $this->typeName field: {$this->getName()}");
         }

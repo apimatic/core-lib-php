@@ -37,11 +37,6 @@ class MockHelper
     private static $response;
 
     /**
-     * @var MockCallback
-     */
-    private static $callback;
-
-    /**
      * @var CallbackCatcher
      */
     private static $callbackCatcher;
@@ -72,8 +67,8 @@ class MockHelper
                     HeaderParam::init('additionalHead1', 'headVal1'),
                     HeaderParam::init('additionalHead2', 'headVal2')
                 ])
-                ->globalRuntimeConfig([
-                    HeaderParam::init('key5', 890.098)
+                ->globalRuntimeHeaders([
+                    'key5' => 890.098
                 ])
                 ->globalErrors([
                     400 => ErrorType::init('Exception num 1', MockException1::class),
@@ -126,10 +121,7 @@ class MockHelper
 
     public static function getCallback(): MockCallback
     {
-        if (!isset(self::$callback)) {
-            self::$callback = new MockCallback();
-        }
-        return self::$callback;
+        return new MockCallback();
     }
 
     public static function getCallbackCatcher(): CallbackCatcher

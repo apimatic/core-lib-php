@@ -120,11 +120,7 @@ class RequestBuilder
         $request->setHttpMethod($this->requestMethod);
         $request->setRetryOption($this->retryOption);
         $request->shouldAddContentType($this->allowContentType);
-        $this->parameters = array_map(function ($param) use ($coreClient, $request) {
-            $param->validate(Client::getJsonHelper($coreClient));
-            $param->apply($request);
-            return $param;
-        }, array_merge($this->parameters, $coreClient->getGlobalRuntimeConfig()));
+        $coreClient->validateParameters($this->parameters)->apply($request);
         if (isset($this->auth)) {
             $coreClient->validateAuth($this->auth)->apply($request);
         }

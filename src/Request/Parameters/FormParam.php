@@ -15,13 +15,6 @@ class FormParam extends EncodedParam
         return new self($key, $value);
     }
 
-    public static function initFromCollected(string $key, $value, $defaultValue = null): self
-    {
-        $instance = self::init($key, $value);
-        $instance->pickFromCollected($defaultValue);
-        return $instance;
-    }
-
     /**
      * @var array<string,string>
      */
@@ -29,24 +22,6 @@ class FormParam extends EncodedParam
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'form');
-    }
-
-    public function required(): self
-    {
-        parent::required();
-        return $this;
-    }
-
-    public function serializeBy(callable $serializerMethod): self
-    {
-        parent::serializeBy($serializerMethod);
-        return $this;
-    }
-
-    public function strictType(string $strictType, array $serializerMethods = []): self
-    {
-        parent::strictType($strictType, $serializerMethods);
-        return $this;
     }
 
     public function encodingHeader(string $key, string $value): self

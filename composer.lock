@@ -4,50 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9862b55179565a86408520bcd5eac874",
+    "content-hash": "7ef7b86206e490b12847a818ff8c0ec7",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
-            "version": "0.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/core-interfaces-php.git",
-                "reference": "c4bf6ffdce1b463af2534871829997af6fe9401e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/c4bf6ffdce1b463af2534871829997af6fe9401e",
-                "reference": "c4bf6ffdce1b463af2534871829997af6fe9401e",
-                "shasum": ""
+                "reference": "617860f4561890c4c5916b19d9a7bb674b4a2a43"
             },
             "require": {
                 "php": ">=7.2 <8.2"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "CoreInterfaces\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "OSL-3.0"
             ],
             "description": "Definition of the behavior of apimatic/core, apimatic/unirest-php and Apimatic's PHP SDK",
             "homepage": "https://github.com/apimatic/core-interfaces-php",
             "keywords": [
+                "CoreLib",
                 "apimatic",
                 "core",
-                "corelib",
                 "interface",
                 "php",
                 "unirest"
             ],
-            "support": {
-                "issues": "https://github.com/apimatic/core-interfaces-php/issues",
-                "source": "https://github.com/apimatic/core-interfaces-php/tree/0.1.0"
-            },
-            "time": "2022-09-22T11:40:44+00:00"
+            "time": "2022-09-28T11:42:30+00:00"
         },
         {
             "name": "apimatic/jsonmapper",
@@ -3608,7 +3598,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "apimatic/core-interfaces": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

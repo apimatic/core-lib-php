@@ -114,15 +114,27 @@ class TypesTest extends TestCase
             $this->assertInstanceOf(MockRequest::class, $sdkContext->getRequest());
             $this->assertInstanceOf(MockCoreResponse::class, $sdkContext->getResponse());
         });
-        $this->assertNotNull($callback->getOnBeforeRequest());
-        $this->assertNotNull($callback->getOnAfterRequest());
 
         $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
         $context = new Context($request, $response, MockHelper::getCoreClient());
 
+        $this->assertNotNull($callback->getOnBeforeRequest());
+        $this->assertNotNull($callback->getOnAfterRequest());
+
         $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getCoreClient()));
         $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getCoreClient()));
+    }
+
+    public function testChildOfCoreCallbackWithoutAnyCallback()
+    {
+        $callback = MockHelper::getCallback();
+
+        $callback->callOnBeforeRequest(null);
+        $callback->callOnAfterRequest(null);
+
+        $this->assertNull($callback->getOnBeforeRequest());
+        $this->assertNull($callback->getOnAfterRequest());
     }
 
     public function testChildOfCoreFileWrapper()

@@ -166,7 +166,11 @@ class Request implements RequestSetterInterface
             $this->addHeader('content-type', $format);
             return;
         }
-        if (is_object($this->body) || is_array($this->body)) {
+        if (is_array($this->body)) {
+            $this->addHeader('content-type', Format::JSON);
+            return;
+        }
+        if (is_object($this->body)) {
             $this->addHeader('content-type', Format::JSON);
             return;
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Request\Parameters;
 
+use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
 use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
@@ -11,30 +12,42 @@ use InvalidArgumentException;
 class MultipleParams extends Parameter
 {
     /**
-     * @var Parameter[]
+     * @var ParamInterface[]
      */
     protected $parameters;
 
-    protected function __construct(string $typeName)
+    public function __construct(string $typeName)
     {
         parent::__construct('', null, $typeName);
     }
+
+    /**
+     * @param ParamInterface[] $parameters
+     */
+    public function parameters(array $parameters): self
+    {
+        $this->parameters = $parameters;
+        return $this;
+    }
+
     /**
      * @throws InvalidArgumentException
      */
     public function validate(TypeValidatorInterface $validator): void
     {
-        $this->parameters = array_map(function ($param) use ($validator) {
+        if ($this->validated) {
+            return;
+        }
+        array_walk($this->parameters, function ($param) use ($validator): void {
             $param->validate($validator);
-            return $param;
-        }, $this->parameters);
+        });
+        $this->validated = true;
     }
 
     public function apply(RequestSetterInterface $request): void
     {
-        $this->parameters = array_map(function ($param) use ($request) {
+        array_walk($this->parameters, function ($param) use ($request): void {
             $param->apply($request);
-            return $param;
-        }, $this->parameters);
+        });
     }
 }

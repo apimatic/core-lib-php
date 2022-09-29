@@ -1,8 +1,9 @@
 # Core Library for PHP
 
-[![version][packagist-version]][packagist-url]
+[![Version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 [![Tests][test-badge]][test-url]
+[![Licence][license-badge]][license-url]
 
 ## Introduction
 
@@ -16,7 +17,7 @@ Core logic and the utilities for the Apimatic's PHP SDK.
 Run the following command to install the package and automatically add the dependency to your composer.json file:
 
 ```php
-composer require "apimatic/core-lib-php"
+composer require "apimatic/core"
 ```
 
 Or add it to the composer.json file manually as given below:
