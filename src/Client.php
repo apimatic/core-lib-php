@@ -43,7 +43,7 @@ class Client
     private $serverUrls;
     private $defaultServer;
     private $globalConfig;
-    private $runtimeAdditionalHeaders;
+    private $globalRuntimeConfig;
     private $globalErrors;
     private $apiCallback;
 
@@ -55,7 +55,7 @@ class Client
      * @param array<string,string> $serverUrls
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
-     * @param ParamInterface[] $runtimeAdditionalHeaders
+     * @param ParamInterface[] $globalRuntimeConfig
      * @param array<int,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
      */
@@ -67,7 +67,7 @@ class Client
         array $serverUrls,
         string $defaultServer,
         array $globalConfig,
-        array $runtimeAdditionalHeaders,
+        array $globalRuntimeConfig,
         array $globalErrors,
         ?CoreCallback $apiCallback
     ) {
@@ -80,7 +80,7 @@ class Client
         $this->serverUrls = $serverUrls;
         $this->defaultServer = $defaultServer;
         $this->globalConfig = $globalConfig;
-        $this->runtimeAdditionalHeaders = $runtimeAdditionalHeaders;
+        $this->globalRuntimeConfig = $globalRuntimeConfig;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
     }
@@ -120,7 +120,7 @@ class Client
      */
     public function validateParameters(array $parameters): MultipleParams
     {
-        $parameters = array_merge($parameters, $this->runtimeAdditionalHeaders);
+        $parameters = array_merge($parameters, $this->globalRuntimeConfig);
         $paramGroup = new MultipleParams('parameters group');
         $paramGroup->parameters($parameters)->validate(self::getJsonHelper($this));
         return $paramGroup;

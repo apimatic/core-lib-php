@@ -5,6 +5,7 @@ namespace Core\Tests\Mocking;
 use Core\ApiCall;
 use Core\Client;
 use Core\ClientBuilder;
+use Core\Request\Parameters\AdditionalHeaderParams;
 use Core\Request\Parameters\HeaderParam;
 use Core\Request\Parameters\TemplateParam;
 use Core\Response\ResponseHandler;
@@ -67,9 +68,7 @@ class MockHelper
                     HeaderParam::init('additionalHead1', 'headVal1'),
                     HeaderParam::init('additionalHead2', 'headVal2')
                 ])
-                ->globalRuntimeHeaders([
-                    'key5' => 890.098
-                ])
+                ->globalRuntimeParam(AdditionalHeaderParams::init(['key5' => 890.098]))
                 ->globalErrors([
                     400 => ErrorType::init('Exception num 1', MockException1::class),
                     401 => ErrorType::init('Exception num 2', MockException2::class),

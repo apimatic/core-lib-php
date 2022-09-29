@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Core;
 
-use Core\Request\Parameters\AdditionalHeaderParams;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
@@ -60,7 +59,7 @@ class ClientBuilder
     /**
      * @var ParamInterface[]
      */
-    private $runtimeAdditionalHeaders = [];
+    private $globalRuntimeConfig = [];
 
     /**
      * @var CoreCallback|null
@@ -142,13 +141,9 @@ class ClientBuilder
         return $this;
     }
 
-    /**
-     * @param array<string,mixed> $globalRuntimeHeaders
-     * @return $this
-     */
-    public function globalRuntimeHeaders(array $globalRuntimeHeaders): self
+    public function globalRuntimeParam(ParamInterface $globalRuntimeParam): self
     {
-        $this->runtimeAdditionalHeaders[] = AdditionalHeaderParams::init($globalRuntimeHeaders);
+        $this->globalRuntimeConfig[] = $globalRuntimeParam;
         return $this;
     }
 
@@ -206,7 +201,7 @@ class ClientBuilder
             $this->serverUrls,
             $this->defaultServer,
             $this->globalConfig,
-            $this->runtimeAdditionalHeaders,
+            $this->globalRuntimeConfig,
             $this->globalErrors,
             $this->apiCallback
         );
