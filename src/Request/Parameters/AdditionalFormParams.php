@@ -6,6 +6,9 @@ namespace Core\Request\Parameters;
 
 class AdditionalFormParams extends MultipleParams
 {
+    /**
+     * Initializes an AdditionalFormParams object.
+     */
     public static function init(?array $values): self
     {
         return new self($values ?? []);
@@ -19,6 +22,9 @@ class AdditionalFormParams extends MultipleParams
         }, array_keys($values), $values);
     }
 
+    /**
+     * Turns all parameters of the object to unIndexed.
+     */
     public function unIndexed(): self
     {
         $this->parameters = array_map(function ($param) {
@@ -27,6 +33,9 @@ class AdditionalFormParams extends MultipleParams
         return $this;
     }
 
+    /**
+     * Turns all parameters of the object to plain.
+     */
     public function plain(): self
     {
         $this->parameters = array_map(function ($param) {

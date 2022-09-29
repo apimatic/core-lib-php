@@ -120,6 +120,8 @@ class CoreHelper
     }
 
     /**
+     * Converts provided value to ?string type.
+     *
      * @param $value false|string
      */
     public static function convertToNullableString($value): ?string
@@ -131,6 +133,8 @@ class CoreHelper
     }
 
     /**
+     * Return info about PHP Engine.
+     *
      * @return string[] An array where 0 => EngineName, and 1 => EngineVersion
      */
     public static function getEngineInfo(bool $test = false): array
@@ -141,6 +145,9 @@ class CoreHelper
         return ['Zend', zend_version()];
     }
 
+    /**
+     * Return basic OS info.
+     */
     public static function getOsInfo(bool $test = false): string
     {
         if ($test || PHP_OS_FAMILY === 'Unknown') {

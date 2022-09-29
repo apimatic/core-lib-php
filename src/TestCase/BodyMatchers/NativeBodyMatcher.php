@@ -6,6 +6,9 @@ namespace Core\TestCase\BodyMatchers;
 
 class NativeBodyMatcher extends BodyMatcher
 {
+    /**
+     * Initializes a new NativeBodyMatcher object with the parameters provided.
+     */
     public static function init($expectedBody, bool $matchArrayOrder = false, bool $matchArrayCount = false): self
     {
         $matcher = new self(new BodyComparator(!$matchArrayCount, $matchArrayOrder, true, true), $expectedBody);
@@ -33,6 +36,10 @@ class NativeBodyMatcher extends BodyMatcher
         return ' in order or size';
     }
 
+    /**
+     * Asserts if rawBody matches the criteria set within NativeBodyMatcher while initialization,
+     * and if expectedBody is a subset of rawBody.
+     */
     public function assert(string $rawBody)
     {
         parent::assert($rawBody);

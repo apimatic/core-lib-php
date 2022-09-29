@@ -14,6 +14,9 @@ use CoreInterfaces\Http\RetryOption;
 
 class RequestBuilder
 {
+    /**
+     * Initializes a Request builder with the method and path specified.
+     */
     public static function init(string $requestMethod, string $path): self
     {
         return new self($requestMethod, $path);
@@ -52,18 +55,28 @@ class RequestBuilder
         $this->path = $path;
     }
 
+
+    /**
+     * The server URL to be set for the request.
+     */
     public function server(string $server): self
     {
         $this->server = $server;
         return $this;
     }
 
+    /**
+     * Sets the retryOption value that is to be set for the request on creation.
+     */
     public function retryOption(string $retryOption): self
     {
         $this->retryOption = $retryOption;
         return $this;
     }
 
+    /**
+     * Disables setting of allowContentType for request on creation.
+     */
     public function disableContentType(): self
     {
         $this->allowContentType = false;
@@ -80,12 +93,18 @@ class RequestBuilder
         return $this;
     }
 
+    /**
+     * Parameters to be set on request creation.
+     */
     public function parameters(ParamInterface ...$parameters): self
     {
         $this->parameters = array_merge($this->parameters, $parameters);
         return $this;
     }
 
+    /**
+     * Sets body format to xml and serializes the body to xml.
+     */
     public function bodyXml(string $rootName): self
     {
         $this->bodyFormat = Format::XML;
@@ -95,6 +114,9 @@ class RequestBuilder
         return $this;
     }
 
+    /**
+     * Sets body format to xml and serializes the body to xml.
+     */
     public function bodyXmlArray(string $rootName, string $itemName): self
     {
         $this->bodyFormat = Format::XML;
@@ -104,6 +126,9 @@ class RequestBuilder
         return $this;
     }
 
+    /**
+     * Sets body format to xml and serializes the body to xml.
+     */
     public function bodyXmlMap(string $rootName): self
     {
         $this->bodyFormat = Format::XML;
@@ -113,7 +138,10 @@ class RequestBuilder
         return $this;
     }
 
-    public function build(Client $coreClient): Request
+    /**
+     * Initializes a new Request object with the properties set within RequestBuilder.
+     */
+    public function build(CLient $coreClient): Request
     {
         $request = $coreClient->getGlobalRequest($this->server);
         $request->appendPath($this->path);

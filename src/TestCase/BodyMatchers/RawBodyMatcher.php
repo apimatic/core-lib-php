@@ -8,6 +8,9 @@ use Core\Types\Sdk\CoreFileWrapper;
 
 class RawBodyMatcher extends BodyMatcher
 {
+    /**
+     * Initializes a RawBodyMatcher object with the expectedBody provided.
+     */
     public static function init($expectedBody): self
     {
         $matcher = new self(new BodyComparator(), $expectedBody);
@@ -15,6 +18,9 @@ class RawBodyMatcher extends BodyMatcher
         return $matcher;
     }
 
+    /**
+     * Asserts if rawBody matches expectedBody.
+     */
     public function assert(string $rawBody)
     {
         parent::assert($rawBody);

@@ -27,8 +27,7 @@ class Request implements RequestSetterInterface
     private $allowContentType = true;
 
     /**
-     * @param string $queryUrl
-     * @param Client|null $client
+     * Creates a new Request object.
      */
     public function __construct(string $queryUrl, ?Client $client = null)
     {
@@ -36,56 +35,89 @@ class Request implements RequestSetterInterface
         $this->converter = Client::getConverter($client);
     }
 
+    /**
+     * Returns the http method to be used for the call.
+     */
     public function getHttpMethod(): string
     {
         return $this->requestMethod;
     }
 
+    /**
+     * Returns the query URL for the request.
+     */
     public function getQueryUrl(): string
     {
         return $this->queryUrl;
     }
 
+    /**
+     * Returns the headers associated with the request.
+     */
     public function getHeaders(): array
     {
         return $this->headers;
     }
 
+    /**
+     * Returns the parameters for the request.
+     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
+    /**
+     * Returns encoded parameters associated the request.
+     */
     public function getEncodedParameters(): array
     {
         return $this->parametersEncoded;
     }
 
+    /**
+     * Returns multipart parameters associated with the request.
+     */
     public function getMultipartParameters(): array
     {
         return $this->parametersMultipart;
     }
 
+    /**
+     * Returns body associated with the request.
+     */
     public function getBody()
     {
         return $this->body;
     }
 
+    /**
+     * Returns the state of retryOption for the request.
+     */
     public function getRetryOption(): string
     {
         return $this->retryOption;
     }
 
+    /**
+     * Converts the request to HttpRequest.
+     */
     public function convert()
     {
         return $this->converter->createHttpRequest($this);
     }
 
+    /**
+     * Creates an ApiException with the message provided.
+     */
     public function toApiException(string $message)
     {
         return $this->converter->createApiException($message, $this, null);
     }
 
+    /**
+     * Adds accept header to the request.
+     */
     public function addAcceptHeader(string $accept): void
     {
         if (!$this->allowContentType) {
@@ -97,11 +129,17 @@ class Request implements RequestSetterInterface
         $this->addHeader('Accept', $accept);
     }
 
+    /**
+     * Sets the Http Method to be used for current request.
+     */
     public function setHttpMethod(string $requestMethod): void
     {
         $this->requestMethod = $requestMethod;
     }
 
+    /**
+     * Appends path to the query URL.
+     */
     public function appendPath(string $path): void
     {
         $this->queryUrl .= $path;
@@ -118,23 +156,35 @@ class Request implements RequestSetterInterface
         $this->headers[$key] = $value;
     }
 
+    /**
+     * Adds template param value to the query URL, corresponding to the key provided.
+     */
     public function addTemplate(string $key, $value): void
     {
         $this->queryUrl = str_replace("{{$key}}", $value, $this->queryUrl);
     }
 
+    /**
+     * Adds an encoded form param to the request.
+     */
     public function addEncodedFormParam(string $key, $value, $realValue): void
     {
         $this->parametersEncoded[$key] = $value;
         $this->parameters[$key] = $realValue;
     }
 
+    /**
+     * Adds a multipart form param to the request.
+     */
     public function addMultipartFormParam(string $key, $value): void
     {
         $this->parametersMultipart[$key] = $value;
         $this->parameters[$key] = $value;
     }
 
+    /**
+     * Adds a body param to the current request.
+     */
     public function addBodyParam($value, string $key = ''): void
     {
         if (empty($key)) {
@@ -177,6 +227,9 @@ class Request implements RequestSetterInterface
         $this->addHeader('content-type', Format::SCALAR);
     }
 
+    /**
+     * Sets body format for the request and returns the body in a serialized format.
+     */
     public function setBodyFormat(string $format, callable $serializer): void
     {
         if (!empty($this->parameters)) {
@@ -186,11 +239,17 @@ class Request implements RequestSetterInterface
         $this->body = Closure::fromCallable($serializer)($this->body);
     }
 
+    /**
+     * Sets value for retryOption for the request.
+     */
     public function setRetryOption(string $retryOption): void
     {
         $this->retryOption = $retryOption;
     }
 
+    /**
+     * Sets if the request has an allowContentType header or not.
+     */
     public function shouldAddContentType(bool $allowContentType): void
     {
         $this->allowContentType = $allowContentType;

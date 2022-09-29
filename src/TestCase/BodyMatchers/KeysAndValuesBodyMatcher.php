@@ -6,6 +6,9 @@ namespace Core\TestCase\BodyMatchers;
 
 class KeysAndValuesBodyMatcher extends KeysBodyMatcher
 {
+    /**
+     * Initializes a new KeysAndValuesBodyMatcher object with the parameters provided.
+     */
     public static function init(
         $expectedBody,
         bool $matchArrayOrder = false,

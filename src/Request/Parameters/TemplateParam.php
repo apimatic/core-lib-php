@@ -8,6 +8,9 @@ use CoreInterfaces\Core\Request\RequestSetterInterface;
 
 class TemplateParam extends Parameter
 {
+    /**
+     * Initializes a template parameter with the key and value provided.
+     */
     public static function init(string $key, $value): self
     {
         return new self($key, $value);
@@ -19,6 +22,9 @@ class TemplateParam extends Parameter
         parent::__construct($key, $value, 'template');
     }
 
+    /**
+     * Disables http encoding for the parameter.
+     */
     public function dontEncode(): self
     {
         $this->encode = false;
@@ -43,6 +49,11 @@ class TemplateParam extends Parameter
         return $this->encode ? urlencode($val) : $val;
     }
 
+    /**
+     * Adds the parameter to the request provided.
+     *
+     * @param RequestSetterInterface $request The request to add the parameter to.
+     */
     public function apply(RequestSetterInterface $request): void
     {
         if ($this->validated) {

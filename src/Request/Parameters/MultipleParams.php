@@ -31,6 +31,8 @@ class MultipleParams extends Parameter
     }
 
     /**
+     * Validates all parameters of the object.
+     *
      * @throws InvalidArgumentException
      */
     public function validate(TypeValidatorInterface $validator): void
@@ -44,6 +46,9 @@ class MultipleParams extends Parameter
         $this->validated = true;
     }
 
+    /**
+     * Applies all parameters to the request provided.
+     */
     public function apply(RequestSetterInterface $request): void
     {
         array_walk($this->parameters, function ($param) use ($request): void {

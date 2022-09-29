@@ -10,6 +10,9 @@ use CoreInterfaces\Core\Request\RequestSetterInterface;
 
 class FormParam extends EncodedParam
 {
+    /**
+     * Initializes a form parameter with the key and value provided.
+     */
     public static function init(string $key, $value): self
     {
         return new self($key, $value);
@@ -24,24 +27,41 @@ class FormParam extends EncodedParam
         parent::__construct($key, $value, 'form');
     }
 
+    /**
+     * Sets encoding header with the key and value provided.
+     *
+     * @param string $key
+     * @param string $value
+     */
     public function encodingHeader(string $key, string $value): self
     {
         $this->encodingHeaders[strtolower($key)] = $value;
         return $this;
     }
 
+    /**
+     * Sets the parameter format to un-indexed.
+     */
     public function unIndexed(): self
     {
         $this->format = RequestArraySerialization::UN_INDEXED;
         return $this;
     }
 
+    /**
+     * Sets the parameter format to plain.
+     */
     public function plain(): self
     {
         $this->format = RequestArraySerialization::PLAIN;
         return $this;
     }
 
+    /**
+     * Adds the parameter to the request provided.
+     *
+     * @param RequestSetterInterface $request The request to add the parameter to.
+     */
     public function apply(RequestSetterInterface $request): void
     {
         if (!$this->validated) {

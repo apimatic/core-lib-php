@@ -8,11 +8,20 @@ use CoreInterfaces\Core\Request\RequestSetterInterface;
 
 class BodyParam extends Parameter
 {
+    /**
+     * Initializes a body parameter with the value specified.
+     */
     public static function init($value): self
     {
         return new self('', $value);
     }
 
+    /**
+     * Initializes a body parameter with the value and key provided.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public static function initWrapped(string $key, $value): self
     {
         return new self($key, $value);
@@ -23,6 +32,11 @@ class BodyParam extends Parameter
         parent::__construct($key, $value, 'body');
     }
 
+    /**
+     * Adds the parameter to the request provided.
+     *
+     * @param RequestSetterInterface $request The request to add the parameter to.
+     */
     public function apply(RequestSetterInterface $request): void
     {
         if ($this->validated) {

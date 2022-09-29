@@ -27,11 +27,17 @@ class HeadersMatcher
         $this->headers = $headers;
     }
 
+    /**
+     * Sets allowExtra flag to true.
+     */
     public function allowExtra(): void
     {
         $this->allowExtra = true;
     }
 
+    /**
+     * Asserts if provided headers match according to the properties set within object.
+     */
     public function assert(array $headers)
     {
         if (empty($this->headers)) {

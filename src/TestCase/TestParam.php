@@ -13,6 +13,8 @@ use Exception;
 class TestParam
 {
     /**
+     * Returns a typeGroup type TestParam.
+     *
      * @param string $json          Json value to be mapped by the typeGroup
      * @param string $typeGroup     Group of types in string format i.e. oneof(...), anyof(...)
      * @param array  $deserializers Methods required for the de-serialization of specific types in
@@ -27,6 +29,8 @@ class TestParam
     }
 
     /**
+     * Returns an object type TestParam.
+     *
      * @param string       $json     Json value to be mapped by the class
      * @param string|null $classname Name of the class inclusive of its namespace,
      *                               Default: object
@@ -44,6 +48,8 @@ class TestParam
     }
 
     /**
+     * Returns a custom TestParam.
+     *
      * @param string   $json     Json value to be deserialized using custom callback
      * @param callable $callback Callback use to deserialize the given value
      * @return mixed Returns the result from the callback
@@ -54,6 +60,8 @@ class TestParam
     }
 
     /**
+     * Returns a file type TestParam.
+     *
      * @param string $url URL of the file to download
      */
     public static function file(string $url)
@@ -63,6 +71,8 @@ class TestParam
     }
 
     /**
+     * Returns a localFile TestParam.
+     *
      * @param string $realPath Local path to the file
      */
     public static function localFile(string $realPath)

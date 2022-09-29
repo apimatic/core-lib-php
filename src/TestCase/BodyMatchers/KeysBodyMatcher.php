@@ -8,6 +8,9 @@ use Core\Utils\CoreHelper;
 
 class KeysBodyMatcher extends BodyMatcher
 {
+    /**
+     * Initializes a new KeysBodyMatcher object with the parameters provided.
+     */
     public static function init($expectedBody, bool $matchArrayOrder = false, bool $matchArrayCount = false): self
     {
         $matcher = new self(new BodyComparator(!$matchArrayCount, $matchArrayOrder, false), $expectedBody);
@@ -15,6 +18,9 @@ class KeysBodyMatcher extends BodyMatcher
         return $matcher;
     }
 
+    /**
+     * Compares rawBody with expectedBody and asserts if expectedBody is a subset of rawBody or not.
+     */
     public function assert(string $rawBody)
     {
         parent::assert($rawBody);

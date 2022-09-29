@@ -6,6 +6,9 @@ namespace Core\Request\Parameters;
 
 class AdditionalQueryParams extends MultipleParams
 {
+    /**
+     * Initializes a new AdditionalQueryParams object.
+     */
     public static function init(?array $values): self
     {
         return new self($values ?? []);
@@ -19,6 +22,9 @@ class AdditionalQueryParams extends MultipleParams
         }, array_keys($values), $values);
     }
 
+    /**
+     * Turns all parameters of the object to unIndexed.
+     */
     public function unIndexed(): self
     {
         $this->parameters = array_map(function ($param) {
@@ -27,6 +33,9 @@ class AdditionalQueryParams extends MultipleParams
         return $this;
     }
 
+    /**
+     * Turns all parameters of the object to plain.
+     */
     public function plain(): self
     {
         $this->parameters = array_map(function ($param) {
@@ -35,6 +44,9 @@ class AdditionalQueryParams extends MultipleParams
         return $this;
     }
 
+    /**
+     * Turns all parameters of the object to comma separated.
+     */
     public function commaSeparated(): self
     {
         $this->parameters = array_map(function ($param) {
@@ -43,6 +55,9 @@ class AdditionalQueryParams extends MultipleParams
         return $this;
     }
 
+    /**
+     * Turns all parameters of the object to tab separated.
+     */
     public function tabSeparated(): self
     {
         $this->parameters = array_map(function ($param) {
@@ -51,6 +66,9 @@ class AdditionalQueryParams extends MultipleParams
         return $this;
     }
 
+    /**
+     * Turns all parameters of the object to pipe separated.
+     */
     public function pipeSeparated(): self
     {
         $this->parameters = array_map(function ($param) {
