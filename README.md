@@ -1,9 +1,9 @@
 # Core Library for PHP
 
-[![version][packagist-version]][packagist-url]
+[![Version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 [![Tests][test-badge]][test-url]
-[![License][license-badge]][license-url]
+[![Licence][license-badge]][license-url]
 
 ## Introduction
 
@@ -17,7 +17,7 @@ Core logic and the utilities for the Apimatic's PHP SDK.
 Run the following command to install the package and automatically add the dependency to your composer.json file:
 
 ```php
-composer require "apimatic/core-lib-php"
+composer require "apimatic/core"
 ```
 
 Or add it to the composer.json file manually as given below:
@@ -31,8 +31,6 @@ Or add it to the composer.json file manually as given below:
 [packagist-url]: https://packagist.org/packages/apimatic/core
 [packagist-version]: https://img.shields.io/packagist/v/apimatic/core.svg?style=flat
 [packagist-downloads]: https://img.shields.io/packagist/dm/apimatic/core.svg?style=flat
-[license-badge]: https://img.shields.io/badge/licence-OSL--3.0-blue
-[license-url]: https://opensource.org/licenses/OSL-3.0
 [test-badge]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml/badge.svg
 [test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
 
@@ -60,9 +58,8 @@ Or add it to the composer.json file manually as given below:
 | [`ResponseHandler`](src/Response/ResponseHandler.php)                       | Response handler for an API call that holds all the above response handling features  |
 | [`Context`](src/Response/Context.php)                                       | Holds the current context i.e. the current request, response and other needed details |
 
-
 ## TestCase
-| Name                                                                                 | Description                                                                    |
+| Name                                                                                 | Description                                                                  |
 |--------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
 | [`KeysAndValuesBodyMatcher`](src/TestCase/BodyMatchers/KeysAndValuesBodyMatcher.php) | Matches actual and expected body, considering both the keys and values       |
 | [`KeysBodyMatcher`](src/TestCase/BodyMatchers/KeysBodyMatcher.php)                   | Matches actual and expected body, considering just the keys                  |

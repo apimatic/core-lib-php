@@ -52,6 +52,12 @@ class CoreTestCaseTest extends TestCase
 
         self::getResponse(202, ['key1' => 'res/header', 'key2' => 'res/2nd'], $param1);
 
+        $this->newTestCase($param1)->assert();
+
+        $this->newTestCase($param1)
+            ->expectHeaders(['key1' => ['differentValue', false], 'key2' => ['differentValue', 'not bool']])
+            ->assert();
+
         $this->newTestCase($param1)
             ->expectStatus(202)
             ->expectHeaders(['key1' => ['res/header', true]])
@@ -174,6 +180,40 @@ class CoreTestCaseTest extends TestCase
                 false
             ))
             ->assert();
+    }
+
+    public function testNativeBodyMatcherMessage()
+    {
+        $object = CoreHelper::deserialize('{"key":"somevalue"}', false);
+        $array = ["key" => "somevalue"];
+        $scalar = "somevalue";
+
+        $message = NativeBodyMatcher::init($scalar)->getDefaultMessage();
+        $this->assertEquals('Response values does not match', $message);
+
+        $message = NativeBodyMatcher::init($object, true, true)->getDefaultMessage();
+        $this->assertEquals('Response object values does not match in order or size', $message);
+
+        $message = NativeBodyMatcher::init($array, true, true)->getDefaultMessage();
+        $this->assertEquals('Response array values does not match in order or size', $message);
+
+        $message = NativeBodyMatcher::init($object, false, true)->getDefaultMessage();
+        $this->assertEquals('Response object values does not match in size', $message);
+
+        $message = NativeBodyMatcher::init($array, false, true)->getDefaultMessage();
+        $this->assertEquals('Response array values does not match in size', $message);
+
+        $message = NativeBodyMatcher::init($object, true)->getDefaultMessage();
+        $this->assertEquals('Response object values does not match in order', $message);
+
+        $message = NativeBodyMatcher::init($array, true)->getDefaultMessage();
+        $this->assertEquals('Response array values does not match in order', $message);
+
+        $message = NativeBodyMatcher::init($object)->getDefaultMessage();
+        $this->assertEquals('Response object values does not match', $message);
+
+        $message = NativeBodyMatcher::init($array)->getDefaultMessage();
+        $this->assertEquals('Response array values does not match', $message);
     }
 
     public function testClassParamForNative()

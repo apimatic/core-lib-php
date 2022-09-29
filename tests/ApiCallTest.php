@@ -60,26 +60,26 @@ class ApiCallTest extends TestCase
     public function testCollectedBodyParams()
     {
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
-            ->parameters(BodyParam::initFromCollected('key1', null))
+            ->parameters(BodyParam::init(null)->extract('key1'))
             ->build(MockHelper::getCoreClient());
         $this->assertNull($request->getBody());
 
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
-            ->parameters(BodyParam::initFromCollected('key1', $options))
+            ->parameters(BodyParam::init($options)->extract('key1'))
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('true', $request->getBody());
 
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
             ->parameters(
-                BodyParam::initWrappedFromCollected('key1', $options),
-                BodyParam::initWrappedFromCollected('key3', $options)
+                BodyParam::initWrapped('key1', $options)->extract('key1'),
+                BodyParam::initWrapped('key3', $options)->extract('key3')
             )
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('{"key1":true,"key3":23}', $request->getBody());
 
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
-            ->parameters(BodyParam::initFromCollected('key4', $options, 'MyConstant'))
+            ->parameters(BodyParam::init($options)->extract('key4', 'MyConstant'))
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('MyConstant', $request->getBody());
     }
@@ -90,10 +90,10 @@ class ApiCallTest extends TestCase
 
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
             ->parameters(
-                FormParam::initFromCollected('key1', $options),
-                FormParam::initFromCollected('key3', $options),
-                FormParam::initFromCollected('key4', $options, 'MyConstant'),
-                FormParam::initFromCollected('key2', $options, 'new string')
+                FormParam::init('key1', $options)->extract('key1'),
+                FormParam::init('key3', $options)->extract('key3'),
+                FormParam::init('key4', $options)->extract('key4', 'MyConstant'),
+                FormParam::init('key2', $options)->extract('key2', 'new string')
             )
             ->build(MockHelper::getCoreClient());
         $this->assertNull($request->getBody());
@@ -118,10 +118,10 @@ class ApiCallTest extends TestCase
 
         $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
             ->parameters(
-                HeaderParam::initFromCollected('key1', $options),
-                HeaderParam::initFromCollected('key3', $options),
-                HeaderParam::initFromCollected('key4', $options, 'MyConstant'),
-                HeaderParam::initFromCollected('key2', $options, 'new string')
+                HeaderParam::init('key1', $options)->extract('key1'),
+                HeaderParam::init('key3', $options)->extract('key3'),
+                HeaderParam::init('key4', $options)->extract('key4', 'MyConstant'),
+                HeaderParam::init('key2', $options)->extract('key2', 'new string')
             )
             ->build(MockHelper::getCoreClient());
         $this->assertEquals(true, $request->getHeaders()['key1']);
@@ -137,10 +137,10 @@ class ApiCallTest extends TestCase
 
         $request = RequestBuilder::init(RequestMethod::POST, '/path')
             ->parameters(
-                QueryParam::initFromCollected('key1', $options),
-                QueryParam::initFromCollected('key3', $options),
-                QueryParam::initFromCollected('key4', $options, 'MyConstant'),
-                QueryParam::initFromCollected('key2', $options, 'new string')
+                QueryParam::init('key1', $options)->extract('key1'),
+                QueryParam::init('key3', $options)->extract('key3'),
+                QueryParam::init('key4', $options)->extract('key4', 'MyConstant'),
+                QueryParam::init('key2', $options)->extract('key2', 'new string')
             )
             ->build(MockHelper::getCoreClient());
         $this->assertEquals(
@@ -155,10 +155,10 @@ class ApiCallTest extends TestCase
 
         $request = RequestBuilder::init(RequestMethod::POST, '/{key1}/{key2}/{key3}/{key4}')
             ->parameters(
-                TemplateParam::initFromCollected('key1', $options),
-                TemplateParam::initFromCollected('key3', $options),
-                TemplateParam::initFromCollected('key4', $options, 'MyConstant'),
-                TemplateParam::initFromCollected('key2', $options, 'new string')
+                TemplateParam::init('key1', $options)->extract('key1'),
+                TemplateParam::init('key3', $options)->extract('key3'),
+                TemplateParam::init('key4', $options)->extract('key4', 'MyConstant'),
+                TemplateParam::init('key2', $options)->extract('key2', 'new string')
             )
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('http://my/path:3000/v1/true/some+string/23/MyConstant', $request->getQueryUrl());

@@ -31,10 +31,12 @@ class CoreAuth implements AuthInterface
      */
     public function validate(TypeValidatorInterface $validator): void
     {
-        $this->parameters = array_map(function ($param) use ($validator) {
+        if ($this->isValid) {
+            return;
+        }
+        array_walk($this->parameters, function ($param) use ($validator): void {
             $param->validate($validator);
-            return $param;
-        }, $this->parameters);
+        });
         $this->isValid = true;
     }
 
@@ -43,9 +45,8 @@ class CoreAuth implements AuthInterface
         if (!$this->isValid) {
             return;
         }
-        $this->parameters = array_map(function ($param) use ($request) {
+        array_walk($this->parameters, function ($param) use ($request): void {
             $param->apply($request);
-            return $param;
-        }, $this->parameters);
+        });
     }
 }

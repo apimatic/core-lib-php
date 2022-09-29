@@ -93,7 +93,11 @@ class Auth implements AuthInterface
                 return $e->getMessage();
             }
         }, $this->authGroups);
-        if ($success || $this->groupType == AuthGroup::AND) {
+        if ($success) {
+            $this->isValid = true;
+            return;
+        }
+        if ($this->groupType == AuthGroup::AND) {
             $this->isValid = true;
             return;
         }

@@ -54,11 +54,14 @@ class HeadersMatcher
         }
 
         $actualKeys = array_keys($actual);
-        foreach ($expected as $key => $valueArray) {
+        array_walk($expected, function ($valueArray, $key) use ($actual, $actualKeys, $message): void {
             $this->testCase->assertTrue(in_array($key, $actualKeys, true), $message);
-            if (is_bool($valueArray[1]) && $valueArray[1]) {
+            if (!is_bool($valueArray[1])) {
+                return;
+            }
+            if ($valueArray[1]) {
                 $this->testCase->assertEquals($valueArray[0], $actual[$key], $message);
             }
-        }
+        });
     }
 }

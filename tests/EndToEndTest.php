@@ -54,13 +54,13 @@ class EndToEndTest extends TestCase
                 ->parameters(
                     TemplateParam::init('sub-path', $template)->required()->strictType('oneof(string,int)'),
                     QueryParam::init('date array', $query)
-                        ->serializeBy([DateHelper::class, 'toRfc1123DateTimeArray'])
-                        ->commaSeparated(),
+                        ->commaSeparated()
+                        ->serializeBy([DateHelper::class, 'toRfc1123DateTimeArray']),
                     HeaderParam::init('header', $header),
                     FormParam::init('form 1', $form1)
-                        ->required()
                         ->encodingHeader('content-type', 'text/plain')
-                        ->unIndexed(),
+                        ->unIndexed()
+                        ->required(),
                     FormParam::init('form 2', $form2)->unIndexed()
                 )
                 ->auth(Auth::and('query', 'header'))

@@ -16,50 +16,10 @@ class TemplateParam extends Parameter
         return new self($key, $value);
     }
 
-    /**
-     * Initializes a template parameter with the value present with the key '$key'
-     * in an already collected array '$value'.
-     */
-    public static function initFromCollected(string $key, $value, $defaultValue = null): self
-    {
-        $instance = self::init($key, $value);
-        $instance->pickFromCollected($defaultValue);
-        return $instance;
-    }
-
     private $encode = true;
     private function __construct(string $key, $value)
     {
         parent::__construct($key, $value, 'template');
-    }
-
-    /**
-     * Marks the value of the parameter as required and throws an exception on validate if the value is missing.
-     */
-    public function required(): self
-    {
-        parent::required();
-        return $this;
-    }
-
-    /**
-     * Serializes the parameter using the method provided.
-     *
-     * @param callable $serializerMethod The method to use for serialization.
-     */
-    public function serializeBy(callable $serializerMethod): self
-    {
-        parent::serializeBy($serializerMethod);
-        return $this;
-    }
-
-    /**
-     * Enables strict type checking for parameter value.
-     */
-    public function strictType(string $strictType, array $serializerMethods = []): self
-    {
-        parent::strictType($strictType, $serializerMethods);
-        return $this;
     }
 
     /**

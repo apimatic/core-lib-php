@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Core\TestCase\BodyMatchers;
 
-use ArrayIterator;
 use Core\Utils\CoreHelper;
 
 class BodyComparator
@@ -71,35 +70,38 @@ class BodyComparator
                 $actual = $tempLeft;
             }
             return !$this->checkValues || $this->isListProperSubsetOf($expected, $actual);
-        } else {
-            // If expected value is tree, actual value should also be tree
-            if (!CoreHelper::isAssociative($actual)) {
-                return !$this->checkValues;
-            }
         }
-        $keyNum = 0;
-        for ($iterator = new ArrayIterator($expected); $iterator->valid(); $iterator->next()) {
-            $key = $iterator->key();
-            $expectedInner = $expected[$key];
+        // If expected value is tree, actual value should also be tree
+        if (!CoreHelper::isAssociative($actual)) {
+            return !$this->checkValues;
+        }
+        $actualKeyNumber = 0;
+        $success = true;
+        array_walk($expected, function ($expectedInner, $key) use ($actual, &$actualKeyNumber, &$success): void {
+            if (!$success) {
+                return;
+            }
             // Check if key exists
             if (!array_key_exists($key, $actual)) {
-                return false;
+                $success = false;
+                return;
             }
             if ($this->isOrdered) {
-                $rightKeys = array_keys($actual);
+                $actualKeys = array_keys($actual);
                 // When $isOrdered, check if key exists at some next position
-                if (!in_array($key, array_slice($rightKeys, $keyNum), true)) {
-                    return false;
+                if (!in_array($key, array_slice($actualKeys, $actualKeyNumber), true)) {
+                    $success = false;
+                    return;
                 }
-                $keyNum = array_search($key, $rightKeys, true);
+                $actualKeyNumber = array_search($key, $actualKeys, true);
             }
             $actualInner = $actual[$key];
-            $keyNum += 1;
+            $actualKeyNumber += 1;
             if (!$this->compare($expectedInner, $actualInner)) {
-                return false;
+                $success = false;
             }
-        }
-        return true;
+        });
+        return $success;
     }
 
     /**

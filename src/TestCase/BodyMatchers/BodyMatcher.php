@@ -26,7 +26,15 @@ class BodyMatcher
         $this->bodyComparator = $bodyComparator;
         $this->expectedBody = $expectedBody;
     }
-
+    
+    /**
+     * Returns already set default message.
+     */
+    public function getDefaultMessage(): string
+    {
+        return $this->defaultMessage;
+    }
+    
     /**
      * Sets testCase and result to the ones provided.
      */
