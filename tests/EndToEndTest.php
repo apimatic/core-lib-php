@@ -49,7 +49,7 @@ class EndToEndTest extends TestCase
     public function callEndpoint($template, ?array $query, int $header, MockFileWrapper $form1, array $form2): MockClass
     {
         return $this->newApiCall()
-            ->requestBuilder(RequestBuilder::init('POST', '/api/path/{sub-path}')
+            ->requestBuilder((new RequestBuilder('POST', '/api/path/{sub-path}'))
                 ->server('Server2')
                 ->parameters(
                     TemplateParam::init('sub-path', $template)->required()->strictType('oneof(string,int)'),

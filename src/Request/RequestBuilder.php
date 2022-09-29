@@ -14,14 +14,6 @@ use CoreInterfaces\Http\RetryOption;
 
 class RequestBuilder
 {
-    /**
-     * Initializes a Request builder with the method and path specified.
-     */
-    public static function init(string $requestMethod, string $path): self
-    {
-        return new self($requestMethod, $path);
-    }
-
     private $requestMethod;
     private $path;
 
@@ -49,7 +41,7 @@ class RequestBuilder
      */
     private $auth;
 
-    private function __construct(string $requestMethod, string $path)
+    public function __construct(string $requestMethod, string $path)
     {
         $this->requestMethod = $requestMethod;
         $this->path = $path;

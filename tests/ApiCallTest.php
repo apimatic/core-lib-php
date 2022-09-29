@@ -59,18 +59,18 @@ class ApiCallTest extends TestCase
 
     public function testCollectedBodyParams()
     {
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init(null)->extract('key1'))
             ->build(MockHelper::getCoreClient());
         $this->assertNull($request->getBody());
 
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init($options)->extract('key1'))
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('true', $request->getBody());
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(
                 BodyParam::initWrapped('key1', $options)->extract('key1'),
                 BodyParam::initWrapped('key3', $options)->extract('key3')
@@ -78,7 +78,7 @@ class ApiCallTest extends TestCase
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('{"key1":true,"key3":23}', $request->getBody());
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init($options)->extract('key4', 'MyConstant'))
             ->build(MockHelper::getCoreClient());
         $this->assertEquals('MyConstant', $request->getBody());
@@ -88,7 +88,7 @@ class ApiCallTest extends TestCase
     {
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(
                 FormParam::init('key1', $options)->extract('key1'),
                 FormParam::init('key3', $options)->extract('key3'),
@@ -116,7 +116,7 @@ class ApiCallTest extends TestCase
     {
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/some/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(
                 HeaderParam::init('key1', $options)->extract('key1'),
                 HeaderParam::init('key3', $options)->extract('key3'),
@@ -135,7 +135,7 @@ class ApiCallTest extends TestCase
     {
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/path')
+        $request = (new RequestBuilder(RequestMethod::POST, '/path'))
             ->parameters(
                 QueryParam::init('key1', $options)->extract('key1'),
                 QueryParam::init('key3', $options)->extract('key3'),
@@ -153,7 +153,7 @@ class ApiCallTest extends TestCase
     {
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
 
-        $request = RequestBuilder::init(RequestMethod::POST, '/{key1}/{key2}/{key3}/{key4}')
+        $request = (new RequestBuilder(RequestMethod::POST, '/{key1}/{key2}/{key3}/{key4}'))
             ->parameters(
                 TemplateParam::init('key1', $options)->extract('key1'),
                 TemplateParam::init('key3', $options)->extract('key3'),
@@ -167,7 +167,7 @@ class ApiCallTest extends TestCase
     public function testSendWithConfig()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::PUT, '/2ndServer')
+            ->requestBuilder((new RequestBuilder(RequestMethod::PUT, '/2ndServer'))
                 ->server('Server2')
                 ->auth('header')
                 ->retryOption(RetryOption::ENABLE_RETRY))
@@ -189,7 +189,7 @@ class ApiCallTest extends TestCase
     public function testSendWithoutContentType()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->disableContentType())
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -199,7 +199,7 @@ class ApiCallTest extends TestCase
         $this->assertArrayNotHasKey('Accept', $result->body['headers']);
 
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->execute();
         $this->assertArrayNotHasKey('Accept', $result['body']['headers']);
     }
@@ -207,7 +207,7 @@ class ApiCallTest extends TestCase
     public function testSendWithCustomContentType()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(HeaderParam::init('content-type', 'MyContentType')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -219,7 +219,7 @@ class ApiCallTest extends TestCase
     public function testSendNoParams()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -237,7 +237,7 @@ class ApiCallTest extends TestCase
     public function testSendTemplate()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', 'val 01')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -249,7 +249,7 @@ class ApiCallTest extends TestCase
     public function testSendTemplateArray()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', ['val 01','**sad&?N','v4'])))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -268,7 +268,7 @@ class ApiCallTest extends TestCase
         $mockObj2->addAdditionalProperty('key4', 'v^^');
         $mockObj->addAdditionalProperty('key5', $mockObj2);
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', $mockObj)))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -283,7 +283,7 @@ class ApiCallTest extends TestCase
     public function testSendSingleQuery()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     QueryParam::init('key', 'val 01'),
                     AdditionalQueryParams::init(null)
@@ -299,7 +299,7 @@ class ApiCallTest extends TestCase
     public function testSendSingleForm()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     FormParam::init('key', 'val 01'),
                     HeaderParam::init('content-type', 'myContentTypeHeader'),
@@ -319,7 +319,7 @@ class ApiCallTest extends TestCase
     public function testSendFileForm()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(FormParam::init('myFile', MockHelper::getFileWrapper())))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -337,7 +337,7 @@ class ApiCallTest extends TestCase
     public function testSendFileFormWithEncodingHeader()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     FormParam::init('myFile', MockHelper::getFileWrapper())->encodingHeader('content-type', 'image/png')
                 ))
@@ -357,7 +357,7 @@ class ApiCallTest extends TestCase
     public function testSendFileFormWithOtherTypes()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     FormParam::init('myFile', MockHelper::getFileWrapper()),
                     FormParam::init('key', 'val 01'),
@@ -392,7 +392,7 @@ class ApiCallTest extends TestCase
         $additionalQueryParamsT = ['key3' => [2,4], 'key8' => 'd'];
         $additionalQueryParamsP = ['key4' => [2,4], 'key9' => 'e'];
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     AdditionalQueryParams::init($additionalQueryParamsUI)->unIndexed(),
                     AdditionalQueryParams::init($additionalQueryParamsPL)->plain(),
@@ -428,7 +428,7 @@ class ApiCallTest extends TestCase
             'newKey' => 'asad'
         ];
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     QueryParam::init('key A', 'val 1'),
                     QueryParam::init('keyB', new MockClass([])),
@@ -479,7 +479,7 @@ class ApiCallTest extends TestCase
         $additionalFormParamsUI = ['key0' => [2,4], 'key2' => 'a'];
         $additionalFormParamsPL = ['key1' => [2,4], 'key3' => 'b'];
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     AdditionalFormParams::init($additionalFormParamsUI)->unIndexed(),
                     AdditionalFormParams::init($additionalFormParamsPL)->plain()
@@ -509,7 +509,7 @@ class ApiCallTest extends TestCase
             'newKey' => 'asad'
         ];
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     FormParam::init('key A', 'val 1'),
                     FormParam::init('keyB', new MockClass([])),
@@ -555,7 +555,7 @@ class ApiCallTest extends TestCase
     public function testSendBodyParam()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init('this is string')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -568,7 +568,7 @@ class ApiCallTest extends TestCase
     public function testSendBodyParamObject()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(new MockClass([]))))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -581,7 +581,7 @@ class ApiCallTest extends TestCase
     public function testSendBodyParamFile()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(MockHelper::getFileWrapper())))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type(MockClass::class))
@@ -594,7 +594,7 @@ class ApiCallTest extends TestCase
     public function testSendMultipleBodyParams()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     BodyParam::initWrapped('key1', 'this is string'),
                     BodyParam::initWrapped('key2', new MockClass(['asad' => 'item1', 'ali' => 'item2']))
@@ -613,7 +613,7 @@ class ApiCallTest extends TestCase
     public function testSendXMLBodyParam()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init('this is string'))
                 ->bodyXml('myRoot'))
             ->responseHandler(MockHelper::globalResponseHandler()
@@ -630,7 +630,7 @@ class ApiCallTest extends TestCase
     public function testSendXMLBodyParamModel()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(new MockClass([34,'asad'])))
                 ->bodyXml('mockClass'))
             ->responseHandler(MockHelper::globalResponseHandler()
@@ -647,7 +647,7 @@ class ApiCallTest extends TestCase
     public function testSendXMLNullBodyParam()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(null))
                 ->bodyXml('myRoot'))
             ->responseHandler(MockHelper::globalResponseHandler()
@@ -661,7 +661,7 @@ class ApiCallTest extends TestCase
     public function testSendXMLArrayBodyParam()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(['this is string', 345, false, null]))
                 ->bodyXmlArray('myRoot', 'innerItem'))
             ->responseHandler(MockHelper::globalResponseHandler()
@@ -679,7 +679,7 @@ class ApiCallTest extends TestCase
     public function testSendMultipleXMLBodyParams()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}')
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
                     BodyParam::initWrapped('key1', 'this is string'),
                     BodyParam::initWrapped('key2', 'this is item 2'),
@@ -704,7 +704,7 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('JsonMapper::mapClass() requires second argument to be a class name, ' .
             'MockClass given.');
         MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->type('MockClass'))
             ->execute();
@@ -723,7 +723,7 @@ class ApiCallTest extends TestCase
         $this->expectException(MockException::class);
         $this->expectExceptionMessage('Invalid argument found');
         MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->deserializerMethod([$this, 'fakeSerializeBy']))
             ->execute();
@@ -734,7 +734,7 @@ class ApiCallTest extends TestCase
         $this->expectException(MockException::class);
         $this->expectExceptionMessage('Unable to map AnyOf (MockCla,string) on: ');
         MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->typeGroup('oneof(MockCla,string)'))
             ->execute();
@@ -743,7 +743,7 @@ class ApiCallTest extends TestCase
     public function testReceiveByAccurateTypeGroup()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->typeGroup('oneof(MockClass,string)'))
             ->execute();
@@ -754,7 +754,7 @@ class ApiCallTest extends TestCase
     public function testReceiveApiResponse()
     {
         $result = MockHelper::newApiCall()
-            ->requestBuilder(RequestBuilder::init(RequestMethod::POST, '/simple/{tyu}'))
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::globalResponseHandler()
                 ->typeGroup('oneof(MockClass,string)')
                 ->returnApiResponse())
