@@ -46,8 +46,8 @@ Or add it to the composer.json file manually as given below:
 | [`HeaderParam`](src/Request/Parameters/HeaderParam.php)                     | Header parameter class                                                |
 | [`QueryParam`](src/Request/Parameters/QueryParam.php)                       | Query parameter class                                                 |
 | [`TemplateParam`](src/Request/Parameters/TemplateParam.php)                 | Template parameter class                                              |
-| [`Request`](src/Request/Request.php)                                        | Request class for an API call                                         |
 | [`RequestBuilder`](src/Request/RequestBuilder.php)                          | Used to instantiate a new Request object with the properties provided |
+| [`Request`](src/Request/Request.php)                                        | Request class for an API call                                         |
 
 ## Response
 | Name                                                                        | Description                                                                           |
@@ -56,18 +56,18 @@ Or add it to the composer.json file manually as given below:
 | [`ErrorType`](src/Response/Types/ErrorType.php)                             | Type handler used to throw exceptions from responses                                  |
 | [`ResponseMultiType`](src/Response/Types/ResponseMultiType.php)             | Maps a group of types to response body                                                |
 | [`ResponseType`](src/Response/Types/ResponseType.php)                       | Maps a model to response body                                                         |
-| [`Context`](src/Response/Context.php)                                       | Holds the current context i.e. the current request, response and other needed details |
 | [`ResponseError`](src/Response/ResponseError.php)                           | Group of error types for response                                                     |
-| [`ResponseHandler`](src/Response/ResponseHandler.php)                       | Response handler for an API call                                                      |
+| [`ResponseHandler`](src/Response/ResponseHandler.php)                       | Response handler for an API call that holds all the above response handling features  |
+| [`Context`](src/Response/Context.php)                                       | Holds the current context i.e. the current request, response and other needed details |
 
 
 ## TestCase
 | Name                                                                                 | Description                                                                    |
-|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| [`KeysAndValuesBodyMatcher`](src/TestCase/BodyMatchers/KeysAndValuesBodyMatcher.php) | Matches a body received to expected body, considering both the keys and values |
-| [`KeysBodyMatcher`](src/TestCase/BodyMatchers/KeysBodyMatcher.php)                   | Matches a body received to expected body, considering just the keys of both    |
-| [`NativeBodyMatcher`](src/TestCase/BodyMatchers/NativeBodyMatcher.php)               | A body matcher for native values like string, int etc                          |
-| [`RawBodyMatcher`](src/TestCase/BodyMatchers/RawBodyMatcher.php)                     | Exactly matches the body received to expected body                             |
-| [`HeadersMatcher`](src/TestCase/HeadersMatcher.php)                                  | Matches the headers received and the headers expected                          |
-| [`StatusCodeMatcher`](src/TestCase/StatusCodeMatcher.php)                            | Matches the HTTP status codes received to the expected ones                    |
-| [`CoreTestCase`](core-lib-php/src/TestCase/CoreTestCase.php)                         | Main class for a test case                                                     |
+|--------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| [`KeysAndValuesBodyMatcher`](src/TestCase/BodyMatchers/KeysAndValuesBodyMatcher.php) | Matches actual and expected body, considering both the keys and values       |
+| [`KeysBodyMatcher`](src/TestCase/BodyMatchers/KeysBodyMatcher.php)                   | Matches actual and expected body, considering just the keys                  |
+| [`NativeBodyMatcher`](src/TestCase/BodyMatchers/NativeBodyMatcher.php)               | A body matcher for native values like string, int etc                        |
+| [`RawBodyMatcher`](src/TestCase/BodyMatchers/RawBodyMatcher.php)                     | Exactly matches the body received to expected body                           |
+| [`HeadersMatcher`](src/TestCase/HeadersMatcher.php)                                  | Matches the headers received and the headers expected                        |
+| [`StatusCodeMatcher`](src/TestCase/StatusCodeMatcher.php)                            | Matches the HTTP status codes received to the expected ones                  |
+| [`CoreTestCase`](core-lib-php/src/TestCase/CoreTestCase.php)                         | Main class for a test case that performs assertions w/ all the above matchers|
