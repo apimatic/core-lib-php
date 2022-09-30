@@ -7,7 +7,7 @@
     "core",
     "CoreLib"
   ],
-  "license": "APIMATIC REFERENCE SOURCE LICENSE",
+  "license": "proprietary",
   "type": "library",
   "homepage": "https://github.com/apimatic/core-lib-php",
   "require": {
