@@ -33,20 +33,30 @@ class TemplateParam extends Parameter
 
     private function getReplacerValue($value): string
     {
-        if (is_object($value)) {
-            $value = (array) $value;
-        }
-        if (is_bool($value)) {
-            $value = var_export($value, true);
-        }
         if (is_null($value)) {
             return '';
-        } elseif (is_array($value)) {
-            $val = array_map([$this, 'getReplacerValue'], $value);
-            return implode("/", $val);
         }
-        $val = strval($value);
-        return $this->encode ? urlencode($val) : $val;
+        if (is_bool($value)) {
+            return $this->getEncodedReplacer(var_export($value, true));
+        }
+        if (is_object($value)) {
+            return $this->getReplacerForArray((array) $value);
+        }
+        if (is_array($value)) {
+            return $this->getReplacerForArray($value);
+        }
+        return $this->getEncodedReplacer($value);
+    }
+
+    private function getReplacerForArray(array $value): string
+    {
+        return implode("/", array_map([$this, 'getReplacerValue'], $value));
+    }
+
+    private function getEncodedReplacer($value): string
+    {
+        $value = strval($value);
+        return $this->encode ? urlencode($value) : $value;
     }
 
     /**

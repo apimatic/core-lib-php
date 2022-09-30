@@ -28,7 +28,7 @@ class CoreTestCaseTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$coreClient = MockHelper::getCoreClient();
+        self::$coreClient = MockHelper::getClient();
     }
 
     private static function getResponse(int $status, array $headers, $body): void

@@ -28,12 +28,15 @@ abstract class EncodedParam extends Parameter
     {
         if (is_null($value)) {
             return null;
-        } elseif (is_array($value)) {
+        }
+        if (is_array($value)) {
             // recursively calling this function to resolve all types in any array
             return array_map([$this, 'prepareValue'], $value);
-        } elseif (is_bool($value)) {
+        }
+        if (is_bool($value)) {
             return var_export($value, true);
-        } elseif ($value instanceof JsonSerializable) {
+        }
+        if ($value instanceof JsonSerializable) {
             $modelArray = $value->jsonSerialize();
             // recursively calling this function to resolve all types in any model
             return array_map([$this, 'prepareValue'], $modelArray instanceof stdClass ? [] : $modelArray);
@@ -59,38 +62,69 @@ abstract class EncodedParam extends Parameter
             RequestArraySerialization::PSV,
             RequestArraySerialization::CSV
         ], true);
-        $keyPostfix = ($format == RequestArraySerialization::UN_INDEXED) ? '[]' : '';
-        $innerArray = !empty($parent);
-        $innerAssociativeArray = $innerArray && CoreHelper::isAssociative($data);
+        $innerAssociativeArray = !empty($parent) && CoreHelper::isAssociative($data);
         $first = true;
         $separator = substr($format, strpos($format, ':') + 1);
-        $r = [];
-        foreach ($data as $k => $v) {
-            if (is_null($v)) {
-                continue;
+        $result = [];
+        array_walk($data, function (
+            $value,
+            $key
+        ) use (
+            &$result,
+            &$first,
+            $parent,
+            $format,
+            $separatorFormat,
+            $separator,
+            $innerAssociativeArray
+        ): void {
+            if (is_null($value)) {
+                return;
             }
-            if ($innerArray) {
-                if (is_numeric($k) && is_scalar($v)) {
-                    $k = $parent . $keyPostfix;
-                } else {
-                    $k = $parent . "[$k]";
-                }
+            $key = $this->generateKeyWithParent($format, $key, $parent, is_scalar($value));
+            if (is_array($value)) {
+                $result[] = $this->httpBuildQuery($value, $format, $key);
+                return;
             }
-            if (is_array($v)) {
-                $r[] = static::httpBuildQuery($v, $format, $k);
-                continue;
+            if (!$separatorFormat) {
+                $result[] = http_build_query([$key => $value]);
+                return;
             }
-            if ($separatorFormat) {
-                if ($innerAssociativeArray || $first) {
-                    $r[] = "&" . http_build_query([$k => $v]);
-                    $first = false;
-                } else {
-                    $r[] = urlencode($separator) . urlencode(strval($v));
-                }
-            } else {
-                $r[] = http_build_query([$k => $v]);
+            $associativePartParam = "&" . http_build_query([$key => $value]);
+            if ($first) {
+                $result[] = $associativePartParam;
+                $first = false;
+                return;
             }
+            if ($innerAssociativeArray) {
+                $result[] = $associativePartParam;
+                return;
+            }
+            $result[] = urlencode($separator) . urlencode(strval($value));
+        });
+        return implode($separatorFormat ? '' : '&', $result);
+    }
+
+    private function generateKeyWithParent(string $format, $key, string $parent, bool $isScalarValue): string
+    {
+        if (empty($parent)) {
+            return $key;
         }
-        return implode($separatorFormat ? '' : '&', $r);
+        $keyForCurrentNonScalarNonAssociativeArray = "{$parent}[$key]";
+        if (!is_numeric($key)) {
+            return $keyForCurrentNonScalarNonAssociativeArray;
+        }
+        if (!$isScalarValue) {
+            return $keyForCurrentNonScalarNonAssociativeArray;
+        }
+        return $parent . $this->getKeyPostFix($format);
+    }
+
+    private function getKeyPostFix(string $format): string
+    {
+        if ($format == RequestArraySerialization::UN_INDEXED) {
+            return '[]';
+        }
+        return '';
     }
 }

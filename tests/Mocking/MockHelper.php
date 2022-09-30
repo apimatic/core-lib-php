@@ -30,7 +30,12 @@ class MockHelper
     /**
      * @var Client
      */
-    private static $coreClient;
+    private static $client;
+
+    /**
+     * @var JsonHelper
+     */
+    private static $jsonHelper;
 
     /**
      * @var MockResponse
@@ -52,16 +57,17 @@ class MockHelper
      */
     private static $urlFileWrapper;
 
-    public static function getCoreClient(): Client
+    public static function getClient(): Client
     {
-        if (!isset(self::$coreClient)) {
-            $coreClientBuilder = ClientBuilder::init(new MockHttpClient())
+        if (!isset(self::$client)) {
+            $clientBuilder = ClientBuilder::init(new MockHttpClient())
                 ->converter(new MockConverter())
                 ->apiCallback(self::getCallbackCatcher())
                 ->serverUrls([
                     'Server1' => 'http://my/path:3000/{one}',
                     'Server2' => 'https://my/path/{two}'
                 ], 'Server1')
+                ->jsonHelper(self::getJsonHelper())
                 ->globalConfig([
                     TemplateParam::init('one', 'v1')->dontEncode(),
                     TemplateParam::init('two', 'v2')->dontEncode(),
@@ -86,28 +92,35 @@ class MockHelper
                 ->userAgentConfig([
                     '{language}' => 'my lang',
                     '{version}' => '1.*.*'
-                ])
-                ->jsonHelper(new JsonHelper(
-                    [MockClass::class => [MockChild1::class, MockChild2::class, MockChild3::class]],
-                    'addAdditionalProperty',
-                    'Core\\Tests\\Mocking\\Other'
-                ));
-            self::$coreClient = $coreClientBuilder->build();
+                ]);
+            self::$client = $clientBuilder->build();
             // @phan-suppress-next-next-line PhanPluginDuplicateAdjacentStatement Following duplicated line will
             // call `addUserAgentToGlobalHeaders` again to see test if its added again or not
-            self::$coreClient = $coreClientBuilder->build();
+            self::$client = $clientBuilder->build();
         }
-        return self::$coreClient;
+        return self::$client;
     }
 
     public static function newApiCall(): ApiCall
     {
-        return new ApiCall(self::getCoreClient());
+        return new ApiCall(self::getClient());
     }
 
-    public static function globalResponseHandler(): ResponseHandler
+    public static function responseHandler(): ResponseHandler
     {
-        return self::getCoreClient()->getGlobalResponseHandler();
+        return self::getClient()->getGlobalResponseHandler();
+    }
+
+    public static function getJsonHelper(): JsonHelper
+    {
+        if (!isset(self::$jsonHelper)) {
+            self::$jsonHelper = new JsonHelper(
+                [MockClass::class => [MockChild1::class, MockChild2::class, MockChild3::class]],
+                'addAdditionalProperty',
+                'Core\\Tests\\Mocking\\Other'
+            );
+        }
+        return self::$jsonHelper;
     }
 
     public static function getResponse(): MockResponse

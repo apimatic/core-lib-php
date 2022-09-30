@@ -88,19 +88,18 @@ class Client
     public function getGlobalRequest(?string $server = null): Request
     {
         $request = new Request($this->serverUrls[$server ?? $this->defaultServer], $this);
-        foreach ($this->globalConfig as $config) {
-            $config->validate(self::getJsonHelper($this));
-            $config->apply($request);
-        }
+        $paramGroup = new MultipleParams('Global Parameters');
+        $paramGroup->parameters($this->globalConfig)->validate(self::getJsonHelper($this));
+        $paramGroup->apply($request);
         return $request;
     }
 
     public function getGlobalResponseHandler(): ResponseHandler
     {
         $responseHandler = new ResponseHandler();
-        foreach ($this->globalErrors as $key => $error) {
+        array_walk($this->globalErrors, function (ErrorType $error, int $key) use ($responseHandler): void {
             $responseHandler->throwErrorOn($key, $error);
-        }
+        });
         return $responseHandler;
     }
 
@@ -121,7 +120,7 @@ class Client
     public function validateParameters(array $parameters): MultipleParams
     {
         $parameters = array_merge($parameters, $this->globalRuntimeConfig);
-        $paramGroup = new MultipleParams('parameters group');
+        $paramGroup = new MultipleParams('Endpoint Parameters');
         $paramGroup->parameters($parameters)->validate(self::getJsonHelper($this));
         return $paramGroup;
     }

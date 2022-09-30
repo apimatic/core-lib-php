@@ -36,16 +36,31 @@ abstract class Parameter implements ParamInterface
         return $this->key == '' ? $this->typeName : $this->key;
     }
 
+    /**
+     * Extracting inner value using a `key` only if the current value is a collection i.e. array/object,
+     * If key is not found in the value array then defaultValue will be used.
+     */
     public function extract(string $key, $defaultValue = null): self
     {
-        if (!is_array($this->value) || !isset($this->value[$key])) {
-            $this->value = $defaultValue;
-            return $this;
+        if (is_array($this->value)) {
+            return $this->extractFromArray($key, $defaultValue);
         }
-        $this->value = $this->value[$key];
+        if (is_object($this->value)) {
+            $this->value = (array) $this->value;
+            return $this->extractFromArray($key, $defaultValue);
+        }
         return $this;
     }
 
+    private function extractFromArray(string $key, $defaultValue): self
+    {
+        if (isset($this->value[$key])) {
+            $this->value = $this->value[$key];
+            return $this;
+        }
+        $this->value = $defaultValue;
+        return $this;
+    }
 
     /**
      * Marks the value of the parameter as required and throws an exception on validate if the value is missing.

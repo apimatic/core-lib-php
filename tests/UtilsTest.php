@@ -112,6 +112,11 @@ class UtilsTest extends TestCase
         $this->assertEquals("my value", $res['key']);
     }
 
+    public function testCoreHelperSerializeNull()
+    {
+        $this->assertEquals(null, CoreHelper::serialize(null));
+    }
+
     public function testCoreHelperValidateUrl()
     {
         $this->expectException(InvalidArgumentException::class);

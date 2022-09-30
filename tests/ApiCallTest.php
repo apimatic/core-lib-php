@@ -61,13 +61,23 @@ class ApiCallTest extends TestCase
     {
         $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init(null)->extract('key1'))
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertNull($request->getBody());
+
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
+            ->parameters(BodyParam::init('some string')->extract('key1', 'new string'))
+            ->build(MockHelper::getClient());
+        $this->assertEquals('some string', $request->getBody());
 
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
         $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
+            ->parameters(BodyParam::init((object) $options)->extract('key1'))
+            ->build(MockHelper::getClient());
+        $this->assertEquals(true, $request->getBody());
+
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init($options)->extract('key1'))
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals('true', $request->getBody());
 
         $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
@@ -75,12 +85,12 @@ class ApiCallTest extends TestCase
                 BodyParam::initWrapped('key1', $options)->extract('key1'),
                 BodyParam::initWrapped('key3', $options)->extract('key3')
             )
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals('{"key1":true,"key3":23}', $request->getBody());
 
         $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
             ->parameters(BodyParam::init($options)->extract('key4', 'MyConstant'))
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals('MyConstant', $request->getBody());
     }
 
@@ -95,7 +105,7 @@ class ApiCallTest extends TestCase
                 FormParam::init('key4', $options)->extract('key4', 'MyConstant'),
                 FormParam::init('key2', $options)->extract('key2', 'new string')
             )
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertNull($request->getBody());
         $this->assertEquals([
             'key1' => 'true',
@@ -123,7 +133,7 @@ class ApiCallTest extends TestCase
                 HeaderParam::init('key4', $options)->extract('key4', 'MyConstant'),
                 HeaderParam::init('key2', $options)->extract('key2', 'new string')
             )
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals(true, $request->getHeaders()['key1']);
         $this->assertEquals('some string', $request->getHeaders()['key2']);
         $this->assertEquals(23, $request->getHeaders()['key3']);
@@ -142,7 +152,7 @@ class ApiCallTest extends TestCase
                 QueryParam::init('key4', $options)->extract('key4', 'MyConstant'),
                 QueryParam::init('key2', $options)->extract('key2', 'new string')
             )
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals(
             'http://my/path:3000/v1/path?key1=true&key3=23&key4=MyConstant&key2=some+string',
             $request->getQueryUrl()
@@ -160,7 +170,7 @@ class ApiCallTest extends TestCase
                 TemplateParam::init('key4', $options)->extract('key4', 'MyConstant'),
                 TemplateParam::init('key2', $options)->extract('key2', 'new string')
             )
-            ->build(MockHelper::getCoreClient());
+            ->build(MockHelper::getClient());
         $this->assertEquals('http://my/path:3000/v1/true/some+string/23/MyConstant', $request->getQueryUrl());
     }
 
@@ -171,7 +181,7 @@ class ApiCallTest extends TestCase
                 ->server('Server2')
                 ->auth('header')
                 ->retryOption(RetryOption::ENABLE_RETRY))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -191,7 +201,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->disableContentType())
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -209,7 +219,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(HeaderParam::init('content-type', 'MyContentType')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -220,7 +230,7 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -239,7 +249,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', 'val 01')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -251,7 +261,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', ['val 01','**sad&?N','v4'])))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -270,7 +280,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(TemplateParam::init('tyu', $mockObj)))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -288,7 +298,7 @@ class ApiCallTest extends TestCase
                     QueryParam::init('key', 'val 01'),
                     AdditionalQueryParams::init(null)
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -305,7 +315,7 @@ class ApiCallTest extends TestCase
                     HeaderParam::init('content-type', 'myContentTypeHeader'),
                     AdditionalFormParams::init(null)
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -321,7 +331,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(FormParam::init('myFile', MockHelper::getFileWrapper())))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -341,7 +351,7 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     FormParam::init('myFile', MockHelper::getFileWrapper())->encodingHeader('content-type', 'image/png')
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -363,7 +373,7 @@ class ApiCallTest extends TestCase
                     FormParam::init('key', 'val 01'),
                     FormParam::init('special', ['%^&&*^?.. + @214', true])
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -400,7 +410,7 @@ class ApiCallTest extends TestCase
                     AdditionalQueryParams::init($additionalQueryParamsT)->tabSeparated(),
                     AdditionalQueryParams::init($additionalQueryParamsP)->pipeSeparated()
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -445,7 +455,7 @@ class ApiCallTest extends TestCase
                         ->commaSeparated(),
                     AdditionalQueryParams::init($additionalQueryParams)
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -484,7 +494,7 @@ class ApiCallTest extends TestCase
                     AdditionalFormParams::init($additionalFormParamsUI)->unIndexed(),
                     AdditionalFormParams::init($additionalFormParamsPL)->plain()
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -522,7 +532,7 @@ class ApiCallTest extends TestCase
                     FormParam::init('keyG', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->plain(),
                     AdditionalFormParams::init($additionalFormParams)->unIndexed()
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -557,7 +567,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init('this is string')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -570,7 +580,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(new MockClass([]))))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -583,7 +593,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(MockHelper::getFileWrapper())))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -599,7 +609,7 @@ class ApiCallTest extends TestCase
                     BodyParam::initWrapped('key1', 'this is string'),
                     BodyParam::initWrapped('key2', new MockClass(['asad' => 'item1', 'ali' => 'item2']))
                 ))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -616,7 +626,7 @@ class ApiCallTest extends TestCase
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init('this is string'))
                 ->bodyXml('myRoot'))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -633,7 +643,7 @@ class ApiCallTest extends TestCase
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(new MockClass([34,'asad'])))
                 ->bodyXml('mockClass'))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -650,7 +660,7 @@ class ApiCallTest extends TestCase
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(null))
                 ->bodyXml('myRoot'))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -664,7 +674,7 @@ class ApiCallTest extends TestCase
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(BodyParam::init(['this is string', 345, false, null]))
                 ->bodyXmlArray('myRoot', 'innerItem'))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -686,7 +696,7 @@ class ApiCallTest extends TestCase
                     BodyParam::initWrapped('key3', null)
                 )
                 ->bodyXmlMap('bodyRoot'))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
@@ -705,7 +715,7 @@ class ApiCallTest extends TestCase
             'MockClass given.');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->type('MockClass'))
             ->execute();
     }
@@ -724,7 +734,7 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('Invalid argument found');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->deserializerMethod([$this, 'fakeSerializeBy']))
             ->execute();
     }
@@ -735,7 +745,7 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('Unable to map AnyOf (MockCla,string) on: ');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->typeGroup('oneof(MockCla,string)'))
             ->execute();
     }
@@ -744,7 +754,7 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->typeGroup('oneof(MockClass,string)'))
             ->execute();
 
@@ -755,7 +765,7 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
-            ->responseHandler(MockHelper::globalResponseHandler()
+            ->responseHandler(MockHelper::responseHandler()
                 ->typeGroup('oneof(MockClass,string)')
                 ->returnApiResponse())
             ->execute();
@@ -777,8 +787,8 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(404);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()->nullOn404()->getResult($context);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullOn404()->getResult($context);
         $this->assertNull($result);
     }
 
@@ -788,8 +798,8 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('HTTP Response Not OK');
         $response = new MockResponse();
         $response->setStatusCode(500);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResult($context);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()->getResult($context);
     }
 
     public function testGlobalMockException1()
@@ -799,8 +809,8 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(400);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResult($context);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()->getResult($context);
     }
 
     public function testGlobalMockException3()
@@ -809,8 +819,8 @@ class ApiCallTest extends TestCase
         $this->expectExceptionMessage('Exception num 3');
         $response = new MockResponse();
         $response->setStatusCode(403);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()->getResult($context);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()->getResult($context);
     }
 
     public function testLocalMockException3()
@@ -820,8 +830,8 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(403);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
@@ -833,8 +843,8 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(403);
         $response->setBody("some erroneous response");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
             ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
@@ -846,8 +856,8 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(500);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
             ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
             ->throwErrorOn(0, ErrorType::init('Default exception', MockException1::class))
             ->getResult($context);
@@ -860,8 +870,8 @@ class ApiCallTest extends TestCase
         $response = new MockResponse();
         $response->setStatusCode(500);
         $response->setBody([]);
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
             ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
             ->throwErrorOn(0, ErrorType::init('Default exception'))
             ->getResult($context);
@@ -871,8 +881,8 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setBody("This is string");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->getResult($context);
         $this->assertEquals('This is string', $result);
     }
@@ -881,8 +891,8 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setBody(CoreHelper::deserialize('{"key":"value"}', false));
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->getResult($context);
         $this->assertEquals(['key' => 'value'], $result);
     }
@@ -891,8 +901,8 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setRawBody("<?xml version=\"1.0\"?>\n<root>This is string</root>\n");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->typeXml('string', 'root')
             ->getResult($context);
         $this->assertEquals('This is string', $result);
@@ -911,8 +921,8 @@ class ApiCallTest extends TestCase
             "    <entry key=\"key2\">val2</entry>\n" .
             "  </new2>\n" .
             "</mockClass>\n");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->typeXml(MockClass::class, 'mockClass')
             ->getResult($context);
         $this->assertInstanceOf(MockClass::class, $result);
@@ -937,8 +947,8 @@ class ApiCallTest extends TestCase
             "  </new2>\n" .
             "</mockClass>\n" .
             "</mockClassArray>\n");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->typeXmlArray(MockClass::class, 'mockClassArray', 'mockClass')
             ->getResult($context);
         $this->assertIsArray($result);
@@ -964,8 +974,8 @@ class ApiCallTest extends TestCase
             "  </new2>\n" .
             "</entry>\n" .
             "</mockClassMap>\n");
-        $context = new Context(MockHelper::getCoreClient()->getGlobalRequest(), $response, MockHelper::getCoreClient());
-        $result = MockHelper::globalResponseHandler()
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
             ->typeXmlMap(MockClass::class, 'mockClassMap')
             ->getResult($context);
         $this->assertIsArray($result);

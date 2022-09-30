@@ -28,12 +28,12 @@ class EndToEndTest extends TestCase
 {
     public function newApiCall(): ApiCall
     {
-        return new ApiCall(MockHelper::getCoreClient());
+        return new ApiCall(MockHelper::getClient());
     }
 
     public function globalResponseHandler(): ResponseHandler
     {
-        return MockHelper::getCoreClient()->getGlobalResponseHandler();
+        return MockHelper::getClient()->getGlobalResponseHandler();
     }
 
     /**

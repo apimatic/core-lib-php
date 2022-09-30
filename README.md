@@ -1,7 +1,6 @@
 # Core Library for PHP
 
 [![Version][packagist-version]][packagist-url]
-[![Downloads][packagist-downloads]][packagist-url]
 [![Tests][test-badge]][test-url]
 [![Licence][license-badge]][license-url]
 
@@ -40,6 +39,7 @@ Or add it to the composer.json file manually as given below:
 | Name                                                                        | Description                                                           |
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | [`AdditionalFormParams`](src/Request/Parameters/AdditionalFormParams.php)   | Used to add additional form params to a request                       |
+| [`AdditionalFormParams`](src/Request/Parameters/AdditionalHeaderParams.php) | Used to add additional header params to a request                     |
 | [`AdditionalQueryParams`](src/Request/Parameters/AdditionalQueryParams.php) | Used to add additional query params to a request                      |
 | [`BodyParam`](src/Request/Parameters/BodyParam.php)                         | Body parameter class                                                  |
 | [`FormParam`](src/Request/Parameters/FormParam.php)                         | Form parameter class                                                  |

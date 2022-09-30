@@ -37,7 +37,7 @@ class TypesTest extends TestCase
     public function testChildOfCoreResponse()
     {
         $response = MockHelper::getResponse();
-        $sdkResponse = $response->convert(Client::getConverter(MockHelper::getCoreClient()));
+        $sdkResponse = $response->convert(Client::getConverter(MockHelper::getClient()));
 
         $this->assertInstanceOf(MockCoreResponse::class, $sdkResponse);
         $this->assertEquals(200, $sdkResponse->getStatusCode());
@@ -49,7 +49,7 @@ class TypesTest extends TestCase
     {
         $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
-        $context = new Context($request, $response, MockHelper::getCoreClient());
+        $context = new Context($request, $response, MockHelper::getClient());
         $sdkApiResponse = $context->toApiResponse(["alpha", "beta"]);
 
         $this->assertInstanceOf(MockApiResponse::class, $sdkApiResponse);
@@ -65,7 +65,7 @@ class TypesTest extends TestCase
     {
         $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
-        $context = new Context($request, $response, MockHelper::getCoreClient());
+        $context = new Context($request, $response, MockHelper::getClient());
         $sdkException = $context->toApiException('Error Occurred');
 
         $this->assertInstanceOf(MockException::class, $sdkException);
@@ -90,11 +90,11 @@ class TypesTest extends TestCase
         $callback = MockHelper::getCallbackCatcher();
         $request = new Request('https://localhost:3000');
         $this->assertNull($callback->getOnBeforeRequest());
-        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getClient()));
 
         $response = MockHelper::getResponse();
-        $context = new Context($request, $response, MockHelper::getCoreClient());
-        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getCoreClient()));
+        $context = new Context($request, $response, MockHelper::getClient());
+        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getClient()));
 
         $this->assertEquals($request, $callback->getRequest());
         $this->assertEquals($response, $callback->getResponse());
@@ -117,13 +117,13 @@ class TypesTest extends TestCase
 
         $request = new Request('https://localhost:3000');
         $response = MockHelper::getResponse();
-        $context = new Context($request, $response, MockHelper::getCoreClient());
+        $context = new Context($request, $response, MockHelper::getClient());
 
         $this->assertNotNull($callback->getOnBeforeRequest());
         $this->assertNotNull($callback->getOnAfterRequest());
 
-        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getCoreClient()));
-        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getCoreClient()));
+        $callback->callOnBeforeWithConversion($request, Client::getConverter(MockHelper::getClient()));
+        $callback->callOnAfterWithConversion($context, Client::getConverter(MockHelper::getClient()));
     }
 
     public function testChildOfCoreCallbackWithoutAnyCallback()

@@ -18,11 +18,14 @@ class CoreHelper
      */
     public static function serialize($value): ?string
     {
-        if (is_string($value) || is_null($value)) {
-            return $value;
-        }
         if ($value instanceof CoreFileWrapper) {
             return $value->getFileContent();
+        }
+        if (is_string($value)) {
+            return $value;
+        }
+        if (is_null($value)) {
+            return null;
         }
         return json_encode($value);
     }
