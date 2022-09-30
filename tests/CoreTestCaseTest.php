@@ -356,6 +356,8 @@ class CoreTestCaseTest extends TestCase
 
         $this->assertFalse((new BodyComparator(false))->compare($obj1, $obj2)); // not allowing extra
         $this->assertTrue((new BodyComparator())->compare(null, null)); // both are null
+        $this->assertFalse((new BodyComparator())->compare(null, $obj2)); // expected is null but actual is not.
+        $this->assertFalse((new BodyComparator())->compare($obj1, null)); // actual is null but expected is not.
         // not equal but not checking for values
         $this->assertTrue((new BodyComparator(true, false, false))->compare($obj1, null));
         $this->assertFalse((new BodyComparator())->compare($obj1, 234)); // matching object with primitive

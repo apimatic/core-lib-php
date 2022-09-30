@@ -142,6 +142,26 @@ class ResponseHandler
         return $this->format;
     }
 
+    private function getBody(Context $context)
+    {
+        $responseBody = $context->getResponse()->getBody();
+        if (is_object($responseBody)) {
+            return (array) $responseBody;
+        }
+        return $responseBody;
+    }
+
+    private function shouldReturnNull(Context $context): bool
+    {
+        if (!$this->nullOn404) {
+            return false;
+        }
+        if ($context->getResponse()->getStatusCode() !== 404) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Returns response from the context provided.
      *
@@ -150,17 +170,14 @@ class ResponseHandler
      */
     public function getResult(Context $context)
     {
-        if ($this->nullOn404 && $context->getResponse()->getStatusCode() === 404) {
+        if ($this->shouldReturnNull($context)) {
             return null;
         }
         $this->responseError->throw($context);
         $result = $this->deserializableType->getFrom($context);
         $result = $result ?? $this->responseType->getFrom($context);
         $result = $result ?? $this->responseMultiType->getFrom($context);
-        if (is_null($result)) {
-            $responseBody = $context->getResponse()->getBody();
-            $result = is_object($responseBody) ? (array) $responseBody : $responseBody;
-        }
+        $result = $result ?? $this->getBody($context);
         if ($this->useApiResponse) {
             return $context->toApiResponse($result);
         }

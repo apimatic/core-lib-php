@@ -109,10 +109,13 @@ class BodyComparator
      */
     private function checkForNull($left, $right): ?bool
     {
-        if (is_null($left) && is_null($right)) {
-            return true;
+        if (is_null($left)) {
+            if (is_null($right)) {
+                return true;
+            }
+            return false;
         }
-        if (is_null($left) || is_null($right)) {
+        if (is_null($right)) {
             return false;
         }
         return null;
@@ -123,10 +126,13 @@ class BodyComparator
      */
     private function checkForPrimitive($left, $right): ?bool
     {
-        if (!is_array($left) && !is_array($right)) {
-            return $left === $right;
+        if (!is_array($left)) {
+            if (!is_array($right)) {
+                return $left === $right;
+            }
+            return false;
         }
-        if (!is_array($left) || !is_array($right)) {
+        if (!is_array($right)) {
             return false;
         }
         return null;
@@ -142,13 +148,13 @@ class BodyComparator
      */
     private function isListProperSubsetOf(array $leftList, array $rightList): bool
     {
-        if ($this->isOrdered && !$this->allowExtra) {
+        if ($this->isOrdered) {
+            if ($this->allowExtra) {
+                return $leftList === array_slice($rightList, 0, count($leftList));
+            }
             return $leftList === $rightList;
-        } elseif ($this->isOrdered && $this->allowExtra) {
-            return $leftList === array_slice($rightList, 0, count($leftList));
-        } else { // if (!$isOrdered && !$allowExtra) || (!$isOrdered && $allowExtra)
-            return $leftList == $this->intersectArrays($leftList, $rightList);
         }
+        return $leftList == $this->intersectArrays($leftList, $rightList);
     }
 
     /**
@@ -178,14 +184,14 @@ class BodyComparator
     /**
      * If passed instance is an object, cast it as an array
      */
-    private function convertObjectToArray($object)
+    private function convertObjectToArray($value)
     {
-        if (is_object($object)) {
-            $object = (array) $object;
+        if (is_object($value)) {
+            return array_map([$this, 'convertObjectToArray'], (array) $value);
         }
-        if (is_array($object)) {
-            return array_map([$this, 'convertObjectToArray'], $object);
+        if (is_array($value)) {
+            return array_map([$this, 'convertObjectToArray'], $value);
         }
-        return $object;
+        return $value;
     }
 }
