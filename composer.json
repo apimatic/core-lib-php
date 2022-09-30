@@ -16,7 +16,7 @@
     "ext-curl": "*",
     "ext-dom": "*",
     "ext-libxml": "*",
-    "apimatic/core-interfaces": "^0.0.1",
+    "apimatic/core-interfaces": "^0.1.0",
     "apimatic/jsonmapper": "^3.0.4"
   },
   "require-dev": {
