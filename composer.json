@@ -32,6 +32,7 @@
   },
   "scripts": {
     "test": "phpunit --coverage-text",
+    "test-ci": "phpunit --coverage-text --coverage-clover=coverage-clover.xml",
     "test-coverage": "phpunit --path-coverage --coverage-html=coverage",
     "analyze": "phan --allow-polyfill-parser",
     "lint-fix-src": "phpcbf --standard=phpcs-ruleset.xml src/",
