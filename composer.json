@@ -7,22 +7,16 @@
     "core",
     "CoreLib"
   ],
-  "license": "OSL-3.0",
+  "license": "APIMATIC REFERENCE SOURCE LICENSE",
   "type": "library",
   "homepage": "https://github.com/apimatic/core-lib-php",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/apimatic/core-interfaces-php.git"
-    }
-  ],
   "require": {
     "php": ">=7.2 <8.2",
     "ext-json": "*",
     "ext-curl": "*",
     "ext-dom": "*",
     "ext-libxml": "*",
-    "apimatic/core-interfaces": "dev-master",
+    "apimatic/core-interfaces": "^0.0.1",
     "apimatic/jsonmapper": "^3.0.4"
   },
   "require-dev": {
