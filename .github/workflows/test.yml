@@ -43,7 +43,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.composer/cache/files
-        key: ${{ matrix.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+        key: ${{ matrix.os }}-core-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ matrix.os }}-php-${{ matrix.php }}-composer-
 
     - name: Install dependencies
