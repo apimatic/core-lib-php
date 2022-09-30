@@ -49,22 +49,10 @@ jobs:
     - name: Update dependencies
       run: composer update
 
-    - name: Fix possible style src
-      id: fix-src
-      run: composer lint-fix-src
-      continue-on-error: true
-
     - name: Check style src
-      if: steps.fix-src.outcome == 'failure'
       run: composer lint-src
 
-    - name: Fix possible style test
-      id: fix-test
-      run: composer lint-fix-test
-      continue-on-error: true
-
     - name: Check style test
-      if: steps.fix-test.outcome == 'failure'
       run: composer lint-test
 
     - name: Run phan analysis
