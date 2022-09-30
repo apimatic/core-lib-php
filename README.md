@@ -19,14 +19,6 @@ Run the following command to install the package and automatically add the depen
 composer require "apimatic/core"
 ```
 
-Or add it to the composer.json file manually as given below:
-
-```php
-"require": {
-    "apimatic/core": "*"
-}
-```
-
 ## Request
 | Name                                                                        | Description                                                           |
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
