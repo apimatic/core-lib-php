@@ -45,6 +45,15 @@ class Context implements ContextInterface
     }
 
     /**
+     * Is successful response.
+     */
+    public function isSuccess(): bool
+    {
+        $statusCode = $this->response->getStatusCode();
+        return $statusCode == min(max($statusCode, 200), 208); // [200,208] = HTTP OK
+    }
+
+    /**
      * Returns JsonHelper object.
      */
     public function getJsonHelper(): JsonHelper

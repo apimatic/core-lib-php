@@ -174,6 +174,9 @@ class ResponseHandler
             return null;
         }
         $this->responseError->throw($context);
+        if (!$context->isSuccess()) {
+            return $context->toApiResponse($this->getBody($context));
+        }
         $result = $this->deserializableType->getFrom($context);
         $result = $result ?? $this->responseType->getFrom($context);
         $result = $result ?? $this->responseMultiType->getFrom($context);

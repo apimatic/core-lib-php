@@ -792,6 +792,16 @@ class ApiCallTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testApiResponseWith400()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(400);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(['res' => 'This is raw body'], $result->getResult());
+    }
+
     public function testGlobalMockException()
     {
         $this->expectException(MockException::class);

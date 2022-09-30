@@ -43,7 +43,7 @@ class ResponseError
             return;
         }
         $statusCode = $context->getResponse()->getStatusCode();
-        if ($statusCode == min(max($statusCode, 200), 208)) { // [200,208] = HTTP OK
+        if ($context->isSuccess()) {
             return;
         }
         if (isset($this->errors[strval($statusCode)])) {
