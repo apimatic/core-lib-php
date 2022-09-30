@@ -1,4 +1,4 @@
-# Apimatic Core Library for PHP
+# APIMatic Core Library for PHP
 
 [![Version][packagist-version]][packagist-url]
 [![Tests][test-badge]][test-url]
