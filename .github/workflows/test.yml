@@ -46,12 +46,7 @@ jobs:
         key: ${{ matrix.os }}-core-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ matrix.os }}-core-${{ matrix.php }}-composer-
 
-    - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-source
-
     - name: Update dependencies
-      if: steps.cache.outputs.cache-hit == 'true'
       run: composer update
 
     - name: Fix possible style src
