@@ -10,7 +10,7 @@ on:
       Title:
         description: "Title of the release"
         required: true
-        default: "Releasing fixes for bugs"
+        default: "Improving API developer experience"
 jobs:
   create-release:
     name: Creating release version ${{ github.event.inputs.Version }}
