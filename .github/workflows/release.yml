@@ -1,4 +1,4 @@
-name: Create Release
+name: Release To Packagist
 run-name: ${{ github.event.inputs.Title }} (${{ github.event.inputs.Version }})
 on:
   workflow_dispatch:
