@@ -83,4 +83,29 @@ abstract class CoreApiResponse
     {
         return $this->body;
     }
+
+    /**
+     * Is response OK?
+     */
+    public function isSuccess(): bool
+    {
+        if ($this->statusCode == null) {
+            return false;
+        }
+        if ($this->statusCode < 200) {
+            return false;
+        }
+        if ($this->statusCode > 299) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Is response missing or not OK?
+     */
+    public function isError(): bool
+    {
+        return !$this->isSuccess();
+    }
 }
