@@ -89,7 +89,16 @@ abstract class CoreApiResponse
      */
     public function isSuccess(): bool
     {
-        return $this->statusCode !== null && $this->statusCode == min(max($this->statusCode, 200), 299);
+        if ($this->statusCode == null) {
+            return false;
+        }
+        if ($this->statusCode < 200) {
+            return false;
+        }
+        if ($this->statusCode > 299) {
+            return false;
+        }
+        return true;
     }
 
     /**

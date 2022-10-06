@@ -803,6 +803,17 @@ class ApiCallTest extends TestCase
         $this->assertTrue($result->isError());
     }
 
+    public function testApiResponseWith100()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(100);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(['res' => 'This is raw body'], $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
     public function testNullOn404()
     {
         $response = new MockResponse();
