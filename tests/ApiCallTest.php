@@ -780,16 +780,16 @@ class ApiCallTest extends TestCase
             '"retryOption":"useGlobalSettings"},"additionalProperties":[]}', $result->getBody());
         $this->assertEquals(['content-type' => 'application/json'], $result->getHeaders());
         $this->assertEquals(200, $result->getStatusCode());
+        $this->assertTrue($result->isSuccess());
         $this->assertNull($result->getReasonPhrase());
     }
 
-    public function testNullOn404()
+    public function testResponseMissingInApiResponse()
     {
-        $response = new MockResponse();
-        $response->setStatusCode(404);
-        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
-        $result = MockHelper::responseHandler()->nullOn404()->getResult($context);
-        $this->assertNull($result);
+        $mockRequest = MockHelper::getClient()->getGlobalRequest()->convert();
+        $response = new MockApiResponse($mockRequest, null, null, null, null, null);
+        $this->assertInstanceOf(MockRequest::class, $response->getRequest());
+        $this->assertTrue($response->isError());
     }
 
     public function testApiResponseWith400()
@@ -800,6 +800,16 @@ class ApiCallTest extends TestCase
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
         $this->assertEquals(['res' => 'This is raw body'], $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testNullOn404()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(404);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullOn404()->getResult($context);
+        $this->assertNull($result);
     }
 
     public function testGlobalMockException()

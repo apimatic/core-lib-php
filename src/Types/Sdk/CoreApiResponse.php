@@ -83,4 +83,20 @@ abstract class CoreApiResponse
     {
         return $this->body;
     }
+
+    /**
+     * Is response OK?
+     */
+    public function isSuccess(): bool
+    {
+        return $this->statusCode !== null && $this->statusCode == min(max($this->statusCode, 200), 299);
+    }
+
+    /**
+     * Is response missing or not OK?
+     */
+    public function isError(): bool
+    {
+        return !$this->isSuccess();
+    }
 }
