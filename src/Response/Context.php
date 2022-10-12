@@ -45,12 +45,24 @@ class Context implements ContextInterface
     }
 
     /**
+     * Returns Response body as a scalar or an associative array.
+     */
+    public function getResponseBody()
+    {
+        $responseBody = $this->response->getBody();
+        if (is_object($responseBody)) {
+            return (array) $responseBody;
+        }
+        return $responseBody;
+    }
+
+    /**
      * Is successful response.
      */
-    public function isSuccess(): bool
+    public function isFailure(): bool
     {
         $statusCode = $this->response->getStatusCode();
-        return $statusCode == min(max($statusCode, 200), 208); // [200,208] = HTTP OK
+        return $statusCode !== min(max($statusCode, 200), 208); // [200,208] = HTTP OK
     }
 
     /**

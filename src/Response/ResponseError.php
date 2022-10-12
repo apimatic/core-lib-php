@@ -12,11 +12,8 @@ class ResponseError
      * @var array<string,ErrorType>
      */
     private $errors;
-
-    /**
-     * @var bool
-     */
-    private $throwException = true;
+    private $useApiResponse = false;
+    private $nullOn404 = false;
 
     /**
      * Adds an error to the errors array with the errorCode and ErrorType provided.
@@ -26,25 +23,44 @@ class ResponseError
         $this->errors[$errorCode] = $error;
     }
 
-    /**
-     * Sets the flag for throwing exception.
-     */
-    public function throwException(bool $shouldThrow): void
+    public function returnApiResponse(): void
     {
-        $this->throwException = $shouldThrow;
+        $this->useApiResponse = true;
     }
 
     /**
-     * Throws an exception if throwException flag is set and response status code is not within 200-208 range.
+     * Sets the nullOn404 flag.
      */
-    public function throw(Context $context)
+    public function nullOn404(): void
     {
-        if (!$this->throwException) {
-            return;
+        $this->nullOn404 = true;
+    }
+
+    private function shouldReturnNull(int $statusCode): bool
+    {
+        if (!$this->nullOn404) {
+            return false;
         }
+        if ($statusCode !== 404) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns calculated result on failure or throws an exception.
+     */
+    public function getResult(Context $context)
+    {
         $statusCode = $context->getResponse()->getStatusCode();
-        if ($context->isSuccess()) {
-            return;
+        if ($this->shouldReturnNull($statusCode)) {
+            if ($this->useApiResponse) {
+                return $context->toApiResponse(null);
+            }
+            return null;
+        }
+        if ($this->useApiResponse) {
+            return $context->toApiResponse($context->getResponseBody());
         }
         if (isset($this->errors[strval($statusCode)])) {
             throw $this->errors[strval($statusCode)]->throwable($context);
