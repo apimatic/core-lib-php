@@ -326,13 +326,17 @@ class ApiCallTest extends TestCase
         $this->assertEquals([], $result->body['parametersMultipart']);
     }
 
-    public function testSendFileForm()
+    public function testSendMultipartFormParameters()
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
-                ->parameters(FormParam::init('myFile', MockHelper::getFileWrapper())))
-            ->responseHandler(MockHelper::responseHandler()
-                ->type(MockClass::class))
+                ->parameters(
+                    FormParam::init('myFile', MockHelper::getFileWrapper())
+                        ->encodingHeader('content-type', 'image/png'),
+                    FormParam::init('object', new MockClass(["key" => 234]))
+                        ->encodingHeader('content-type', 'application/json')
+                ))
+            ->responseHandler(MockHelper::responseHandler()->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals([], $result->body['parametersEncoded']);
@@ -342,6 +346,8 @@ class ApiCallTest extends TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
         $this->assertEquals('My Text', $file->getPostFilename());
         $this->assertEquals($file, $result->body['parameters']['myFile']);
+        $object = $result->body['parametersMultipart']['object'];
+        $this->assertEquals('{"body":{"key":234}}', $object);
     }
 
     public function testSendFileFormWithEncodingHeader()

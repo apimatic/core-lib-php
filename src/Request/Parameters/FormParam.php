@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core\Request\Parameters;
 
 use Core\Types\Sdk\CoreFileWrapper;
+use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Request\RequestArraySerialization;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
 
@@ -57,6 +58,12 @@ class FormParam extends EncodedParam
         return $this;
     }
 
+    private function isMultipart(): bool
+    {
+        return isset($this->encodingHeaders['content-type']) &&
+            $this->encodingHeaders['content-type'] != 'application/x-www-form-urlencoded';
+    }
+
     /**
      * Adds the parameter to the request provided.
      *
@@ -77,6 +84,10 @@ class FormParam extends EncodedParam
             return;
         }
         $this->value = $this->prepareValue($this->value);
+        if ($this->isMultipart()) {
+            $request->addMultipartFormParam($this->key, CoreHelper::serialize($this->value));
+            return;
+        }
         $encodedValue = $this->httpBuildQuery([$this->key => $this->value], $this->format);
         if (empty($encodedValue)) {
             return;
