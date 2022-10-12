@@ -19,7 +19,6 @@ class ResponseHandler
     private $responseMultiType;
     private $responseError;
     private $useApiResponse = false;
-    private $nullOn404 = false;
 
     public function __construct()
     {
@@ -38,19 +37,22 @@ class ResponseHandler
         return $this;
     }
 
+    /**
+     * Wrap the actual success/failure response in ApiResponse
+     */
     public function returnApiResponse(): self
     {
-        $this->responseError->throwException(false);
         $this->useApiResponse = true;
+        $this->responseError->returnApiResponse();
         return $this;
     }
 
     /**
-     * Sets the nullOn404 flag.
+     * Sets the nullOn404 flag in ResponseError.
      */
     public function nullOn404(): self
     {
-        $this->nullOn404 = true;
+        $this->responseError->nullOn404();
         return $this;
     }
 
@@ -142,26 +144,6 @@ class ResponseHandler
         return $this->format;
     }
 
-    private function getBody(Context $context)
-    {
-        $responseBody = $context->getResponse()->getBody();
-        if (is_object($responseBody)) {
-            return (array) $responseBody;
-        }
-        return $responseBody;
-    }
-
-    private function shouldReturnNull(Context $context): bool
-    {
-        if (!$this->nullOn404) {
-            return false;
-        }
-        if ($context->getResponse()->getStatusCode() !== 404) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Returns response from the context provided.
      *
@@ -170,17 +152,13 @@ class ResponseHandler
      */
     public function getResult(Context $context)
     {
-        if ($this->shouldReturnNull($context)) {
-            return null;
-        }
-        $this->responseError->throw($context);
-        if (!$context->isSuccess()) {
-            return $context->toApiResponse($this->getBody($context));
+        if ($context->isFailure()) {
+            return $this->responseError->getResult($context);
         }
         $result = $this->deserializableType->getFrom($context);
         $result = $result ?? $this->responseType->getFrom($context);
         $result = $result ?? $this->responseMultiType->getFrom($context);
-        $result = $result ?? $this->getBody($context);
+        $result = $result ?? $context->getResponseBody();
         if ($this->useApiResponse) {
             return $context->toApiResponse($result);
         }

@@ -814,6 +814,16 @@ class ApiCallTest extends TestCase
         $this->assertTrue($result->isError());
     }
 
+    public function testApiResponseWithNullOn404()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(404);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullOn404()->returnApiResponse()->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertNull($result->getResult());
+    }
+
     public function testNullOn404()
     {
         $response = new MockResponse();
@@ -821,6 +831,26 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->nullOn404()->getResult($context);
         $this->assertNull($result);
+    }
+
+    public function testStatus404WithoutNullOn404()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage('HTTP Response Not OK');
+        $response = new MockResponse();
+        $response->setStatusCode(404);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()->getResult($context);
+    }
+
+    public function testNullOn404WithStatus400()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage('Exception num 1');
+        $response = new MockResponse();
+        $response->setStatusCode(400);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()->nullOn404()->getResult($context);
     }
 
     public function testGlobalMockException()
