@@ -6,9 +6,7 @@ namespace Core\Response\Types;
 
 use Core\Response\Context;
 use Core\Utils\CoreHelper;
-use PHP_CodeSniffer\Reports\Source;
 use Rs\Json\Pointer;
-use SebastianBergmann\Invoker\ProcessControlExtensionNotLoadedException;
 
 class ErrorType
 {
@@ -51,10 +49,9 @@ class ErrorType
 
             $errorDescription = $this->updateHeaderPlaceHolderValues($errorDescription, $response);
 
-            $statusCodePlaceholder = '${statusCode}';
             $errorDescription = $this->addPlaceHolderValue(
                 $errorDescription,
-                $statusCodePlaceholder,
+                '{$statusCode}',
                 $response->getStatusCode()
             );
 
@@ -67,7 +64,7 @@ class ErrorType
     private function updateHeaderPlaceHolderValues($errorDescription, $response)
     {
         $headers = $response->getHeaders();
-        $headerKeys = $this->getHeaderKeys($response);
+        $headerKeys = $this->getHeaderKeys($headers);
 
         for ($x = 0; $x < count($headerKeys); $x++) {
             $errorDescription = $this->addPlaceHolderValue(
@@ -82,32 +79,33 @@ class ErrorType
 
     private function updateResponsePlaceholderValues($errorDescription, $jsonPointersInTemplate, $response)
     {
-        if (count($jsonPointersInTemplate) > 0) {
-            // Response can only be in the body?
+        if (count($jsonPointersInTemplate[0]) > 0) {
             $jsonResponsePointer = $this->initializeJsonPointer($response);
-
-            if ($jsonResponsePointer == null) {
-                throw new Pointer\InvalidJsonException("Could not create an instance of JsonPointer.");
-            }
 
             $jsonPointers = $jsonPointersInTemplate[0];
 
             for ($x = 0; $x < count($jsonPointers); $x++) {
-                $errorDescription = $this->addPlaceHolderValue($errorDescription,
+                $placeHolderValue = "";
+
+                if ($jsonResponsePointer != null) {
+                    $placeHolderValue = $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#'));
+                }
+
+                $errorDescription = $this->addPlaceHolderValue(
+                    $errorDescription,
                     '{$response.body' . $jsonPointers[$x] . '}',
-                    $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#')));
+                    $placeHolderValue
+                );
             }
 
             return $errorDescription;
         }
 
-        if (is_object($response->getBody())) {
-            return $this->addPlaceHolderValue($errorDescription,
-                '{$response.body}', CoreHelper::serialize($response->getBody()));
-        }
-
-        return $this->addPlaceHolderValue($errorDescription,
-            '{$response.body}', $response->getRawBody());
+        return $this->addPlaceHolderValue(
+            $errorDescription,
+            '{$response.body}',
+            $response->getRawBody()
+        );
     }
 
     private function getJsonPointersFromTemplate($template)
@@ -121,19 +119,25 @@ class ErrorType
 
     private function addPlaceHolderValue($template, $placeHolder, $value)
     {
+        if (!is_string($value)) {
+            $value = var_export($value, true);
+        }
+
         return str_replace($placeHolder, $value, $template);
     }
 
-    private function getHeaderKeys($response)
+    private function getHeaderKeys($headers)
     {
-        return array_keys($response->getHeaders());
+        return array_keys($headers);
     }
 
     private function getJsonPointerValue($jsonPointer, $pointer)
     {
-        // handle empty string pointer
-        // returns the complete json string as string in case of empty
         try {
+            if (trim($pointer) === '') {
+                return "";
+            }
+
             $pointerValue = $jsonPointer->get($pointer);
 
             if (is_object($pointerValue)) {
@@ -148,10 +152,19 @@ class ErrorType
 
     private function initializeJsonPointer($response)
     {
-        try {
-            return new Pointer($response->getRawBody());
-        } catch (Pointer\InvalidJsonException $ex) {
-            return null;
+        $rawBody = $response->getRawBody();
+        $jsonResponsePointer = null;
+
+        if ($this->isJson($rawBody)) {
+            $jsonResponsePointer = new Pointer($rawBody);
         }
+
+        return $jsonResponsePointer;
+    }
+
+    private function isJson($string)
+    {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }
