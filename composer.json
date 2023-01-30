@@ -18,7 +18,7 @@
     "ext-libxml": "*",
     "apimatic/core-interfaces": "^0.1.0",
     "apimatic/jsonmapper": "^3.0.4",
-    "php-jsonpointer/php-jsonpointer": "^4.0.0"
+    "php-jsonpointer/php-jsonpointer": "^3.0.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.5",
