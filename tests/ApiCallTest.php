@@ -948,6 +948,44 @@ class ApiCallTest extends TestCase
             ->getResult($context);
     }
 
+    public function testJsonPointersWithInvalidPointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"key":"value"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#////0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithNativeResponse()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody(10);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
     public function testJsonPointersWithJsonMapTypePointer()
     {
         $this->expectExceptionMessage(
