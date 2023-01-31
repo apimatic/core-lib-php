@@ -46,8 +46,8 @@ jobs:
         key: ${{ matrix.os }}-core-lib-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ matrix.os }}-core-lib-${{ matrix.php }}-composer-
 
-    - name: Install dependencies
-      run: composer install
+    - name: Update dependencies
+      run: composer update
 
     - name: Check style src
       run: composer lint-src
