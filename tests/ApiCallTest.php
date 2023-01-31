@@ -872,10 +872,10 @@ class ApiCallTest extends TestCase
     public function testJsonPointersWithJsonArrayTypePointer()
     {
         $this->expectExceptionMessage(
-            'Failed to make request: 409 - headerValue, 409 - Failed to make the request 409 status code'
+            'Failed to make request: 409-headerValue, 409 - Failed to make the request 409 status code'
         );
         $response = new MockResponse();
-        $response->setHeaders(["headerKey" => "headerValue"]);
+        $response->setHeaders(["header key" => "headerValue"]);
         $response->setStatusCode(409);
         $response->setBody('{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
             '"Error":[{"Code":409,"Detail":"Failed to make the request 409 status code"},' .
@@ -883,7 +883,7 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
             ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
-                'Failed to make request: {$statusCode} - {$response.header.headerKey}, {$response.body#/Error/0/Code}' .
+                'Failed to make request: {$statusCode}-{$response.header.header Key}, {$response.body#/Error/0/Code}' .
                 ' - {$response.body#/Error/0/Detail}'
             ))
             ->getResult($context);

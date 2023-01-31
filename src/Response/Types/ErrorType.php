@@ -45,11 +45,16 @@ class ErrorType
      */
     public function throwable(Context $context)
     {
+        $this->updateErrorDescriptionIfHasTemplate($context->getResponse());
+
+        return $context->toApiException($this->description, $this->className);
+    }
+
+    private function updateErrorDescriptionIfHasTemplate($response): void
+    {
+        $errorDescriptionTemplate = $this->description;
+
         if ($this->hasErrorTemplate) {
-            $response = $context->getResponse();
-
-            $errorDescriptionTemplate = $this->description;
-
             $jsonPointersInTemplate = $this->getJsonPointersFromTemplate($errorDescriptionTemplate);
 
             $errorDescription = $this->updateResponsePlaceholderValues(
@@ -68,8 +73,6 @@ class ErrorType
 
             $this->description = $errorDescription;
         }
-
-        return $context->toApiException($this->description, $this->className);
     }
 
     private function updateHeaderPlaceHolderValues(string $errorDescription, ResponseInterface $response): string
@@ -81,7 +84,8 @@ class ErrorType
             $errorDescription = $this->addPlaceHolderValue(
                 $errorDescription,
                 '{$response.header.' . $headerKeys[$x] . '}',
-                $headers[$headerKeys[$x]]
+                $headers[$headerKeys[$x]],
+                true
             );
         }
 
@@ -99,33 +103,33 @@ class ErrorType
         array $jsonPointersInTemplate,
         ResponseInterface $response
     ): string {
-        if (count($jsonPointersInTemplate[0]) > 0) {
-            $jsonResponsePointer = $this->initializeJsonPointer($response);
-
-            $jsonPointers = $jsonPointersInTemplate[0];
-
-            for ($x = 0; $x < count($jsonPointers); $x++) {
-                $placeHolderValue = "";
-
-                if ($jsonResponsePointer != null) {
-                    $placeHolderValue = $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#'));
-                }
-
-                $errorDescription = $this->addPlaceHolderValue(
-                    $errorDescription,
-                    '{$response.body' . $jsonPointers[$x] . '}',
-                    $placeHolderValue
-                );
-            }
-
-            return $errorDescription;
+        if (count($jsonPointersInTemplate[0]) < 1) {
+            return $this->addPlaceHolderValue(
+                $errorDescription,
+                '{$response.body}',
+                $response->getRawBody()
+            );
         }
 
-        return $this->addPlaceHolderValue(
-            $errorDescription,
-            '{$response.body}',
-            $response->getRawBody()
-        );
+        $jsonResponsePointer = $this->initializeJsonPointer($response);
+
+        $jsonPointers = $jsonPointersInTemplate[0];
+
+        for ($x = 0; $x < count($jsonPointers); $x++) {
+            $placeHolderValue = "";
+
+            if ($jsonResponsePointer != null) {
+                $placeHolderValue = $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#'));
+            }
+
+            $errorDescription = $this->addPlaceHolderValue(
+                $errorDescription,
+                '{$response.body' . $jsonPointers[$x] . '}',
+                $placeHolderValue
+            );
+        }
+
+        return $errorDescription;
     }
 
     private function getJsonPointersFromTemplate(string $template): array
@@ -137,10 +141,18 @@ class ErrorType
         return $matches;
     }
 
-    private function addPlaceHolderValue(string $template, string $placeHolder, $value): string
-    {
+    private function addPlaceHolderValue(
+        string $template,
+        string $placeHolder,
+        $value,
+        bool $searchCaseInsensitive = false
+    ): string {
         if (!is_string($value)) {
             $value = var_export($value, true);
+        }
+
+        if ($searchCaseInsensitive) {
+            return str_ireplace($placeHolder, $value, $template);
         }
 
         return str_replace($placeHolder, $value, $template);
@@ -174,7 +186,7 @@ class ErrorType
             }
 
             return $pointerValue;
-        } catch (Pointer\NonexistentValueReferencedException $ex) {
+        } catch (Pointer\NonexistentValueReferencedException | Pointer\InvalidPointerException $ex) {
             return "";
         }
     }
