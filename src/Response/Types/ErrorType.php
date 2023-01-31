@@ -6,6 +6,7 @@ namespace Core\Response\Types;
 
 use Core\Response\Context;
 use Core\Utils\CoreHelper;
+use CoreInterfaces\Core\Response\ResponseInterface;
 use Rs\Json\Pointer;
 
 class ErrorType
@@ -31,6 +32,8 @@ class ErrorType
 
     /**
      * Throws an Api exception from the context provided.
+     *
+     * @param Context $context
      */
     public function throwable(Context $context)
     {
@@ -61,7 +64,7 @@ class ErrorType
         return $context->toApiException($this->description, $this->className);
     }
 
-    private function updateHeaderPlaceHolderValues($errorDescription, $response)
+    private function updateHeaderPlaceHolderValues(string $errorDescription, ResponseInterface $response): string
     {
         $headers = $response->getHeaders();
         $headerKeys = $this->getHeaderKeys($headers);
@@ -77,8 +80,17 @@ class ErrorType
         return $errorDescription;
     }
 
-    private function updateResponsePlaceholderValues($errorDescription, $jsonPointersInTemplate, $response)
-    {
+    /**
+     * @param $errorDescription string
+     * @param $jsonPointersInTemplate string[]
+     * @param $response ResponseInterface
+     * @return string Updated error string template.
+     */
+    private function updateResponsePlaceholderValues(
+        string $errorDescription,
+        array $jsonPointersInTemplate,
+        ResponseInterface $response
+    ): string {
         if (count($jsonPointersInTemplate[0]) > 0) {
             $jsonResponsePointer = $this->initializeJsonPointer($response);
 
@@ -108,7 +120,7 @@ class ErrorType
         );
     }
 
-    private function getJsonPointersFromTemplate($template)
+    private function getJsonPointersFromTemplate(string $template): array
     {
         $pointerPattern = '/#[\w\/]*/i';
 
@@ -117,7 +129,7 @@ class ErrorType
         return $matches;
     }
 
-    private function addPlaceHolderValue($template, $placeHolder, $value)
+    private function addPlaceHolderValue(string $template, string $placeHolder, $value): string
     {
         if (!is_string($value)) {
             $value = var_export($value, true);
@@ -126,12 +138,21 @@ class ErrorType
         return str_replace($placeHolder, $value, $template);
     }
 
-    private function getHeaderKeys($headers)
+    /**
+     * @param $headers array
+     * @return int[]|string[]
+     */
+    private function getHeaderKeys(array $headers)
     {
         return array_keys($headers);
     }
 
-    private function getJsonPointerValue($jsonPointer, $pointer)
+    /**
+     * @param $jsonPointer Pointer
+     * @param $pointer string
+     * @return mixed Json pointer value from the JSON provided.
+     */
+    private function getJsonPointerValue(Pointer $jsonPointer, string $pointer)
     {
         try {
             if (trim($pointer) === '') {
@@ -150,7 +171,7 @@ class ErrorType
         }
     }
 
-    private function initializeJsonPointer($response)
+    private function initializeJsonPointer(ResponseInterface $response): ?Pointer
     {
         $rawBody = $response->getRawBody();
         $jsonResponsePointer = null;
@@ -162,9 +183,9 @@ class ErrorType
         return $jsonResponsePointer;
     }
 
-    private function isJson($string)
+    private function isJson(string $string): bool
     {
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
+        $decoded = json_decode($string);
+        return is_object($decoded) || json_last_error() === JSON_ERROR_NONE;
     }
 }
