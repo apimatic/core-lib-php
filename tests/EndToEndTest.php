@@ -67,7 +67,7 @@ class EndToEndTest extends TestCase
                 ->retryOption(RetryOption::ENABLE_RETRY))
             ->responseHandler($this->globalResponseHandler()
                 ->type(MockClass::class)
-                ->throwErrorOn(405, ErrorType::init('Wrong payload 405', MockException3::class))
+                ->throwErrorOn("405", ErrorType::init('Wrong payload 405', MockException3::class))
                 ->nullOn404())
             ->execute();
     }

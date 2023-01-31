@@ -14,9 +14,17 @@ class ErrorType
     /**
      * Initializes a new object with the description and class name provided.
      */
-    public static function init(string $description, ?string $className = null, bool $hasErrorTemplate = false): self
+    public static function init(string $description, ?string $className = null): self
     {
-        return new self($description, $className, $hasErrorTemplate);
+        return new self($description, $className, false);
+    }
+
+    /**
+     * Initializes a new object with error template and class name provided.
+     */
+    public static function initWithErrorTemplate(string $errorTemplate, ?string $className = null): self
+    {
+        return new self($errorTemplate, $className, true);
     }
 
     private $description;

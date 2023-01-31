@@ -882,11 +882,9 @@ class ApiCallTest extends TestCase
             '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(409, ErrorType::init(
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
                 'Failed to make request: {$statusCode} - {$response.header.headerKey}, {$response.body#/Error/0/Code}' .
-                ' - {$response.body#/Error/0/Detail}',
-                MockException1::class,
-                true
+                ' - {$response.body#/Error/0/Detail}'
             ))
             ->getResult($context);
     }
@@ -905,12 +903,10 @@ class ApiCallTest extends TestCase
         );
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(410, ErrorType::init(
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
                 'Failed to make request: {$statusCode}, ' .
                 '{$response.body#/Error/410/Code} - {$response.body#/Error/410/Detail} - ' .
-                '{$response.body#/Error/410/IsSuccess}',
-                MockException1::class,
-                true
+                '{$response.body#/Error/410/IsSuccess}'
             ))
             ->getResult($context);
     }
@@ -930,10 +926,8 @@ class ApiCallTest extends TestCase
             ',"410":{"Code":410,"Detail":"Failed to make the request 410 status code"}}}'));
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(410, ErrorType::init(
-                'Failed to make request: {$statusCode}, {$response.body}',
-                MockException1::class,
-                true
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
             ))
             ->getResult($context);
     }
@@ -950,11 +944,9 @@ class ApiCallTest extends TestCase
             '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(409, ErrorType::init(
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
                 'Failed to make request: {$statusCode}, {$response.body#/Error/0/Code}' .
-                ' - {$response.body#/Error/0/Detail}',
-                MockException1::class,
-                true
+                ' - {$response.body#/Error/0/Detail}'
             ))
             ->getResult($context);
     }
@@ -971,11 +963,9 @@ class ApiCallTest extends TestCase
             '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(409, ErrorType::init(
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
                 'Failed to make request: {$statusCode}, {$response.body#/Error/0/Code}' .
-                ' - {$response.body#/Error/0/NonExistentPointer}',
-                MockException1::class,
-                true
+                ' - {$response.body#/Error/0/NonExistentPointer}'
             ))
             ->getResult($context);
     }
@@ -990,10 +980,8 @@ class ApiCallTest extends TestCase
         $response->setBody(10);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(410, ErrorType::init(
-                'Failed to make request: {$statusCode}, {$response.body}',
-                MockException1::class,
-                true
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
             ))
             ->getResult($context);
     }
@@ -1008,10 +996,8 @@ class ApiCallTest extends TestCase
         $response->setBody(false);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(410, ErrorType::init(
-                'Failed to make request: {$statusCode}, {$response.body}',
-                MockException1::class,
-                true
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
             ))
             ->getResult($context);
     }
@@ -1026,10 +1012,8 @@ class ApiCallTest extends TestCase
         $response->setBody('{"SomeKey":"value"}');
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(410, ErrorType::init(
-                'Failed to make request: {$statusCode}, {$response.body#}',
-                MockException1::class,
-                true
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body#}'
             ))
             ->getResult($context);
     }
@@ -1064,7 +1048,7 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->throwErrorOn("403", ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
 
@@ -1077,7 +1061,7 @@ class ApiCallTest extends TestCase
         $response->setBody("some erroneous response");
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->throwErrorOn("403", ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
 
@@ -1090,8 +1074,8 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
-            ->throwErrorOn(0, ErrorType::init('Default exception', MockException1::class))
+            ->throwErrorOn("403", ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn("0", ErrorType::init('Default exception', MockException1::class))
             ->getResult($context);
     }
 
@@ -1104,8 +1088,8 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
-            ->throwErrorOn(0, ErrorType::init('Default exception'))
+            ->throwErrorOn("403", ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn("0", ErrorType::init('Default exception'))
             ->getResult($context);
     }
 

@@ -31,9 +31,9 @@ class ResponseHandler
     /**
      * Associates an ErrorType object to the statusCode provided.
      */
-    public function throwErrorOn(int $statusCode, ErrorType $error): self
+    public function throwErrorOn(string $statusCode, ErrorType $error): self
     {
-        $this->responseError->addError(strval($statusCode), $error);
+        $this->responseError->addError($statusCode, $error);
         return $this;
     }
 

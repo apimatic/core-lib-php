@@ -76,9 +76,9 @@ class MockHelper
                 ])
                 ->globalRuntimeParam(AdditionalHeaderParams::init(['key5' => 890.098]))
                 ->globalErrors([
-                    400 => ErrorType::init('Exception num 1', MockException1::class),
-                    401 => ErrorType::init('Exception num 2', MockException2::class),
-                    403 => ErrorType::init('Exception num 3')
+                    strval(400) => ErrorType::init('Exception num 1', MockException1::class),
+                    strval(401) => ErrorType::init('Exception num 2', MockException2::class),
+                    strval(403) => ErrorType::init('Exception num 3')
                 ])
                 ->authManagers([
                     "header" => new HeaderAuthManager('someAuthToken', 'accessToken'),

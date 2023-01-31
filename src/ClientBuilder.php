@@ -37,7 +37,7 @@ class ClientBuilder
     private $authManagers = [];
 
     /**
-     * @var array<int,ErrorType>
+     * @var array<string,ErrorType>
      */
     private $globalErrors = [];
 
@@ -103,7 +103,7 @@ class ClientBuilder
     }
 
     /**
-     * @param array<int,ErrorType> $globalErrors
+     * @param array<string,ErrorType> $globalErrors
      * @return $this
      */
     public function globalErrors(array $globalErrors): self
