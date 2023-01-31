@@ -907,7 +907,7 @@ class ApiCallTest extends TestCase
         MockHelper::responseHandler()
             ->throwErrorOn(410, ErrorType::init(
                 'Failed to make request: {$statusCode}, ' .
-                '{$response.body#/Error/410/Code} - {$response.body#/Error/410/Detail} - '.
+                '{$response.body#/Error/410/Code} - {$response.body#/Error/410/Detail} - ' .
                 '{$response.body#/Error/410/IsSuccess}',
                 MockException1::class,
                 true
