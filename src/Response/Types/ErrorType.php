@@ -179,6 +179,10 @@ class ErrorType
         }
     }
 
+    /**
+     * @throws Pointer\InvalidJsonException
+     * @throws Pointer\NonWalkableJsonException
+     */
     private function initializeJsonPointer(ResponseInterface $response): ?Pointer
     {
         $rawBody = $response->getRawBody();
@@ -194,6 +198,15 @@ class ErrorType
     private function isJson(string $string): bool
     {
         $decoded = json_decode($string);
-        return is_object($decoded) || json_last_error() === JSON_ERROR_NONE;
+        if (is_null($decoded)) {
+            return false;
+        }
+        if (is_array($decoded)) {
+            return true;
+        }
+        if (is_object($decoded)) {
+            return true;
+        }
+        return false;
     }
 }
