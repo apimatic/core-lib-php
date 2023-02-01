@@ -56,7 +56,7 @@ class Client
      * @param string $defaultServer
      * @param ParamInterface[] $globalConfig
      * @param ParamInterface[] $globalRuntimeConfig
-     * @param array<int,ErrorType> $globalErrors
+     * @param array<string,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
      */
     public function __construct(
@@ -97,7 +97,7 @@ class Client
     public function getGlobalResponseHandler(): ResponseHandler
     {
         $responseHandler = new ResponseHandler();
-        array_walk($this->globalErrors, function (ErrorType $error, int $key) use ($responseHandler): void {
+        array_walk($this->globalErrors, function (ErrorType $error, string $key) use ($responseHandler): void {
             $responseHandler->throwErrorOn($key, $error);
         });
         return $responseHandler;

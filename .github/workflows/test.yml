@@ -43,8 +43,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.composer/cache/files
-        key: ${{ matrix.os }}-core-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: ${{ matrix.os }}-core-${{ matrix.php }}-composer-
+        key: ${{ matrix.os }}-core-lib-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ matrix.os }}-core-lib-${{ matrix.php }}-composer-
 
     - name: Update dependencies
       run: composer update

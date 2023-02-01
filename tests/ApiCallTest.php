@@ -71,7 +71,7 @@ class ApiCallTest extends TestCase
 
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];
         $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
-            ->parameters(BodyParam::init((object) $options)->extract('key1'))
+            ->parameters(BodyParam::init((object)$options)->extract('key1'))
             ->build(MockHelper::getClient());
         $this->assertEquals(true, $request->getBody());
 
@@ -260,7 +260,7 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
-                ->parameters(TemplateParam::init('tyu', ['val 01','**sad&?N','v4'])))
+                ->parameters(TemplateParam::init('tyu', ['val 01', '**sad&?N', 'v4'])))
             ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
             ->execute();
@@ -273,7 +273,7 @@ class ApiCallTest extends TestCase
         $mockObj = new MockClass([]);
         $mockObj->addAdditionalProperty('key', 'val 01');
         $mockObj->addAdditionalProperty('key2', 'v4');
-        $mockObj2 = new MockClass([null,null]);
+        $mockObj2 = new MockClass([null, null]);
         $mockObj2->addAdditionalProperty('key3', '**sad&?N');
         $mockObj2->addAdditionalProperty('key4', 'v^^');
         $mockObj->addAdditionalProperty('key5', $mockObj2);
@@ -402,11 +402,11 @@ class ApiCallTest extends TestCase
 
     public function testAdditionalQuery()
     {
-        $additionalQueryParamsUI = ['key0' => [2,4], 'key5' => 'a'];
-        $additionalQueryParamsPL = ['key1' => [2,4], 'key6' => 'b'];
-        $additionalQueryParamsC = ['key2' => [2,4], 'key7' => 'c'];
-        $additionalQueryParamsT = ['key3' => [2,4], 'key8' => 'd'];
-        $additionalQueryParamsP = ['key4' => [2,4], 'key9' => 'e'];
+        $additionalQueryParamsUI = ['key0' => [2, 4], 'key5' => 'a'];
+        $additionalQueryParamsPL = ['key1' => [2, 4], 'key6' => 'b'];
+        $additionalQueryParamsC = ['key2' => [2, 4], 'key7' => 'c'];
+        $additionalQueryParamsT = ['key3' => [2, 4], 'key8' => 'd'];
+        $additionalQueryParamsP = ['key4' => [2, 4], 'key9' => 'e'];
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
@@ -440,7 +440,7 @@ class ApiCallTest extends TestCase
     public function testSendMultipleQuery()
     {
         $additionalQueryParams = [
-            'keyH' => [2,4],
+            'keyH' => [2, 4],
             'newKey' => 'asad'
         ];
         $result = MockHelper::newApiCall()
@@ -448,14 +448,14 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     QueryParam::init('key A', 'val 1'),
                     QueryParam::init('keyB', new MockClass([])),
-                    QueryParam::init('keyB2', [2,4]),
-                    QueryParam::init('keyC', new MockClass([23, 24,'asad'])),
+                    QueryParam::init('keyB2', [2, 4]),
+                    QueryParam::init('keyC', new MockClass([23, 24, 'asad'])),
                     QueryParam::init('keyD', new MockClass([23, 24]))->unIndexed(),
                     QueryParam::init('keyE', new MockClass([true, false, null]))->plain(),
-                    QueryParam::init('keyF', new MockClass(['A','B','C']))->commaSeparated(),
-                    QueryParam::init('keyG', new MockClass(['A','B','C']))->tabSeparated(),
-                    QueryParam::init('keyH', new MockClass(['A','B','C']))->pipeSeparated(),
-                    QueryParam::init('keyI', new MockClass(['A','B', new MockClass([1])]))->pipeSeparated(),
+                    QueryParam::init('keyF', new MockClass(['A', 'B', 'C']))->commaSeparated(),
+                    QueryParam::init('keyG', new MockClass(['A', 'B', 'C']))->tabSeparated(),
+                    QueryParam::init('keyH', new MockClass(['A', 'B', 'C']))->pipeSeparated(),
+                    QueryParam::init('keyI', new MockClass(['A', 'B', new MockClass([1])]))->pipeSeparated(),
                     QueryParam::init('keyJ', new MockClass(['innerKey1' => 'A', 'innerKey2' => 'B']))->pipeSeparated(),
                     QueryParam::init('keyK', new MockChild3("body", ['innerKey1' => 'A']))
                         ->commaSeparated(),
@@ -492,8 +492,8 @@ class ApiCallTest extends TestCase
 
     public function testAdditionalForm()
     {
-        $additionalFormParamsUI = ['key0' => [2,4], 'key2' => 'a'];
-        $additionalFormParamsPL = ['key1' => [2,4], 'key3' => 'b'];
+        $additionalFormParamsUI = ['key0' => [2, 4], 'key2' => 'a'];
+        $additionalFormParamsPL = ['key1' => [2, 4], 'key3' => 'b'];
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
                 ->parameters(
@@ -511,8 +511,8 @@ class ApiCallTest extends TestCase
             'key3' => 'key3=b',
         ], $result->body['parametersEncoded']);
         $this->assertEquals([
-            'key0' => [2,4],
-            'key1' => [2,4],
+            'key0' => [2, 4],
+            'key1' => [2, 4],
             'key2' => 'a',
             'key3' => 'b',
         ], $result->body['parameters']);
@@ -521,7 +521,7 @@ class ApiCallTest extends TestCase
     public function testSendMultipleForm()
     {
         $additionalFormParams = [
-            'keyH' => [2,4],
+            'keyH' => [2, 4],
             'newKey' => 'asad'
         ];
         $result = MockHelper::newApiCall()
@@ -529,9 +529,9 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     FormParam::init('key A', 'val 1'),
                     FormParam::init('keyB', new MockClass([])),
-                    FormParam::init('keyB2', [2,4]),
-                    FormParam::init('keyB3', ['key1' => 2,'key2' => 4]),
-                    FormParam::init('keyC', new MockClass([23, 24,'asad'])),
+                    FormParam::init('keyB2', [2, 4]),
+                    FormParam::init('keyB3', ['key1' => 2, 'key2' => 4]),
+                    FormParam::init('keyC', new MockClass([23, 24, 'asad'])),
                     FormParam::init('keyD', new MockClass([23, 24]))->unIndexed(),
                     FormParam::init('keyE', new MockClass([23, 24, new MockClass([1])]))->unIndexed(),
                     FormParam::init('keyF', new MockClass([true, false, null]))->plain(),
@@ -556,14 +556,14 @@ class ApiCallTest extends TestCase
         ], $result->body['parametersEncoded']);
         $this->assertEquals([
             'key A' => 'val 1',
-            'keyB2' => [2,4],
-            'keyB3' => ['key1' => 2,'key2' => 4],
-            'keyC' => ['body' => [23, 24,'asad']],
+            'keyB2' => [2, 4],
+            'keyB3' => ['key1' => 2, 'key2' => 4],
+            'keyC' => ['body' => [23, 24, 'asad']],
             'keyD' => ['body' => [23, 24]],
             'keyE' => ['body' => [23, 24, ['body' => [1]]]],
             'keyF' => ['body' => ['true', 'false', null]],
             'keyG' => ['body' => ['innerKey1' => 'A', 'innerKey2' => 'B']],
-            'keyH' => [2,4],
+            'keyH' => [2, 4],
             'newKey' => 'asad'
         ], $result->body['parameters']);
     }
@@ -647,7 +647,7 @@ class ApiCallTest extends TestCase
     {
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
-                ->parameters(BodyParam::init(new MockClass([34,'asad'])))
+                ->parameters(BodyParam::init(new MockClass([34, 'asad'])))
                 ->bodyXml('mockClass'))
             ->responseHandler(MockHelper::responseHandler()
                 ->type(MockClass::class))
@@ -869,6 +869,271 @@ class ApiCallTest extends TestCase
         MockHelper::responseHandler()->getResult($context);
     }
 
+    public function testJsonPointersWithJsonArrayTypePointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue, 409 - Failed to make the request 409 status code'
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":[{"Code":409,"Detail":"Failed to make the request 409 status code"},' .
+            '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key}, {$response.body#/Error/0/Code}' .
+                ' - {$response.body#/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithJsonArray()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue, 409 - Failed to make the request 409 status code'
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('[{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":[{"Code":409,"Detail":"Failed to make the request 409 status code"},' .
+            '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}]');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithNullJson()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody(null);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithInvalidJson()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"invalidJson"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithInvalidJsonAndEmptyPointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"invalidJson"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithInvalidPointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"key":"value"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#////0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithNativeResponse()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody(10);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#/0/Error/0/Code}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithJsonMapTypePointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 410, 410 - Failed to make the request 410 status code - false'
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(410);
+        $response->setBody(
+            '{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":{"409":{"Code":409,"Detail":"Failed to make the request 409 status code"},' .
+            '"410":{"Code":410,"Detail":"Failed to make the request 410 status code","IsSuccess":false}}}'
+        );
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, ' .
+                '{$response.body#/Error/410/Code} - {$response.body#/Error/410/Detail} - ' .
+                '{$response.body#/Error/410/IsSuccess}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testErrorTypeNoJsonPointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 410, {"OtherJsonField":2,"AnotherJsonField":' .
+            '{"Name":"name","Value":3},"Error":{"409":{"Code":409,"Detail":"Failed' .
+            ' to make the request 409 status code"},"410":{"Code":410,"Detail":"Failed' .
+            ' to make the request 410 status code"}}}'
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(410);
+        $response->setBody(CoreHelper::deserialize('{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":{"409":{"Code":409,"Detail":"Failed to make the request 409 status code"}' .
+            ',"410":{"Code":410,"Detail":"Failed to make the request 410 status code"}}}'));
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithValueObject()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409, 409 - {"Value":"Failed to make the request 409 status code"}'
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(409);
+        $response->setBody('{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":[{"Code":409,"Detail":{"Value":"Failed to make the request 409 status code"}},' .
+            '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body#/Error/0/Code}' .
+                ' - {$response.body#/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testJsonPointersWithNonExistentValuePointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409, 409 - '
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(409);
+        $response->setBody('{"OtherJsonField":2,"AnotherJsonField":{"Name":"name","Value":3},' .
+            '"Error":[{"Code":409,"Detail":{"Value":"Failed to make the request 409 status code"}},' .
+            '{"Code":410,"Detail":"Failed to make the request 410 status code"}]}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body#/Error/0/Code}' .
+                ' - {$response.body#/Error/0/NonExistentPointer}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testErrorTypeNoJsonPointerScalarType()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 410, 10'
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(410);
+        $response->setBody(10);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testErrorTypeNoJsonPointerBooleanType()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 410, false'
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(410);
+        $response->setBody(false);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body}'
+            ))
+            ->getResult($context);
+    }
+
+    public function testErrorTypeTemplateWithEmptyJsonPoint()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 410, '
+        );
+        $response = new MockResponse();
+        $response->setStatusCode(410);
+        $response->setBody('{"SomeKey":"value"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("410", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}, {$response.body#}'
+            ))
+            ->getResult($context);
+    }
+
     public function testGlobalMockException1()
     {
         $this->expectException(MockException1::class);
@@ -899,7 +1164,7 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->throwErrorOn("403", ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
 
@@ -912,7 +1177,7 @@ class ApiCallTest extends TestCase
         $response->setBody("some erroneous response");
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('Local exception num 3', MockException3::class))
+            ->throwErrorOn("403", ErrorType::init('Local exception num 3', MockException3::class))
             ->getResult($context);
     }
 
@@ -925,8 +1190,8 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
-            ->throwErrorOn(0, ErrorType::init('Default exception', MockException1::class))
+            ->throwErrorOn("403", ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn("0", ErrorType::init('Default exception', MockException1::class))
             ->getResult($context);
     }
 
@@ -939,8 +1204,8 @@ class ApiCallTest extends TestCase
         $response->setBody([]);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()
-            ->throwErrorOn(403, ErrorType::init('local exception num 3', MockException3::class))
-            ->throwErrorOn(0, ErrorType::init('Default exception'))
+            ->throwErrorOn("403", ErrorType::init('local exception num 3', MockException3::class))
+            ->throwErrorOn("0", ErrorType::init('Default exception'))
             ->getResult($context);
     }
 
@@ -994,7 +1259,7 @@ class ApiCallTest extends TestCase
             ->getResult($context);
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
+            ["34", "asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result->body
         );
     }
@@ -1021,7 +1286,7 @@ class ApiCallTest extends TestCase
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result[0]);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
+            ["34", "asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result[0]->body
         );
     }
@@ -1048,7 +1313,7 @@ class ApiCallTest extends TestCase
         $this->assertIsArray($result);
         $this->assertInstanceOf(MockClass::class, $result['mockClass']);
         $this->assertEquals(
-            ["34","asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
+            ["34", "asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result['mockClass']->body
         );
     }

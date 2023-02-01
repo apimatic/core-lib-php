@@ -29,7 +29,8 @@ return [
         'tests',
         $vendor_dir . '/apimatic/core-interfaces',
         $vendor_dir . '/apimatic/jsonmapper',
-        $vendor_dir . '/phpunit/phpunit'
+        $vendor_dir . '/phpunit/phpunit',
+        $vendor_dir . '/php-jsonpointer/php-jsonpointer'
     ],
 
     // A directory list that defines files that will be excluded
