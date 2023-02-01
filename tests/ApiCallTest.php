@@ -214,6 +214,42 @@ class ApiCallTest extends TestCase
         $this->assertArrayNotHasKey('Accept', $result['body']['headers']);
     }
 
+    public function testSendWithContentTypeWithBody()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
+                ->parameters(BodyParam::init(123))
+                ->parameters(HeaderParam::init('content-type', 'MyContentType')))
+            ->responseHandler(MockHelper::responseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertEquals('MyContentType', $result->body['headers']['content-type']);
+        $result = MockHelper::newApiCall()
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
+            ->execute();
+        $this->assertArrayNotHasKey('Accept', $result['body']['headers']);
+    }
+
+    public function testSendDisableContentTypeWithBody()
+    {
+        $result = MockHelper::newApiCall()
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}'))
+                ->parameters(BodyParam::init(123))
+                ->disableContentType())
+            ->responseHandler(MockHelper::responseHandler()
+                ->type(MockClass::class))
+            ->execute();
+        $this->assertInstanceOf(MockClass::class, $result);
+        $this->assertArrayNotHasKey('content-type', $result->body['headers']);
+        $this->assertArrayNotHasKey('Accept', $result->body['headers']);
+
+        $result = MockHelper::newApiCall()
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
+            ->execute();
+        $this->assertArrayNotHasKey('Accept', $result['body']['headers']);
+    }
+
     public function testSendWithCustomContentType()
     {
         $result = MockHelper::newApiCall()
@@ -237,7 +273,6 @@ class ApiCallTest extends TestCase
         $this->assertEquals(RequestMethod::POST, $result->body['httpMethod']);
         $this->assertEquals('http://my/path:3000/v1/simple/{tyu}', $result->body['queryUrl']);
         $this->assertEquals('application/json', $result->body['headers']['Accept']);
-        $this->assertEquals('text/plain; charset=utf-8', $result->body['headers']['content-type']);
         $this->assertEquals('headVal1', $result->body['headers']['additionalHead1']);
         $this->assertEquals('headVal2', $result->body['headers']['additionalHead2']);
         $this->assertStringStartsWith('my lang|1.*.*|', $result->body['headers']['user-agent']);
@@ -670,8 +705,7 @@ class ApiCallTest extends TestCase
                 ->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
-        $this->assertEquals(Format::XML, $result->body['headers']['content-type']);
-        $this->assertEquals('<?xml version="1.0"?>' . "\n", $result->body['body']);
+        $this->assertNull($result->body['body']);
     }
 
     public function testSendXMLArrayBodyParam()
@@ -781,10 +815,9 @@ class ApiCallTest extends TestCase
         $this->assertStringContainsString('{"body":{"httpMethod":"Post","queryUrl":"http:\/\/my\/path:3000\/v1' .
             '\/simple\/{tyu}","headers":{"additionalHead1":"headVal1","additionalHead2":"headVal2","user-agent":' .
             '"my lang|1.*.*|', $result->getBody());
-        $this->assertStringContainsString(',"content-type":"text\/plain; charset=utf-8","Accept":"application\/json"' .
+        $this->assertStringContainsString(',"Accept":"application\/json"' .
             '},"parameters":[],"parametersEncoded":[],"parametersMultipart":[],"body":null,' .
             '"retryOption":"useGlobalSettings"},"additionalProperties":[]}', $result->getBody());
-        $this->assertEquals(['content-type' => 'application/json'], $result->getHeaders());
         $this->assertEquals(200, $result->getStatusCode());
         $this->assertTrue($result->isSuccess());
         $this->assertNull($result->getReasonPhrase());
