@@ -50,27 +50,29 @@ class ErrorType
 
     private function updateErrorDescriptionTemplate($response): void
     {
-        if ($this->hasErrorTemplate) {
-            $errorDescriptionTemplate = $this->description;
-
-            $jsonPointersInTemplate = $this->getJsonPointersFromTemplate($errorDescriptionTemplate);
-
-            $errorDescription = $this->updateResponsePlaceholderValues(
-                $errorDescriptionTemplate,
-                $jsonPointersInTemplate,
-                $response
-            );
-
-            $errorDescription = $this->updateHeaderPlaceHolderValues($errorDescription, $response);
-
-            $errorDescription = $this->addPlaceHolderValue(
-                $errorDescription,
-                '{$statusCode}',
-                $response->getStatusCode()
-            );
-
-            $this->description = $errorDescription;
+        if (!$this->hasErrorTemplate) {
+            return;
         }
+
+        $errorDescriptionTemplate = $this->description;
+
+        $jsonPointersInTemplate = $this->getJsonPointersFromTemplate($errorDescriptionTemplate);
+
+        $errorDescription = $this->updateResponsePlaceholderValues(
+            $errorDescriptionTemplate,
+            $jsonPointersInTemplate,
+            $response
+        );
+
+        $errorDescription = $this->updateHeaderPlaceHolderValues($errorDescription, $response);
+
+        $errorDescription = $this->addPlaceHolderValue(
+            $errorDescription,
+            '{$statusCode}',
+            $response->getStatusCode()
+        );
+
+        $this->description = $errorDescription;
     }
 
     private function updateHeaderPlaceHolderValues(string $errorDescription, ResponseInterface $response): string
@@ -159,11 +161,11 @@ class ErrorType
      */
     private function getJsonPointerValue(?Pointer $jsonPointer, string $pointer)
     {
-        try {
-            if ($jsonPointer == null || trim($pointer) === '') {
-                return "";
-            }
+        if ($jsonPointer == null || trim($pointer) === '') {
+            return "";
+        }
 
+        try {
             $pointerValue = $jsonPointer->get($pointer);
 
             if (is_object($pointerValue)) {
