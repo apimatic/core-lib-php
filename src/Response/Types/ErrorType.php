@@ -160,11 +160,7 @@ class ErrorType
     private function getJsonPointerValue(?Pointer $jsonPointer, string $pointer)
     {
         try {
-            if ($jsonPointer == null) {
-                return "";
-            }
-
-            if (trim($pointer) === '') {
+            if ($jsonPointer == null || trim($pointer) === '') {
                 return "";
             }
 

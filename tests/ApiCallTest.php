@@ -948,6 +948,25 @@ class ApiCallTest extends TestCase
             ->getResult($context);
     }
 
+    public function testJsonPointersWithInvalidJsonAndEmptyPointer()
+    {
+        $this->expectExceptionMessage(
+            'Failed to make request: 409-headerValue,  - '
+        );
+        $response = new MockResponse();
+        $response->setHeaders(["header key" => "headerValue"]);
+        $response->setStatusCode(409);
+        $response->setBody('{"invalidJson"}');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->throwErrorOn("409", ErrorType::initWithErrorTemplate(
+                'Failed to make request: {$statusCode}-{$response.header.header Key},' .
+                ' {$response.body#}' .
+                ' - {$response.body#/0/Error/0/Detail}'
+            ))
+            ->getResult($context);
+    }
+
     public function testJsonPointersWithInvalidPointer()
     {
         $this->expectExceptionMessage(
