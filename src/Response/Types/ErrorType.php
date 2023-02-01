@@ -40,21 +40,19 @@ class ErrorType
 
     /**
      * Throws an Api exception from the context provided.
-     *
-     * @param Context $context
      */
     public function throwable(Context $context)
     {
-        $this->updateErrorDescriptionIfHasTemplate($context->getResponse());
+        $this->updateErrorDescriptionTemplate($context->getResponse());
 
         return $context->toApiException($this->description, $this->className);
     }
 
-    private function updateErrorDescriptionIfHasTemplate($response): void
+    private function updateErrorDescriptionTemplate($response): void
     {
-        $errorDescriptionTemplate = $this->description;
-
         if ($this->hasErrorTemplate) {
+            $errorDescriptionTemplate = $this->description;
+
             $jsonPointersInTemplate = $this->getJsonPointersFromTemplate($errorDescriptionTemplate);
 
             $errorDescription = $this->updateResponsePlaceholderValues(
@@ -78,7 +76,7 @@ class ErrorType
     private function updateHeaderPlaceHolderValues(string $errorDescription, ResponseInterface $response): string
     {
         $headers = $response->getHeaders();
-        $headerKeys = $this->getHeaderKeys($headers);
+        $headerKeys = array_keys($headers);
 
         for ($x = 0; $x < count($headerKeys); $x++) {
             $errorDescription = $this->addPlaceHolderValue(
@@ -116,11 +114,7 @@ class ErrorType
         $jsonPointers = $jsonPointersInTemplate[0];
 
         for ($x = 0; $x < count($jsonPointers); $x++) {
-            $placeHolderValue = "";
-
-            if ($jsonResponsePointer != null) {
-                $placeHolderValue = $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#'));
-            }
+            $placeHolderValue = $this->getJsonPointerValue($jsonResponsePointer, ltrim($jsonPointers[$x], '#'));
 
             $errorDescription = $this->addPlaceHolderValue(
                 $errorDescription,
@@ -159,22 +153,17 @@ class ErrorType
     }
 
     /**
-     * @param $headers array
-     * @return int[]|string[]
-     */
-    private function getHeaderKeys(array $headers)
-    {
-        return array_keys($headers);
-    }
-
-    /**
-     * @param $jsonPointer Pointer
+     * @param $jsonPointer ?Pointer
      * @param $pointer string
      * @return mixed Json pointer value from the JSON provided.
      */
-    private function getJsonPointerValue(Pointer $jsonPointer, string $pointer)
+    private function getJsonPointerValue(?Pointer $jsonPointer, string $pointer)
     {
         try {
+            if ($jsonPointer == null) {
+                return "";
+            }
+
             if (trim($pointer) === '') {
                 return "";
             }
@@ -186,39 +175,17 @@ class ErrorType
             }
 
             return $pointerValue;
-        } catch (Pointer\NonexistentValueReferencedException | Pointer\InvalidPointerException $ex) {
+        } catch (\Exception $ex) {
             return "";
         }
     }
 
-    /**
-     * @throws Pointer\InvalidJsonException
-     * @throws Pointer\NonWalkableJsonException
-     */
     private function initializeJsonPointer(ResponseInterface $response): ?Pointer
     {
-        $rawBody = $response->getRawBody();
-        $jsonResponsePointer = null;
-
-        if ($this->isJson($rawBody)) {
-            $jsonResponsePointer = new Pointer($rawBody);
+        try {
+            return new Pointer($response->getRawBody());
+        } catch (\Exception $ex) {
+            return null;
         }
-
-        return $jsonResponsePointer;
-    }
-
-    private function isJson(string $string): bool
-    {
-        $decoded = json_decode($string);
-        if (is_null($decoded)) {
-            return false;
-        }
-        if (is_array($decoded)) {
-            return true;
-        }
-        if (is_object($decoded)) {
-            return true;
-        }
-        return false;
     }
 }
