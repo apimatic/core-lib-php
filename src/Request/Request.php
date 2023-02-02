@@ -235,6 +235,11 @@ class Request implements RequestSetterInterface
         if (!empty($this->parameters)) {
             return;
         }
+
+        if (is_null($this->body)) {
+            return;
+        }
+
         $this->addContentType($format);
         $this->body = Closure::fromCallable($serializer)($this->body);
     }
