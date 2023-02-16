@@ -23,18 +23,18 @@ composer require "apimatic/core"
 ```
 
 ## Request
-| Name                                                                        | Description                                                           |
-|-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| [`AdditionalFormParams`](src/Request/Parameters/AdditionalFormParams.php)   | Used to add additional form params to a request                       |
-| [`AdditionalFormParams`](src/Request/Parameters/AdditionalHeaderParams.php) | Used to add additional header params to a request                     |
-| [`AdditionalQueryParams`](src/Request/Parameters/AdditionalQueryParams.php) | Used to add additional query params to a request                      |
-| [`BodyParam`](src/Request/Parameters/BodyParam.php)                         | Body parameter class                                                  |
-| [`FormParam`](src/Request/Parameters/FormParam.php)                         | Form parameter class                                                  |
-| [`HeaderParam`](src/Request/Parameters/HeaderParam.php)                     | Header parameter class                                                |
-| [`QueryParam`](src/Request/Parameters/QueryParam.php)                       | Query parameter class                                                 |
-| [`TemplateParam`](src/Request/Parameters/TemplateParam.php)                 | Template parameter class                                              |
-| [`RequestBuilder`](src/Request/RequestBuilder.php)                          | Used to instantiate a new Request object with the properties provided |
-| [`Request`](src/Request/Request.php)                                        | Request class for an API call                                         |
+| Name                                                                         | Description                                                           |
+|------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| [`AdditionalFormParams`](src/Request/Parameters/AdditionalFormParams.php)    | Used to add additional form params to a request                       |
+| [`AdditionalHeaderParams`](src/Request/Parameters/AdditionalHeaderParams.php)| Used to add additional header params to a request                     |
+| [`AdditionalQueryParams`](src/Request/Parameters/AdditionalQueryParams.php)  | Used to add additional query params to a request                      |
+| [`BodyParam`](src/Request/Parameters/BodyParam.php)                          | Body parameter class                                                  |
+| [`FormParam`](src/Request/Parameters/FormParam.php)                          | Form parameter class                                                  |
+| [`HeaderParam`](src/Request/Parameters/HeaderParam.php)                      | Header parameter class                                                |
+| [`QueryParam`](src/Request/Parameters/QueryParam.php)                        | Query parameter class                                                 |
+| [`TemplateParam`](src/Request/Parameters/TemplateParam.php)                  | Template parameter class                                              |
+| [`RequestBuilder`](src/Request/RequestBuilder.php)                           | Used to instantiate a new Request object with the properties provided |
+| [`Request`](src/Request/Request.php)                                         | Request class for an API call                                         |
 
 ## Response
 | Name                                                                        | Description                                                                           |
