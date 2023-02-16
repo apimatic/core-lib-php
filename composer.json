@@ -7,7 +7,7 @@
     "core",
     "CoreLib"
   ],
-  "license": "proprietary",
+  "license": "MIT",
   "type": "library",
   "homepage": "https://github.com/apimatic/core-lib-php",
   "require": {
