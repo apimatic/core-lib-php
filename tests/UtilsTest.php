@@ -254,7 +254,7 @@ class UtilsTest extends TestCase
 
     public function testFromUnixDateRequired()
     {
-        $result = DateHelper::fromUnixTimestampRequired(1633046400);
+        $result = DateHelper::fromUnixTimestampRequired('1633046400');
         $this->assertInstanceOf('DateTime', $result);
     }
 
