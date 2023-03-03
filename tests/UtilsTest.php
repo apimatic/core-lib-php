@@ -193,9 +193,7 @@ class UtilsTest extends TestCase
     public function testFromSimpleDateRequired()
     {
         $result = DateHelper::fromSimpleDateRequired('2021-10-01');
-        $expected = new DateTime();
-        $expected->setDate(2021, 10, 1);
-        $this->assertEquals('2021-10-01', $result->format(DateHelper::SIMPLE_DATE));
+        $this->assertEquals('2021-10-01', DateHelper::toSimpleDate($result));
     }
 
     public function testFromRFC1123DateFailure()
@@ -215,7 +213,7 @@ class UtilsTest extends TestCase
     public function testFromRFC1123DateRequired()
     {
         $result = DateHelper::fromRfc1123DateTimeRequired('Thu, 30 Sep 2021 00:00:00 GMT');
-        $this->assertInstanceOf('DateTime', $result);
+        $this->assertEquals('Thu, 30 Sep 2021 00:00:00 GMT', DateHelper::toRfc1123DateTime($result));
     }
 
     public function testFromRFC3339DateFailure()
@@ -235,7 +233,7 @@ class UtilsTest extends TestCase
     public function testFromRFC3339DateRequired()
     {
         $result = DateHelper::fromRfc3339DateTimeRequired('2021-10-01T00:00:00+00:00');
-        self::assertInstanceOf('DateTime', $result);
+        $this->assertEquals('2021-10-01T00:00:00+00:00', DateHelper::toRfc3339DateTime($result));
     }
 
     public function testFromUnixDateFailure()
@@ -255,7 +253,7 @@ class UtilsTest extends TestCase
     public function testFromUnixDateRequired()
     {
         $result = DateHelper::fromUnixTimestampRequired('1633046400');
-        $this->assertInstanceOf('DateTime', $result);
+        $this->assertEquals(1633046400, DateHelper::toUnixTimestamp($result));
     }
 
     public function testFromSimpleDateString()
