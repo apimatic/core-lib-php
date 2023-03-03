@@ -183,11 +183,37 @@ class UtilsTest extends TestCase
         DateHelper::fromSimpleDate('---');
     }
 
+    public function testFromSimpleDateRequiredFailure()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Date is null, empty or not in required format.');
+        DateHelper::fromSimpleDateRequired(null);
+    }
+
+    public function testFromSimpleDateRequired()
+    {
+        $result = DateHelper::fromSimpleDateRequired('2021-10-01');
+        $this->assertEquals('2021-10-01', DateHelper::toSimpleDate($result));
+    }
+
     public function testFromRFC1123DateFailure()
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Incorrect format.');
         DateHelper::fromRfc1123DateTime('---');
+    }
+
+    public function testFromRFC1123DateRequiredFailure()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('DateTime is null, empty or not in required format.');
+        DateHelper::fromRfc1123DateTimeRequired(null);
+    }
+
+    public function testFromRFC1123DateRequired()
+    {
+        $result = DateHelper::fromRfc1123DateTimeRequired('Thu, 30 Sep 2021 00:00:00 GMT');
+        $this->assertEquals('Thu, 30 Sep 2021 00:00:00 GMT', DateHelper::toRfc1123DateTime($result));
     }
 
     public function testFromRFC3339DateFailure()
@@ -197,11 +223,37 @@ class UtilsTest extends TestCase
         DateHelper::fromRfc3339DateTime('---');
     }
 
+    public function testFromRFC3339DateRequiredFailure()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('DateTime is null, empty or not in required format.');
+        DateHelper::fromRfc3339DateTimeRequired(null);
+    }
+
+    public function testFromRFC3339DateRequired()
+    {
+        $result = DateHelper::fromRfc3339DateTimeRequired('2021-10-01T00:00:00+00:00');
+        $this->assertEquals('2021-10-01T00:00:00+00:00', DateHelper::toRfc3339DateTime($result));
+    }
+
     public function testFromUnixDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Incorrect format.');
         DateHelper::fromUnixTimestamp('-0-');
+    }
+
+    public function testFromUnixDateRequiredFailure()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('DateTime is null, empty or not in required format.');
+        DateHelper::fromUnixTimestampRequired(null);
+    }
+
+    public function testFromUnixDateRequired()
+    {
+        $result = DateHelper::fromUnixTimestampRequired('1633046400');
+        $this->assertEquals(1633046400, DateHelper::toUnixTimestamp($result));
     }
 
     public function testFromSimpleDateString()

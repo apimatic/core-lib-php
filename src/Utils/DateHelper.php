@@ -93,6 +93,25 @@ class DateHelper
     }
 
     /**
+     * Parse a datetime string in simple date format to a DateTime object
+     *
+     * @param string|null $date A datetime string in simple date format
+     *
+     * @return DateTime The parsed DateTime object
+     * @throws InvalidArgumentException
+     */
+    public static function fromSimpleDateRequired(?string $date): DateTime
+    {
+        $result = DateHelper::fromSimpleDate($date);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        throw new \InvalidArgumentException('Date is null, empty or not in required format.');
+    }
+
+    /**
      * Parse an array of datetime strings in simple date format to an array of DateTime objects
      *
      * @param array|null $dates An array of datetime strings in simple date format
@@ -218,6 +237,25 @@ class DateHelper
             return $x->setTimeZone(new DateTimeZone('GMT'));
         }
         throw new InvalidArgumentException('Incorrect format.');
+    }
+
+    /**
+     * Parse a datetime string in Rfc1123 format to a DateTime object
+     *
+     * @param string|null $datetime A datetime string in Rfc1123 format
+     *
+     * @return DateTime The parsed DateTime object
+     * @throws InvalidArgumentException
+     */
+    public static function fromRfc1123DateTimeRequired(?string $datetime): DateTime
+    {
+        $result = DateHelper::fromRfc1123DateTime($datetime);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        throw new \InvalidArgumentException('DateTime is null, empty or not in required format.');
     }
 
     /**
@@ -362,6 +400,25 @@ class DateHelper
     }
 
     /**
+     * Parse a datetime string in Rfc3339 format to a DateTime object
+     *
+     * @param string|null $datetime A datetime string in Rfc3339 format
+     *
+     * @return DateTime The parsed DateTime object
+     * @throws InvalidArgumentException
+     */
+    public static function fromRfc3339DateTimeRequired(?string $datetime): DateTime
+    {
+        $result = DateHelper::fromRfc3339DateTime($datetime);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        throw new \InvalidArgumentException('DateTime is null, empty or not in required format.');
+    }
+
+    /**
      * Parse an array of datetime strings in Rfc3339 format to an array of DateTime objects
      *
      * @param array|null $dates An array of datetime strings in Rfc3339 format
@@ -487,6 +544,25 @@ class DateHelper
             return $x;
         }
         throw new InvalidArgumentException('Incorrect format.');
+    }
+
+    /**
+     * Parse a Unix Timestamp to a DateTime object
+     *
+     * @param string|null $datetime The Unix Timestamp
+     *
+     * @return DateTime The parsed DateTime object
+     * @throws InvalidArgumentException
+     */
+    public static function fromUnixTimestampRequired(?string $datetime): DateTime
+    {
+        $result = DateHelper::fromUnixTimestamp($datetime);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        throw new \InvalidArgumentException('DateTime is null, empty or not in required format.');
     }
 
     /**
