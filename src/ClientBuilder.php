@@ -174,10 +174,10 @@ class ClientBuilder
         if (is_null($this->userAgent)) {
             return;
         }
-        list($engineName, $engineVersion) = CoreHelper::getEngineInfo();
+
         $placeHolders = [
-            '{engine}' => $engineName,
-            '{engine-version}' => $engineVersion,
+            '{engine}' => 'PHP',
+            '{engine-version}' => phpversion(),
             '{os-info}' => CoreHelper::getOsInfo(),
         ];
         $placeHolders = array_merge($placeHolders, $this->userAgentConfig);
