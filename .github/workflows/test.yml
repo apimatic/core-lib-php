@@ -1,7 +1,8 @@
 name: Tests
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "16-php-8.2-support" ]
 
 permissions:
   contents: read
