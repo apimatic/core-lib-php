@@ -275,8 +275,10 @@ class ApiCallTest extends TestCase
         $this->assertEquals('application/json', $result->body['headers']['Accept']);
         $this->assertEquals('headVal1', $result->body['headers']['additionalHead1']);
         $this->assertEquals('headVal2', $result->body['headers']['additionalHead2']);
-        $this->assertStringStartsWith('my lang|1.*.*|', $result->body['headers']['user-agent']);
-        $this->assertStringNotContainsString('{', $result->body['headers']['user-agent']);
+        $this->assertEquals(
+            'my lang|1.*.*|PHP|' . phpversion() . '|' . CoreHelper::getOsInfo(),
+            $result->body['headers']['user-agent']
+        );
     }
 
     public function testSendTemplate()

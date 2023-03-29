@@ -136,19 +136,6 @@ class CoreHelper
     }
 
     /**
-     * Return info about PHP Engine.
-     *
-     * @return string[] An array where 0 => EngineName, and 1 => EngineVersion
-     */
-    public static function getEngineInfo(bool $test = false): array
-    {
-        if ($test || empty(zend_version())) {
-            return ['',''];
-        }
-        return ['Zend', zend_version()];
-    }
-
-    /**
      * Return basic OS info.
      */
     public static function getOsInfo(bool $test = false): string

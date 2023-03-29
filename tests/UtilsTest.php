@@ -170,10 +170,9 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
-    public function testUserAgentParams()
+    public function testEmptyOsInfo()
     {
         $this->assertEquals('', CoreHelper::getOsInfo(true));
-        $this->assertEquals(['', ''], CoreHelper::getEngineInfo(true));
     }
 
     public function testFromSimpleDateFailure()
