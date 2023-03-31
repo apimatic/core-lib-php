@@ -16,7 +16,7 @@
     "ext-curl": "*",
     "ext-dom": "*",
     "ext-libxml": "*",
-    "apimatic/core-interfaces": "dev-3-php-8.2-support",
+    "apimatic/core-interfaces": "^0.1.0",
     "apimatic/jsonmapper": "^3.0.4",
     "php-jsonpointer/php-jsonpointer": "^3.0.2"
   },

@@ -2,7 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ "16-php-8.2-support" ]
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 permissions:
   contents: read
