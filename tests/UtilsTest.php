@@ -124,6 +124,17 @@ class UtilsTest extends TestCase
         CoreHelper::validateUrl('some/invalid/url/format');
     }
 
+    public function testCoreHelperValidateUrlForwardSlash()
+    {
+        $validated = CoreHelper::validateUrl('https://google.com/');
+
+        $this->assertEquals('https://google.com', $validated);
+
+        $validated = CoreHelper::validateUrl('https://google.com//');
+
+        $this->assertEquals('https://google.com', $validated);
+    }
+
     public function testCoreHelperCheckValueOrValuesInList()
     {
         $list = ['string', 'int', 'float', '1'];
@@ -135,7 +146,7 @@ class UtilsTest extends TestCase
         $this->assertFalse(CoreHelper::checkValueOrValuesInList(['int', 'unknown'], $list));
         $this->assertTrue(CoreHelper::checkValueOrValuesInList(['float', 'int'], $list));
 
-        $this->assertFalse(CoreHelper::checkValueOrValuesInList(['int', ['float','unknown']], $list));
+        $this->assertFalse(CoreHelper::checkValueOrValuesInList(['int', ['float', 'unknown']], $list));
         $this->assertTrue(CoreHelper::checkValueOrValuesInList(['float', ['int', 'string']], $list));
     }
 
@@ -259,7 +270,7 @@ class UtilsTest extends TestCase
     {
         $this->assertNull(DateHelper::fromSimpleDateMapOfArray(null));
         $this->assertNull(DateHelper::fromSimpleDateArrayOfMap(null));
-        $res = DateHelper::fromSimpleDateMapOfArray((object) [
+        $res = DateHelper::fromSimpleDateMapOfArray((object)[
             'A' => ['2021-10-01', '2021-09-30'],
             'B' => [null, '2021-09-29'],
             'C' => null]);
@@ -281,7 +292,7 @@ class UtilsTest extends TestCase
     {
         $this->assertNull(DateHelper::fromRfc1123DateTimeMapOfArray(null));
         $this->assertNull(DateHelper::fromRfc1123DateTimeArrayOfMap(null));
-        $res = DateHelper::fromRfc1123DateTimeMapOfArray((object) [
+        $res = DateHelper::fromRfc1123DateTimeMapOfArray((object)[
             'A' => ['Fri, 01 Oct 2021 00:00:00 GMT', 'Thu, 30 Sep 2021 00:00:00 GMT'],
             'B' => [null, 'Wed, 29 Sep 2021 00:00:00 GMT'],
             'C' => null]);
@@ -303,7 +314,7 @@ class UtilsTest extends TestCase
     {
         $this->assertNull(DateHelper::fromRfc3339DateTimeMapOfArray(null));
         $this->assertNull(DateHelper::fromRfc3339DateTimeArrayOfMap(null));
-        $res = DateHelper::fromRfc3339DateTimeMapOfArray((object) [
+        $res = DateHelper::fromRfc3339DateTimeMapOfArray((object)[
             'A' => ['2021-10-01T00:00:00+00:00', '2021-09-30T00:00:00+00:00'],
             'B' => [null, '2021-09-29T00:00:00+00:00'],
             'C' => null]);
@@ -334,7 +345,7 @@ class UtilsTest extends TestCase
     {
         $this->assertNull(DateHelper::fromUnixTimestampMapOfArray(null));
         $this->assertNull(DateHelper::fromUnixTimestampArrayOfMap(null));
-        $res = DateHelper::fromUnixTimestampMapOfArray((object) [
+        $res = DateHelper::fromUnixTimestampMapOfArray((object)[
             'A' => [1633046400, 1632960000],
             'B' => [null, 1632873600],
             'C' => null]);
