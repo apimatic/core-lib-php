@@ -62,6 +62,9 @@ class CoreHelper
         $query = substr($url, strlen($protocol));
         $query = preg_replace("#//+#", "/", $query);
 
+        //remove forward slash from end
+        $query = rtrim($query, '/');
+
         //return process url
         return $protocol . $query;
     }
