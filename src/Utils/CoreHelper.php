@@ -50,23 +50,22 @@ class CoreHelper
      */
     public static function validateUrl(string $url): string
     {
-        //ensure that the urls are absolute
+        // ensure that the urls are absolute
         $matchCount = preg_match("#^(https?://[^/]+)#", $url, $matches);
         if ($matchCount == 0) {
             throw new InvalidArgumentException('Invalid Url format.');
         }
-        //get the http protocol match
+        // separate out protocol and path
         $protocol = $matches[1];
+        $path = substr($url, strlen($protocol));
 
-        //remove redundant forward slashes
-        $query = substr($url, strlen($protocol));
-        $query = preg_replace("#//+#", "/", $query);
+        // replace multiple consecutive forward slashes by single ones
+        $path = preg_replace("#//+#", "/", $path);
 
-        //remove forward slash from end
-        $query = rtrim($query, '/');
+        // remove forward slash from end
+        $path = rtrim($path, '/');
 
-        //return process url
-        return $protocol . $query;
+        return $protocol . $path;
     }
 
     /**

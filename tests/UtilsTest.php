@@ -124,15 +124,16 @@ class UtilsTest extends TestCase
         CoreHelper::validateUrl('some/invalid/url/format');
     }
 
-    public function testCoreHelperValidateUrlForwardSlash()
+    public function testCoreHelperValidateUrlForwardSlashesFix()
     {
+        $validated = CoreHelper::validateUrl('https://google.com');
+        $this->assertEquals('https://google.com', $validated);
+
         $validated = CoreHelper::validateUrl('https://google.com/');
-
         $this->assertEquals('https://google.com', $validated);
 
-        $validated = CoreHelper::validateUrl('https://google.com//');
-
-        $this->assertEquals('https://google.com', $validated);
+        $validated = CoreHelper::validateUrl('https://google.com///apimatic///');
+        $this->assertEquals('https://google.com/apimatic', $validated);
     }
 
     public function testCoreHelperCheckValueOrValuesInList()
