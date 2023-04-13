@@ -383,7 +383,7 @@ class ApiCallTest extends TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
         $this->assertEquals('My Text', $file->getPostFilename());
         $this->assertEquals($file, $result->body['parameters']['myFile']);
-        $object = $result->body['parametersMultipart']['object'];
+        $object = $result->body['parametersMultipart']['object']['value'];
         $this->assertEquals('{"body":{"key":234}}', $object);
     }
 
