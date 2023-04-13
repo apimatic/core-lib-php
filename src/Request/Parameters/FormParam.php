@@ -85,7 +85,15 @@ class FormParam extends EncodedParam
         }
         $this->value = $this->prepareValue($this->value);
         if ($this->isMultipart()) {
-            $request->addMultipartFormParam($this->key, CoreHelper::serialize($this->value));
+            $multiPartParam = [
+                "value" => CoreHelper::serialize($this->value)
+            ];
+
+            if (isset($this->encodingHeaders['content-type'])) {
+                $multiPartParam["content-type"] = $this->encodingHeaders['content-type'];
+            }
+
+            $request->addMultipartFormParam($this->key, $multiPartParam);
             return;
         }
         $encodedValue = $this->httpBuildQuery([$this->key => $this->value], $this->format);
