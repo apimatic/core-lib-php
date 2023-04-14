@@ -385,6 +385,10 @@ class ApiCallTest extends TestCase
         $this->assertEquals($file, $result->body['parameters']['myFile']);
         $object = $result->body['parametersMultipart']['object']['data'];
         $this->assertEquals('{"body":{"key":234}}', $object);
+        $this->assertEquals(
+            'application/json',
+            $result->body['parametersMultipart']['object']['headers']['content-type']
+        );
     }
 
     public function testSendFileFormWithEncodingHeader()

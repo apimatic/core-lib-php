@@ -36,7 +36,7 @@ class FormParam extends EncodedParam
      */
     public function encodingHeader(string $key, string $value): self
     {
-        $this->encodingHeaders[strtolower($key)] = $value;
+        $this->encodingHeaders[$key] = $value;
         return $this;
     }
 
@@ -60,8 +60,10 @@ class FormParam extends EncodedParam
 
     private function isMultipart(): bool
     {
+        $lowerCasedKeyHeaderArray = array_change_key_case($this->encodingHeaders, CASE_LOWER);
+
         return !empty($this->encodingHeaders) &&
-            $this->encodingHeaders['content-type'] != 'application/x-www-form-urlencoded';
+            $lowerCasedKeyHeaderArray['content-type'] != 'application/x-www-form-urlencoded';
     }
 
     /**
@@ -86,9 +88,9 @@ class FormParam extends EncodedParam
         $this->value = $this->prepareValue($this->value);
         if ($this->isMultipart()) {
             $multiPartParam = [
-                "data" => CoreHelper::serialize($this->value)
+                'data' => CoreHelper::serialize($this->value),
+                'headers' => $this->encodingHeaders
             ];
-            $multiPartParam["headers"] = $this->encodingHeaders;
             $request->addMultipartFormParam($this->key, $multiPartParam);
             return;
         }
