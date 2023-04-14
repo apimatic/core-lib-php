@@ -60,7 +60,7 @@ class FormParam extends EncodedParam
 
     private function isMultipart(): bool
     {
-        return isset($this->encodingHeaders['content-type']) &&
+        return !empty($this->encodingHeaders) &&
             $this->encodingHeaders['content-type'] != 'application/x-www-form-urlencoded';
     }
 
@@ -86,13 +86,9 @@ class FormParam extends EncodedParam
         $this->value = $this->prepareValue($this->value);
         if ($this->isMultipart()) {
             $multiPartParam = [
-                "value" => CoreHelper::serialize($this->value)
+                "data" => CoreHelper::serialize($this->value)
             ];
-
-            if (isset($this->encodingHeaders['content-type'])) {
-                $multiPartParam["content-type"] = $this->encodingHeaders['content-type'];
-            }
-
+            $multiPartParam["headers"] = $this->encodingHeaders;
             $request->addMultipartFormParam($this->key, $multiPartParam);
             return;
         }
