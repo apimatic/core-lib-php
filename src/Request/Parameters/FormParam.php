@@ -8,6 +8,7 @@ use Core\Types\Sdk\CoreFileWrapper;
 use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Request\RequestArraySerialization;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
+use CURLFile;
 
 class FormParam extends EncodedParam
 {
@@ -36,6 +37,9 @@ class FormParam extends EncodedParam
      */
     public function encodingHeader(string $key, string $value): self
     {
+        if (strtolower($key) == 'content-type') {
+            $key = 'Content-Type';
+        }
         $this->encodingHeaders[$key] = $value;
         return $this;
     }
@@ -60,10 +64,31 @@ class FormParam extends EncodedParam
 
     private function isMultipart(): bool
     {
-        $lowerCasedKeyHeaderArray = array_change_key_case($this->encodingHeaders, CASE_LOWER);
+        if ($this->value instanceof CoreFileWrapper) {
+            return true;
+        }
+        return isset($this->encodingHeaders['Content-Type']) &&
+            $this->encodingHeaders['Content-Type'] != 'application/x-www-form-urlencoded';
+    }
 
-        return !empty($this->encodingHeaders) &&
-            $lowerCasedKeyHeaderArray['content-type'] != 'application/x-www-form-urlencoded';
+    /**
+     * Returns multipart data.
+     *
+     * @return CURLFile|array CURLFile for FileWrapper value and wrapped data with encodingHeaders
+     *                        as array for all other types of value
+     */
+    private function getMultipartData()
+    {
+        if ($this->value instanceof CoreFileWrapper) {
+            if (isset($this->encodingHeaders['Content-Type'])) {
+                return $this->value->createCurlFileInstance($this->encodingHeaders['Content-Type']);
+            }
+            return $this->value->createCurlFileInstance();
+        }
+        return [
+            'data' => CoreHelper::serialize($this->prepareValue($this->value)),
+            'headers' => $this->encodingHeaders
+        ];
     }
 
     /**
@@ -76,24 +101,11 @@ class FormParam extends EncodedParam
         if (!$this->validated) {
             return;
         }
-        if ($this->value instanceof CoreFileWrapper) {
-            if (isset($this->encodingHeaders['content-type'])) {
-                $this->value = $this->value->createCurlFileInstance($this->encodingHeaders['content-type']);
-            } else {
-                $this->value = $this->value->createCurlFileInstance();
-            }
-            $request->addMultipartFormParam($this->key, $this->value);
+        if ($this->isMultipart()) {
+            $request->addMultipartFormParam($this->key, $this->getMultipartData());
             return;
         }
         $this->value = $this->prepareValue($this->value);
-        if ($this->isMultipart()) {
-            $multiPartParam = [
-                'data' => CoreHelper::serialize($this->value),
-                'headers' => $this->encodingHeaders
-            ];
-            $request->addMultipartFormParam($this->key, $multiPartParam);
-            return;
-        }
         $encodedValue = $this->httpBuildQuery([$this->key => $this->value], $this->format);
         if (empty($encodedValue)) {
             return;
