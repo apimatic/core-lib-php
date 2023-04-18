@@ -372,6 +372,7 @@ class ApiCallTest extends TestCase
                         ->encodingHeader('content-type', 'image/png'),
                     FormParam::init('object', new MockClass(["key" => 234]))
                         ->encodingHeader('content-type', 'application/json')
+                        ->encodingHeader('Class-Name', 'MockClass')
                 ))
             ->responseHandler(MockHelper::responseHandler()->type(MockClass::class))
             ->execute();
@@ -384,7 +385,15 @@ class ApiCallTest extends TestCase
         $this->assertEquals('My Text', $file->getPostFilename());
         $this->assertEquals($file, $result->body['parameters']['myFile']);
         $object = $result->body['parametersMultipart']['object'];
-        $this->assertEquals('{"body":{"key":234}}', $object);
+        $this->assertEquals('{"body":{"key":234}}', $object['data']);
+        $this->assertEquals($object['data'], $result->body['parameters']['object']);
+        $this->assertEquals(
+            [
+                'Content-Type' => 'application/json',
+                'Class-Name' => 'MockClass'
+            ],
+            $object['headers']
+        );
     }
 
     public function testSendFileFormWithEncodingHeader()
