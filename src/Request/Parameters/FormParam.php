@@ -71,8 +71,8 @@ class FormParam extends EncodedParam
     /**
      * Returns multipart data.
      *
-     * @return CURLFile|array CURLFile for FileWrapper value and wrapped data with encodingHeaders
-     *                        as array for all other types of value
+     * @return CURLFile|array CURLFile for FileWrapper value whereas Array of string $data and
+     *                        array<string,string> $headers for all other types of value
      */
     private function getMultipartData()
     {
