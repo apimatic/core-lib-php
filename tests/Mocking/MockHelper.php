@@ -116,6 +116,7 @@ class MockHelper
         if (!isset(self::$jsonHelper)) {
             self::$jsonHelper = new JsonHelper(
                 [MockClass::class => [MockChild1::class, MockChild2::class, MockChild3::class]],
+                ['disc' => 'my field', 'disc1' => 'This is 1', 'disc2' => 'This is 2'],
                 'addAdditionalProperty',
                 'Core\\Tests\\Mocking\\Other'
             );

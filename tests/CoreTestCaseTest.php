@@ -13,6 +13,8 @@ use Core\TestCase\BodyMatchers\RawBodyMatcher;
 use Core\TestCase\CoreTestCase;
 use Core\TestCase\TestParam;
 use Core\Tests\Mocking\MockHelper;
+use Core\Tests\Mocking\Other\MockChild1;
+use Core\Tests\Mocking\Other\MockChild2;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Response\MockResponse;
 use Core\Utils\CoreHelper;
@@ -278,6 +280,24 @@ class CoreTestCaseTest extends TestCase
                 TestParam::typeGroup('This is string', 'oneof(string,int)')
             ))
             ->assert();
+    }
+
+    public function testTypeGroupParamForCustomTypes()
+    {
+        $obj = TestParam::typeGroup(
+            '{"childBody":"this is mock class","body":[]}',
+            'anyOf(MockChild1,MockChild2)'
+        );
+        $this->assertInstanceOf(MockChild1::class, $obj);
+    }
+
+    public function testTypeGroupParamForCustomTypesWithDiscriminators()
+    {
+        $obj = TestParam::typeGroup(
+            '{"childBody":"this is mock class","body":[],"my field":"This is 2"}',
+            'oneOf{disc}(MockChild1{disc1},MockChild2{disc2})'
+        );
+        $this->assertInstanceOf(MockChild2::class, $obj);
     }
 
     public function testClassArrayParamForNative()
