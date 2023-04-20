@@ -25,19 +25,19 @@ class JsonHelper implements TypeValidatorInterface
     private $defaultNamespace;
 
     /**
-     * @param array<string,string[]> $inheritedModel
+     * @param array<string,string[]> $inheritedModels
      * @param array<string,string> $discriminatorSubstitutions
      * @param string|null $additionalPropsMethodName
      * @param string|null $defaultNamespace
      */
     public function __construct(
-        array $inheritedModel,
+        array $inheritedModels,
         array $discriminatorSubstitutions,
         ?string $additionalPropsMethodName,
         ?string $defaultNamespace
     ) {
         $this->jsonMapper = new JsonMapper();
-        $this->jsonMapper->arChildClasses = $inheritedModel;
+        $this->jsonMapper->arChildClasses = $inheritedModels;
         $this->jsonMapper->discriminatorSubs = $discriminatorSubstitutions;
         $this->jsonMapper->sAdditionalPropertiesCollectionMethod = $additionalPropsMethodName;
         $this->defaultNamespace = $defaultNamespace;
