@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "87601e01a9f012435da34734b114bae3",
+    "content-hash": "725f7b9cd06290268f95d02b5846bbe0",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
@@ -51,16 +51,16 @@
         },
         {
             "name": "apimatic/jsonmapper",
-            "version": "3.0.7",
+            "version": "dev-37-oaf-discriminator-support",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/jsonmapper.git",
-                "reference": "c877632b29155c5a1efc9a417888e77d51393294"
+                "reference": "9497b73ebe450a7aefeec2cbfcd790bc7c840b7b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/c877632b29155c5a1efc9a417888e77d51393294",
-                "reference": "c877632b29155c5a1efc9a417888e77d51393294",
+                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/9497b73ebe450a7aefeec2cbfcd790bc7c840b7b",
+                "reference": "9497b73ebe450a7aefeec2cbfcd790bc7c840b7b",
                 "shasum": ""
             },
             "require": {
@@ -99,9 +99,9 @@
             "support": {
                 "email": "mehdi.jaffery@apimatic.io",
                 "issues": "https://github.com/apimatic/jsonmapper/issues",
-                "source": "https://github.com/apimatic/jsonmapper/tree/3.0.7"
+                "source": "https://github.com/apimatic/jsonmapper/tree/37-oaf-discriminator-support"
             },
-            "time": "2023-04-04T06:44:42+00:00"
+            "time": "2023-04-20T06:37:15+00:00"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -643,16 +643,16 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "cfa81ea1d35294d64adb9c68aa4cb9e92400e53f"
+                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/cfa81ea1d35294d64adb9c68aa4cb9e92400e53f",
-                "reference": "cfa81ea1d35294d64adb9c68aa4cb9e92400e53f",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/f60565f8c0566a31acf06884cdaa591867ecc956",
+                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956",
                 "shasum": ""
             },
             "require": {
@@ -688,9 +688,9 @@
             "support": {
                 "email": "cweiske@cweiske.de",
                 "issues": "https://github.com/cweiske/jsonmapper/issues",
-                "source": "https://github.com/cweiske/jsonmapper/tree/v4.1.0"
+                "source": "https://github.com/cweiske/jsonmapper/tree/v4.2.0"
             },
-            "time": "2022-12-08T20:46:14+00:00"
+            "time": "2023-04-09T17:37:40+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -1108,16 +1108,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.16.1",
+            "version": "1.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "e27e92d939e2e3636f0a1f0afaba59692c0bf571"
+                "reference": "f545fc30978190a056832aa7ed995e36a66267f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/e27e92d939e2e3636f0a1f0afaba59692c0bf571",
-                "reference": "e27e92d939e2e3636f0a1f0afaba59692c0bf571",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/f545fc30978190a056832aa7ed995e36a66267f3",
+                "reference": "f545fc30978190a056832aa7ed995e36a66267f3",
                 "shasum": ""
             },
             "require": {
@@ -1147,9 +1147,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.16.1"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.19.1"
             },
-            "time": "2023-02-07T18:11:17+00:00"
+            "time": "2023-04-18T11:30:56+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1471,16 +1471,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.6",
+            "version": "9.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "b65d59a059d3004a040c16a82e07bbdf6cfdd115"
+                "reference": "c993f0d3b0489ffc42ee2fe0bd645af1538a63b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b65d59a059d3004a040c16a82e07bbdf6cfdd115",
-                "reference": "b65d59a059d3004a040c16a82e07bbdf6cfdd115",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c993f0d3b0489ffc42ee2fe0bd645af1538a63b2",
+                "reference": "c993f0d3b0489ffc42ee2fe0bd645af1538a63b2",
                 "shasum": ""
             },
             "require": {
@@ -1554,7 +1554,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.6"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.7"
             },
             "funding": [
                 {
@@ -1570,7 +1570,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-27T11:43:46+00:00"
+            "time": "2023-04-14T08:58:40+00:00"
         },
         {
             "name": "psr/container",
@@ -3682,7 +3682,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "apimatic/jsonmapper": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
