@@ -179,7 +179,7 @@ class Request implements RequestSetterInterface
     public function addMultipartFormParam(string $key, $value): void
     {
         $this->parametersMultipart[$key] = $value;
-        $this->parameters[$key] = is_array($value) ? $value['data'] : $value;
+        $this->parameters[$key] = $value;
     }
 
     /**
