@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "725f7b9cd06290268f95d02b5846bbe0",
+    "content-hash": "085fc4713d428df51b738ba31af36899",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
@@ -51,16 +51,16 @@
         },
         {
             "name": "apimatic/jsonmapper",
-            "version": "dev-37-oaf-discriminator-support",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/jsonmapper.git",
-                "reference": "9497b73ebe450a7aefeec2cbfcd790bc7c840b7b"
+                "reference": "aa5542f35efebde36c1c1c81d97d7df24678c7e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/9497b73ebe450a7aefeec2cbfcd790bc7c840b7b",
-                "reference": "9497b73ebe450a7aefeec2cbfcd790bc7c840b7b",
+                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/aa5542f35efebde36c1c1c81d97d7df24678c7e4",
+                "reference": "aa5542f35efebde36c1c1c81d97d7df24678c7e4",
                 "shasum": ""
             },
             "require": {
@@ -99,9 +99,9 @@
             "support": {
                 "email": "mehdi.jaffery@apimatic.io",
                 "issues": "https://github.com/apimatic/jsonmapper/issues",
-                "source": "https://github.com/apimatic/jsonmapper/tree/37-oaf-discriminator-support"
+                "source": "https://github.com/apimatic/jsonmapper/tree/3.1.0"
             },
-            "time": "2023-04-20T06:37:15+00:00"
+            "time": "2023-05-03T09:50:17+00:00"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -1108,16 +1108,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.19.1",
+            "version": "1.20.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "f545fc30978190a056832aa7ed995e36a66267f3"
+                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/f545fc30978190a056832aa7ed995e36a66267f3",
-                "reference": "f545fc30978190a056832aa7ed995e36a66267f3",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
+                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
                 "shasum": ""
             },
             "require": {
@@ -1147,9 +1147,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.19.1"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.20.4"
             },
-            "time": "2023-04-18T11:30:56+00:00"
+            "time": "2023-05-02T09:19:37+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2764,16 +2764,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v6.2.8",
+            "version": "v6.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "3582d68a64a86ec25240aaa521ec8bc2342b369b"
+                "reference": "12288d9f4500f84a4d02254d4aa968b15488476f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/3582d68a64a86ec25240aaa521ec8bc2342b369b",
-                "reference": "3582d68a64a86ec25240aaa521ec8bc2342b369b",
+                "url": "https://api.github.com/repos/symfony/console/zipball/12288d9f4500f84a4d02254d4aa968b15488476f",
+                "reference": "12288d9f4500f84a4d02254d4aa968b15488476f",
                 "shasum": ""
             },
             "require": {
@@ -2840,7 +2840,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v6.2.8"
+                "source": "https://github.com/symfony/console/tree/v6.2.10"
             },
             "funding": [
                 {
@@ -2856,7 +2856,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-29T21:42:15+00:00"
+            "time": "2023-04-28T13:37:43+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -3682,9 +3682,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "apimatic/jsonmapper": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
