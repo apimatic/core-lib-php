@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Core\Response\Types;
 
 use Core\Response\Context;
-use Exception;
-use LogicException;
-use RuntimeException;
 
 class ResponseMultiType
 {
