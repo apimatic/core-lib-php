@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Core\Response\Types;
 
+use apimatic\jsonmapper\AnyOfValidationException;
+use apimatic\jsonmapper\OneOfValidationException;
 use Closure;
 use Core\Response\Context;
 use Exception;
-use LogicException;
-use RuntimeException;
 
 class ResponseType
 {
@@ -71,7 +71,7 @@ class ResponseType
                 $this->responseClass,
                 $this->dimensions
             );
-        } catch (RuntimeException | LogicException $e) {
+        } catch (OneOfValidationException | AnyOfValidationException $e) {
             throw $e;
         } catch (Exception $e) {
             throw $context->toApiException($e->getMessage());

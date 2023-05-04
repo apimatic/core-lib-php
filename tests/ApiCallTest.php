@@ -765,7 +765,7 @@ class ApiCallTest extends TestCase
 
     public function testReceiveByWrongType()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(MockException::class);
         $this->expectExceptionMessage('JsonMapper::mapClass() requires second argument to be a class name, ' .
             'InvalidClass given.');
         MockHelper::newApiCall()
@@ -1348,7 +1348,7 @@ class ApiCallTest extends TestCase
 
     public function testTypeInvalidJsonFailure()
     {
-        $this->expectException(JsonMapperException::class);
+        $this->expectException(MockException::class);
         $this->expectExceptionMessage(
             'Could not find required constructor arguments for Core\Tests\Mocking\Other\MockClass: body'
         );
