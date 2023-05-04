@@ -7,6 +7,8 @@ namespace Core\Response\Types;
 use Closure;
 use Core\Response\Context;
 use Exception;
+use LogicException;
+use RuntimeException;
 
 class ResponseType
 {
@@ -69,6 +71,8 @@ class ResponseType
                 $this->responseClass,
                 $this->dimensions
             );
+        } catch (RuntimeException | LogicException $e) {
+            throw $e;
         } catch (Exception $e) {
             throw $context->toApiException($e->getMessage());
         }

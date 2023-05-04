@@ -122,7 +122,7 @@ class ResponseHandler
     }
 
     /**
-     * @param string $typeGroup                Group of types in string format i.e. oneof(...), anyof(...)
+     * @param string $typeGroup                Group of types in string format i.e. oneOf(...), anyOf(...)
      * @param string[] $typeGroupDeserializers Methods required for deserialization of specific types in
      *                                         in the provided typeGroup, should be an array in the format:
      *                                         ['path/to/method returnType', ...]. Default: []

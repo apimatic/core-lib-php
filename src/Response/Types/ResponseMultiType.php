@@ -6,6 +6,8 @@ namespace Core\Response\Types;
 
 use Core\Response\Context;
 use Exception;
+use LogicException;
+use RuntimeException;
 
 class ResponseMultiType
 {
@@ -44,10 +46,6 @@ class ResponseMultiType
             return null;
         }
         $responseBody = $context->getResponse()->getBody();
-        try {
-            return $context->getJsonHelper()->mapTypes($responseBody, $this->typeGroup, $this->deserializers);
-        } catch (Exception $e) {
-            throw $context->toApiException($e->getMessage());
-        }
+        return $context->getJsonHelper()->mapTypes($responseBody, $this->typeGroup, $this->deserializers);
     }
 }

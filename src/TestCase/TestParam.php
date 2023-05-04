@@ -16,7 +16,7 @@ class TestParam
      * Returns a typeGroup type TestParam.
      *
      * @param string $json          Json value to be mapped by the typeGroup
-     * @param string $typeGroup     Group of types in string format i.e. oneof(...), anyof(...)
+     * @param string $typeGroup     Group of types in string format i.e. oneOf(...), anyOf(...)
      * @param array  $deserializers Methods required for the de-serialization of specific types in
      *                              in the provided typeGroup, should be an array in the format:
      *                              ['path/to/method returnType', ...]. Default: []

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "085fc4713d428df51b738ba31af36899",
+    "content-hash": "b028ba6d664bf489126ca2d7a3ff5328",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
@@ -51,16 +51,16 @@
         },
         {
             "name": "apimatic/jsonmapper",
-            "version": "3.1.0",
+            "version": "dev-39-jsonmapper-runtime-exception",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/jsonmapper.git",
-                "reference": "aa5542f35efebde36c1c1c81d97d7df24678c7e4"
+                "reference": "e666d33c5f73909bdf24d76ecc4b6b4e215cbe61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/aa5542f35efebde36c1c1c81d97d7df24678c7e4",
-                "reference": "aa5542f35efebde36c1c1c81d97d7df24678c7e4",
+                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/e666d33c5f73909bdf24d76ecc4b6b4e215cbe61",
+                "reference": "e666d33c5f73909bdf24d76ecc4b6b4e215cbe61",
                 "shasum": ""
             },
             "require": {
@@ -99,9 +99,9 @@
             "support": {
                 "email": "mehdi.jaffery@apimatic.io",
                 "issues": "https://github.com/apimatic/jsonmapper/issues",
-                "source": "https://github.com/apimatic/jsonmapper/tree/3.1.0"
+                "source": "https://github.com/apimatic/jsonmapper/tree/39-jsonmapper-runtime-exception"
             },
-            "time": "2023-05-03T09:50:17+00:00"
+            "time": "2023-05-04T07:11:50+00:00"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -3682,7 +3682,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "apimatic/jsonmapper": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
