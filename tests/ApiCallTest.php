@@ -3,7 +3,6 @@
 namespace Core\Tests;
 
 use apimatic\jsonmapper\AnyOfValidationException;
-use apimatic\jsonmapper\JsonMapperException;
 use apimatic\jsonmapper\OneOfValidationException;
 use Core\Request\Parameters\AdditionalFormParams;
 use Core\Request\Parameters\AdditionalQueryParams;
@@ -30,7 +29,6 @@ use CoreInterfaces\Core\Request\RequestMethod;
 use CoreInterfaces\Http\RetryOption;
 use CURLFile;
 use Exception;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ApiCallTest extends TestCase
