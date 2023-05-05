@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\TestCase;
 
+use apimatic\jsonmapper\JsonMapperException;
 use Closure;
 use Core\Client;
 use Core\Types\Sdk\CoreFileWrapper;
@@ -21,7 +22,7 @@ class TestParam
      *                              in the provided typeGroup, should be an array in the format:
      *                              ['path/to/method returnType', ...]. Default: []
      * @return mixed Returns the mapped value from json
-     * @throws Exception
+     * @throws JsonMapperException
      */
     public static function typeGroup(string $json, string $typeGroup, array $deserializers = [])
     {
