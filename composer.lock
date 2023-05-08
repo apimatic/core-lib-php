@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b028ba6d664bf489126ca2d7a3ff5328",
+    "content-hash": "d5cd187298dec13610a0ea175650d780",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
@@ -51,16 +51,16 @@
         },
         {
             "name": "apimatic/jsonmapper",
-            "version": "dev-39-jsonmapper-runtime-exception",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/jsonmapper.git",
-                "reference": "e666d33c5f73909bdf24d76ecc4b6b4e215cbe61"
+                "reference": "646a3088386a3aa6baeae5a6620517b6959ef193"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/e666d33c5f73909bdf24d76ecc4b6b4e215cbe61",
-                "reference": "e666d33c5f73909bdf24d76ecc4b6b4e215cbe61",
+                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/646a3088386a3aa6baeae5a6620517b6959ef193",
+                "reference": "646a3088386a3aa6baeae5a6620517b6959ef193",
                 "shasum": ""
             },
             "require": {
@@ -99,9 +99,9 @@
             "support": {
                 "email": "mehdi.jaffery@apimatic.io",
                 "issues": "https://github.com/apimatic/jsonmapper/issues",
-                "source": "https://github.com/apimatic/jsonmapper/tree/39-jsonmapper-runtime-exception"
+                "source": "https://github.com/apimatic/jsonmapper/tree/3.1.1"
             },
-            "time": "2023-05-04T07:11:50+00:00"
+            "time": "2023-05-08T06:20:23+00:00"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -2041,16 +2041,16 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "4.0.4",
+            "version": "4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "3461e3fccc7cfdfc2720be910d3bd73c69be590d"
+                "reference": "74be17022044ebaaecfdf0c5cd504fc9cd5a7131"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/3461e3fccc7cfdfc2720be910d3bd73c69be590d",
-                "reference": "3461e3fccc7cfdfc2720be910d3bd73c69be590d",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/74be17022044ebaaecfdf0c5cd504fc9cd5a7131",
+                "reference": "74be17022044ebaaecfdf0c5cd504fc9cd5a7131",
                 "shasum": ""
             },
             "require": {
@@ -2095,7 +2095,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/diff/issues",
-                "source": "https://github.com/sebastianbergmann/diff/tree/4.0.4"
+                "source": "https://github.com/sebastianbergmann/diff/tree/4.0.5"
             },
             "funding": [
                 {
@@ -2103,7 +2103,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T13:10:38+00:00"
+            "time": "2023-05-07T05:35:17+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -3682,9 +3682,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "apimatic/jsonmapper": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
