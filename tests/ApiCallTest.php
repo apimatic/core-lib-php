@@ -2,6 +2,8 @@
 
 namespace Core\Tests;
 
+use apimatic\jsonmapper\AnyOfValidationException;
+use apimatic\jsonmapper\OneOfValidationException;
 use Core\Request\Parameters\AdditionalFormParams;
 use Core\Request\Parameters\AdditionalQueryParams;
 use Core\Request\Parameters\BodyParam;
@@ -754,11 +756,11 @@ class ApiCallTest extends TestCase
     {
         $this->expectException(MockException::class);
         $this->expectExceptionMessage('JsonMapper::mapClass() requires second argument to be a class name, ' .
-            'MockClass given.');
+            'InvalidClass given.');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::responseHandler()
-                ->type('MockClass'))
+                ->type('InvalidClass'))
             ->execute();
     }
 
@@ -781,14 +783,25 @@ class ApiCallTest extends TestCase
             ->execute();
     }
 
-    public function testReceiveByWrongTypeGroup()
+    public function testReceiveByWrongAnyOfTypeGroup()
     {
-        $this->expectException(MockException::class);
-        $this->expectExceptionMessage('Unable to map AnyOf (MockCla,string) on: ');
+        $this->expectException(AnyOfValidationException::class);
+        $this->expectExceptionMessage('We could not match any acceptable type from (MockCla,string) on: ');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::responseHandler()
-                ->typeGroup('oneof(MockCla,string)'))
+                ->typeGroup('anyOf(MockCla,string)'))
+            ->execute();
+    }
+
+    public function testReceiveByWrongOneOfTypeGroup()
+    {
+        $this->expectException(OneOfValidationException::class);
+        $this->expectExceptionMessage('There are more than one matching types i.e. { object and MockClass } on: ');
+        MockHelper::newApiCall()
+            ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
+            ->responseHandler(MockHelper::responseHandler()
+                ->typeGroup('oneOf(MockClass,object)'))
             ->execute();
     }
 
@@ -797,7 +810,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::responseHandler()
-                ->typeGroup('oneof(MockClass,string)'))
+                ->typeGroup('oneOf(MockClass,string)'))
             ->execute();
 
         $this->assertInstanceOf(MockClass::class, $result);
@@ -808,7 +821,7 @@ class ApiCallTest extends TestCase
         $result = MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
             ->responseHandler(MockHelper::responseHandler()
-                ->typeGroup('oneof(MockClass,string)')
+                ->typeGroup('oneOf(MockClass,string)')
                 ->returnApiResponse())
             ->execute();
         $this->assertInstanceOf(MockApiResponse::class, $result);
@@ -1297,6 +1310,43 @@ class ApiCallTest extends TestCase
             ["34", "asad", "this is new", ["key1" => "val1", "key2" => "val2"], "this is attribute", null],
             $result->body
         );
+    }
+
+    public function testTypeXmlFailure()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage(
+            'Required value not found at XML path "/mockClass/new1[1]" during deserialization.'
+        );
+        $response = new MockResponse();
+        $response->setRawBody("<?xml version=\"1.0\"?>\n" .
+            "<mockClass attr=\"this is attribute\">\n" .
+            "  <body>34</body>\n" .
+            "  <body>asad</body>\n" .
+            "  <newInvalid>this is new</newInvalid>\n" .
+            "  <new2>\n" .
+            "    <entry key=\"key1\">val1</entry>\n" .
+            "    <entry key=\"key2\">val2</entry>\n" .
+            "  </new2>\n" .
+            "</mockClass>\n");
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->typeXml(MockClass::class, 'mockClass')
+            ->getResult($context);
+    }
+
+    public function testTypeInvalidJsonFailure()
+    {
+        $this->expectException(MockException::class);
+        $this->expectExceptionMessage(
+            'Could not find required constructor arguments for Core\Tests\Mocking\Other\MockClass: body'
+        );
+        $response = new MockResponse();
+        $response->setBody(json_decode('{"invalidItem":"wrong item"}'));
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        MockHelper::responseHandler()
+            ->type(MockClass::class)
+            ->getResult($context);
     }
 
     public function testTypeXmlArray()

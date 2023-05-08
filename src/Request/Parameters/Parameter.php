@@ -91,7 +91,7 @@ abstract class Parameter implements ParamInterface
 
     /**
      * @param string   $strictType        Strict single type i.e. string, ModelName, etc. or group of types
-     *                                    in string format i.e. oneof(...), anyof(...)
+     *                                    in string format i.e. oneOf(...), anyOf(...)
      * @param string[] $serializerMethods Methods required for the serialization of specific types in
      *                                    in the provided strict types/type, should be an array in the format:
      *                                    ['path/to/method argumentType', ...]. Default: []

@@ -2,6 +2,7 @@
 
 namespace Core\Tests;
 
+use apimatic\jsonmapper\JsonMapperException;
 use Core\Client;
 use Core\ClientBuilder;
 use Core\Request\Parameters\BodyParam;
@@ -117,7 +118,7 @@ class ClientTest extends TestCase
 
     public function testStrictTypeQueryParamValidation()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         QueryParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
@@ -147,7 +148,7 @@ class ClientTest extends TestCase
 
     public function testStrictTypeTemplateParamValidation()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         TemplateParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
@@ -175,7 +176,7 @@ class ClientTest extends TestCase
 
     public function testStrictTypeFormParamValidation()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         FormParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
@@ -205,7 +206,7 @@ class ClientTest extends TestCase
 
     public function testStrictTypeHeaderParamValidation()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         HeaderParam::init('newKey', 'someVal')->strictType('oneof(int,bool)')->validate(
@@ -233,7 +234,7 @@ class ClientTest extends TestCase
 
     public function testStrictTypeBodyParamValidation()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage("Unable to map Type: string on: oneof(int,bool)");
 
         BodyParam::init('someVal')->strictType('oneof(int,bool)')->validate(
