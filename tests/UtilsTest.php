@@ -187,6 +187,11 @@ class UtilsTest extends TestCase
         $this->assertEquals('', CoreHelper::getOsInfo(true));
     }
 
+    public function testDisabledOsVersion()
+    {
+        $this->assertEquals(PHP_OS_FAMILY, CoreHelper::getOsInfo(false, true));
+    }
+
     public function testFromSimpleDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);
