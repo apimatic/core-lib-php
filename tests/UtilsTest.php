@@ -182,9 +182,21 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
+    public function testOsInfo()
+    {
+        $expected = PHP_OS_FAMILY . '-' . php_uname('r');
+        $this->assertEquals($expected, CoreHelper::getOsInfo());
+    }
+
     public function testEmptyOsInfo()
     {
-        $this->assertEquals('', CoreHelper::getOsInfo(true));
+        $this->assertEquals('', CoreHelper::getOsInfo(''));
+        $this->assertEquals('', CoreHelper::getOsInfo('Unknown'));
+    }
+
+    public function testDisabledOsVersion()
+    {
+        $this->assertEquals(PHP_OS_FAMILY, CoreHelper::getOsInfo(PHP_OS_FAMILY, 'unknown_func'));
     }
 
     public function testFromSimpleDateFailure()

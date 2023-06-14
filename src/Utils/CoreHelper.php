@@ -140,11 +140,14 @@ class CoreHelper
     /**
      * Return basic OS info.
      */
-    public static function getOsInfo(bool $test = false): string
+    public static function getOsInfo(string $osFamily = PHP_OS_FAMILY, string $functionName = 'php_uname'): string
     {
-        if ($test || PHP_OS_FAMILY === 'Unknown') {
+        if ($osFamily === 'Unknown' || empty($osFamily)) {
             return '';
         }
-        return PHP_OS_FAMILY . '-' . php_uname('r');
+        if (!function_exists($functionName)) {
+            return $osFamily;
+        }
+        return $osFamily . '-' . call_user_func($functionName, 'r');
     }
 }
