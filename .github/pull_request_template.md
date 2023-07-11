@@ -2,7 +2,9 @@
 Write a summary of the changes made in the PR.
 
 ## Why
-Exlpain the reasons for the changes.
+Explain the reasons for the changes.
+
+Closes #
 
 ## Type of change
 Select multiple if applicable.

@@ -20,7 +20,7 @@ abstract class EncodedParam extends Parameter
     /**
      * Prepare a mixed typed value or array for form/query encoding.
      *
-     * @param mixed $value  Any mixed typed value.
+     * @param mixed $value Any mixed typed value.
      *
      * @return mixed  A valid instance to be sent in form/query.
      */
@@ -34,7 +34,7 @@ abstract class EncodedParam extends Parameter
             return array_map([$this, 'prepareValue'], $value);
         }
         if (is_bool($value)) {
-            return var_export($value, true);
+            return $this->isMultipart() ? $value : var_export($value, true);
         }
         if ($value instanceof JsonSerializable) {
             $modelArray = $value->jsonSerialize();
@@ -42,6 +42,16 @@ abstract class EncodedParam extends Parameter
             return array_map([$this, 'prepareValue'], $modelArray instanceof stdClass ? [] : $modelArray);
         }
         return $value;
+    }
+
+    /**
+     * Override this method to provide isMultipart implementation.
+     *
+     * @return bool Returning false by default
+     */
+    protected function isMultipart(): bool
+    {
+        return false;
     }
 
     /**
