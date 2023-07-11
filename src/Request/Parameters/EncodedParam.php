@@ -34,10 +34,7 @@ abstract class EncodedParam extends Parameter
             return array_map([$this, 'prepareValue'], $value);
         }
         if (is_bool($value)) {
-            if ($this->isMultipart()) {
-                return $value;
-            }
-            return var_export($value, true);
+            return $this->isMultipart() ? $value : var_export($value, true);
         }
         if ($value instanceof JsonSerializable) {
             $modelArray = $value->jsonSerialize();
