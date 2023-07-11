@@ -58,7 +58,7 @@ class FormParam extends EncodedParam
         return $this;
     }
 
-    private function isMultipart(): bool
+    protected function isMultipart(): bool
     {
         return isset($this->encodingHeaders['content-type']) &&
             $this->encodingHeaders['content-type'] != 'application/x-www-form-urlencoded';

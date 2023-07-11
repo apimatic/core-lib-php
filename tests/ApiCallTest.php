@@ -372,21 +372,27 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     FormParam::init('myFile', MockHelper::getFileWrapper())
                         ->encodingHeader('content-type', 'image/png'),
-                    FormParam::init('object', new MockClass(["key" => 234]))
-                        ->encodingHeader('content-type', 'application/json')
+                    FormParam::init('object', new MockClass(["key" => 234, "myBool" => true]))
+                        ->encodingHeader('content-type', 'application/json'),
+                    FormParam::init('my bool', true)
+                        ->encodingHeader('content-type', 'application/text')
                 ))
             ->responseHandler(MockHelper::responseHandler()->type(MockClass::class))
             ->execute();
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals([], $result->body['parametersEncoded']);
+
         $file = $result->body['parametersMultipart']['myFile'];
         $this->assertInstanceOf(CURLFile::class, $file);
         $this->assertStringEndsWith('testFile.txt', $file->getFilename());
         $this->assertEquals('text/plain', $file->getMimeType());
         $this->assertEquals('My Text', $file->getPostFilename());
-        $this->assertEquals($file, $result->body['parameters']['myFile']);
-        $object = $result->body['parametersMultipart']['object'];
-        $this->assertEquals('{"body":{"key":234}}', $object);
+
+        $this->assertEquals([
+            'myFile' => $file,
+            'object' => '{"body":{"key":234,"myBool":true}}',
+            'my bool' => 'true'
+        ], $result->body['parametersMultipart']);
     }
 
     public function testSendFileFormWithEncodingHeader()
@@ -416,6 +422,8 @@ class ApiCallTest extends TestCase
                 ->parameters(
                     FormParam::init('myFile', MockHelper::getFileWrapper()),
                     FormParam::init('key', 'val 01'),
+                    FormParam::init('my bool', true),
+                    FormParam::init('object', new MockClass(["key" => 234, "myBool" => true])),
                     FormParam::init('special', ['%^&&*^?.. + @214', true])
                 ))
             ->responseHandler(MockHelper::responseHandler()
@@ -424,7 +432,9 @@ class ApiCallTest extends TestCase
         $this->assertInstanceOf(MockClass::class, $result);
         $this->assertEquals([
             'key' => 'key=val+01',
-            'special' => 'special%5B0%5D=%25%5E%26%26%2A%5E%3F..+%2B+%40214&special%5B1%5D=true'
+            'special' => 'special%5B0%5D=%25%5E%26%26%2A%5E%3F..+%2B+%40214&special%5B1%5D=true',
+            'my bool' => 'my+bool=true',
+            'object' => 'object%5Bbody%5D%5Bkey%5D=234&object%5Bbody%5D%5BmyBool%5D=true'
         ], $result->body['parametersEncoded']);
         $this->assertEquals(1, count($result->body['parametersMultipart']));
         $file = $result->body['parametersMultipart']['myFile'];
@@ -435,7 +445,9 @@ class ApiCallTest extends TestCase
         $this->assertEquals([
             'myFile' => $file,
             'key' => 'val 01',
-            'special' => ['%^&&*^?.. + @214', 'true']
+            'special' => ['%^&&*^?.. + @214', 'true'],
+            'my bool' => 'true',
+            'object' => [ 'body' => [ 'key' => 234, 'myBool' => 'true']]
         ], $result->body['parameters']);
     }
 
