@@ -7,6 +7,7 @@ use Core\Authentication\AuthValidationException;
 use Core\Request\Request;
 use Core\Tests\Mocking\Authentication\HeaderAuthManager;
 use Core\Tests\Mocking\MockHelper;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -114,7 +115,8 @@ class AuthenticationTest extends TestCase
     public function testHeaderWithMissingFieldAndQueryAuth()
     {
         $this->expectException(AuthValidationException::class);
-        $this->expectExceptionMessage("Missing required header field: authorization");
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required header field: authorization");
 
         $auth = Auth::and('headerWithNull', 'query');
         MockHelper::getClient()->validateAuth($auth);
@@ -123,7 +125,8 @@ class AuthenticationTest extends TestCase
     public function testHeaderAndQueryAuthWithMissingFields()
     {
         $this->expectException(AuthValidationException::class);
-        $this->expectExceptionMessage("Missing required header field: authorization");
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required header field: authorization");
 
         $auth = Auth::and('headerWithNull', 'queryWithNull');
         MockHelper::getClient()->validateAuth($auth);
@@ -187,7 +190,7 @@ class AuthenticationTest extends TestCase
     public function testFormOrHeaderWithNullAndHeaderOrQueryWithNull()
     {
         $request = new Request('http://localhost:3000');
-        $auth = Auth::and(Auth::or('form', 'headerWithNull', 'formWithNull'), Auth::or('header', 'queryWithNull'));
+        $auth = Auth::and(Auth::or('form', 'headerWithNull', 'formWithNull'), Auth::or('queryWithNull', 'header'));
         MockHelper::getClient()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([
@@ -204,7 +207,8 @@ class AuthenticationTest extends TestCase
     public function testFormOrHeaderWithNullAndHeaderAndQueryWithNull()
     {
         $this->expectException(AuthValidationException::class);
-        $this->expectExceptionMessage("Missing required query field: token");
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required query field: token");
 
         $auth = Auth::and(Auth::or('form', 'headerWithNull'), Auth::and('header', 'queryWithNull'));
         MockHelper::getClient()->validateAuth($auth);
@@ -212,7 +216,7 @@ class AuthenticationTest extends TestCase
 
     public function testInvalidAuthName()
     {
-        $this->expectException(AuthValidationException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("AuthManager not found with name: \"myAuth\"");
 
         MockHelper::getClient()->validateAuth(Auth::or('myAuth'));
