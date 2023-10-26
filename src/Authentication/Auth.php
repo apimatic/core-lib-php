@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Authentication;
 
+use Core\Exceptions\AuthValidationException;
 use CoreInterfaces\Core\Authentication\AuthGroup;
 use CoreInterfaces\Core\Authentication\AuthInterface;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
@@ -32,20 +33,24 @@ class Auth implements AuthInterface
     }
 
     /**
-     * @var array
+     * @var array<Auth|string>
      */
     private $auths;
 
     /**
-     * @var array<string,AuthInterface>
+     * @var AuthInterface[]
      */
-    private $authGroups = [];
+    private $selectedAuthGroups = [];
+
+    /**
+     * @var AuthInterface[]
+     */
+    private $validatedAuthGroups = [];
 
     /**
      * @var string
      */
     private $groupType;
-    private $isValid = false;
 
     /**
      * @param array $auths
@@ -62,7 +67,7 @@ class Auth implements AuthInterface
      */
     public function withAuthManagers(array $authManagers): self
     {
-        $this->authGroups = array_map(function ($auth) use ($authManagers) {
+        $this->selectedAuthGroups = array_map(function ($auth) use ($authManagers) {
             if (is_string($auth) && isset($authManagers[$auth])) {
                 return $authManagers[$auth];
             } elseif ($auth instanceof Auth) {
@@ -74,35 +79,32 @@ class Auth implements AuthInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws AuthValidationException
      */
     public function validate(TypeValidatorInterface $validator): void
     {
-        $success = empty($this->authGroups);
-        $errors = array_map(function ($authGroup) use ($validator, &$success) {
+        $this->validatedAuthGroups = [];
+        $errors = array_filter(array_map(function ($authGroup) use ($validator) {
             try {
                 $authGroup->validate($validator);
-                if ($this->groupType == AuthGroup::OR) {
-                    $success = true;
+                if ($this->groupType == AuthGroup::AND || empty($this->validatedAuthGroups)) {
+                    // Add all authGroups as validated in AND group
+                    // but only the first one in OR group
+                    $this->validatedAuthGroups[] = $authGroup;
                 }
                 return false;
             } catch (InvalidArgumentException $e) {
-                if ($this->groupType == AuthGroup::AND) {
-                    throw $e;
-                }
                 return $e->getMessage();
             }
-        }, $this->authGroups);
-        if ($success) {
-            $this->isValid = true;
+        }, $this->selectedAuthGroups));
+
+        if (empty($errors) || ($this->groupType == AuthGroup::OR && !empty($this->validatedAuthGroups))) {
             return;
         }
-        if ($this->groupType == AuthGroup::AND) {
-            $this->isValid = true;
-            return;
-        }
-        throw new InvalidArgumentException("Missing required auth credentials:\n-> " .
-            join("\n-> ", array_filter($errors)));
+
+        // throw exception if unable to apply Any Single authentication in AND group
+        // OR if unable to apply All authentication in OR group
+        throw AuthValidationException::init($errors);
     }
 
     /**
@@ -110,12 +112,9 @@ class Auth implements AuthInterface
      */
     public function apply(RequestSetterInterface $request): void
     {
-        if (!$this->isValid) {
-            return;
-        }
-        $this->authGroups = array_map(function ($authGroup) use ($request) {
+        $this->validatedAuthGroups = array_map(function ($authGroup) use ($request) {
             $authGroup->apply($request);
             return $authGroup;
-        }, $this->authGroups);
+        }, $this->validatedAuthGroups);
     }
 }
