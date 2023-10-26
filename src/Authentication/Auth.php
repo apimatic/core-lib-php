@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Authentication;
 
+use Core\Exceptions\AuthValidationException;
 use CoreInterfaces\Core\Authentication\AuthGroup;
 use CoreInterfaces\Core\Authentication\AuthInterface;
 use CoreInterfaces\Core\Request\RequestSetterInterface;

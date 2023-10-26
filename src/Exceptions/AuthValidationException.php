@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Core\Authentication;
+namespace Core\Exceptions;
 
 use InvalidArgumentException;
 

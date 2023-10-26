@@ -3,7 +3,7 @@
 namespace Core\Tests;
 
 use Core\Authentication\Auth;
-use Core\Authentication\AuthValidationException;
+use Core\Exceptions\AuthValidationException;
 use Core\Request\Request;
 use Core\Tests\Mocking\Authentication\HeaderAuthManager;
 use Core\Tests\Mocking\MockHelper;
