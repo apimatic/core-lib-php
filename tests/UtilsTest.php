@@ -323,6 +323,21 @@ class UtilsTest extends TestCase
             null], $res);
     }
 
+    public function testAddingTimezoneInRFC3339DateString()
+    {
+        $date = DateHelper::fromRfc3339DateTime("2021-10-01T00:00:00");
+        $this->assertEquals("2021-10-01T00:00:00+00:00", DateHelper::toRfc3339DateTime($date));
+
+        $date = DateHelper::fromRfc3339DateTime("2021-10-01T00:00:00Z");
+        $this->assertEquals("2021-10-01T00:00:00+00:00", DateHelper::toRfc3339DateTime($date));
+
+        $date = DateHelper::fromRfc3339DateTime("2021-10-01T00:00:00+01:00");
+        $this->assertEquals("2021-09-30T23:00:00+00:00", DateHelper::toRfc3339DateTime($date));
+
+        $date = DateHelper::fromRfc3339DateTime("2021-10-01T00:00:00-01:00");
+        $this->assertEquals("2021-10-01T01:00:00+00:00", DateHelper::toRfc3339DateTime($date));
+    }
+
     public function testFromRFC3339DateString()
     {
         $this->assertNull(DateHelper::fromRfc3339DateTimeMapOfArray(null));
