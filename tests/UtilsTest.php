@@ -301,6 +301,12 @@ class UtilsTest extends TestCase
             null], DateHelper::toSimpleDate2DArray($res));
     }
 
+    public function testFromSimpleDateStringTimeInfo()
+    {
+        $date = DateHelper::fromSimpleDate('2024-01-16');
+        $this->assertEquals(strtotime('2024-01-16'), $date->getTimestamp());
+    }
+
     public function testFromRFC1123DateString()
     {
         $this->assertNull(DateHelper::fromRfc1123DateTimeMapOfArray(null));
