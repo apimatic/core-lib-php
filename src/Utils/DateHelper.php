@@ -87,7 +87,7 @@ class DateHelper
         }
         $x = DateTime::createFromFormat(static::SIMPLE_DATE, $date);
         if ($x instanceof DateTime) {
-            return $x;
+            return $x->setTime(0, 0);
         }
         throw new InvalidArgumentException('Incorrect format.');
     }
