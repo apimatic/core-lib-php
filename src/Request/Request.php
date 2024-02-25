@@ -37,7 +37,7 @@ class Request implements RequestSetterInterface
         if ($globalParams != null) {
             $globalParams->apply($this);
         }
-        CoreHelper::validateUrl($this->queryUrl);
+        $this->queryUrl = CoreHelper::validateUrl($this->queryUrl);
     }
 
     /**
