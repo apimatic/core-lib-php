@@ -6,6 +6,7 @@ namespace Core\Request;
 
 use Closure;
 use Core\Client;
+use Core\Request\Parameters\MultipleParams;
 use Core\Types\Sdk\CoreFileWrapper;
 use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Format;
@@ -29,10 +30,14 @@ class Request implements RequestSetterInterface
     /**
      * Creates a new Request object.
      */
-    public function __construct(string $queryUrl, ?Client $client = null)
+    public function __construct(string $queryUrl, ?Client $client = null, ?MultipleParams $globalParams = null)
     {
-        $this->queryUrl = CoreHelper::validateUrl($queryUrl);
+        $this->queryUrl = $queryUrl;
         $this->converter = Client::getConverter($client);
+        if ($globalParams != null) {
+            $globalParams->apply($this);
+        }
+        $this->queryUrl = CoreHelper::validateUrl($this->queryUrl);
     }
 
     /**

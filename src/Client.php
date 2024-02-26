@@ -87,11 +87,9 @@ class Client
 
     public function getGlobalRequest(?string $server = null): Request
     {
-        $request = new Request($this->serverUrls[$server ?? $this->defaultServer], $this);
-        $paramGroup = new MultipleParams('Global Parameters');
-        $paramGroup->parameters($this->globalConfig)->validate(self::getJsonHelper($this));
-        $paramGroup->apply($request);
-        return $request;
+        $globalParams = new MultipleParams('Global Parameters');
+        $globalParams->parameters($this->globalConfig)->validate(self::getJsonHelper($this));
+        return new Request($this->serverUrls[$server ?? $this->defaultServer], $this, $globalParams);
     }
 
     public function getGlobalResponseHandler(): ResponseHandler

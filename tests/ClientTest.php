@@ -241,4 +241,30 @@ class ClientTest extends TestCase
             Client::getJsonHelper(MockHelper::getClient())
         );
     }
+
+    public function testRequestInitializationWithCustomBaseUrl()
+    {
+        $customUrl = 'https://my/path/';
+        $customUrlWithoutSlash = 'https://my/path';
+
+        $client = ClientBuilder::init(new MockHttpClient())
+            ->converter(new MockConverter())
+            ->apiCallback(MockHelper::getCallbackCatcher())
+            ->jsonHelper(MockHelper::getJsonHelper())
+            ->serverUrls([
+                'ServerA' => '{custom-url-a}',
+                'ServerB' => '{custom-url-b}',
+            ], 'ServerA')
+            ->globalConfig([
+                TemplateParam::init('custom-url-a', $customUrl)->dontEncode(),
+                TemplateParam::init('custom-url-b', $customUrlWithoutSlash)->dontEncode()
+            ])
+            ->build();
+
+        $requestA = $client->getGlobalRequest('ServerA');
+        $this->assertEquals($customUrlWithoutSlash, $requestA->getQueryUrl());
+
+        $requestB = $client->getGlobalRequest('ServerB');
+        $this->assertEquals($customUrlWithoutSlash, $requestB->getQueryUrl());
+    }
 }
