@@ -4,7 +4,6 @@ namespace Core\Response\Types;
 
 use Closure;
 use Core\Response\Context;
-use Throwable;
 
 class DeserializableType
 {
@@ -29,10 +28,6 @@ class DeserializableType
         if (is_null($this->deserializerMethod)) {
             return null;
         }
-        try {
-            return Closure::fromCallable($this->deserializerMethod)($context->getResponse()->getBody());
-        } catch (Throwable $t) {
-            throw $context->toApiException($t->getMessage());
-        }
+        return Closure::fromCallable($this->deserializerMethod)($context->getResponse()->getBody());
     }
 }
