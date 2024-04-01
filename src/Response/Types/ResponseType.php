@@ -6,7 +6,6 @@ namespace Core\Response\Types;
 
 use Closure;
 use Core\Response\Context;
-use Exception;
 
 class ResponseType
 {
@@ -57,20 +56,16 @@ class ResponseType
         if (is_null($this->responseClass)) {
             return null;
         }
-        try {
-            if (isset($this->xmlDeserializer)) {
-                return Closure::fromCallable($this->xmlDeserializer)(
-                    $context->getResponse()->getRawBody(),
-                    $this->responseClass
-                );
-            }
-            return $context->getJsonHelper()->mapClass(
-                $context->getResponse()->getBody(),
-                $this->responseClass,
-                $this->dimensions
+        if (isset($this->xmlDeserializer)) {
+            return Closure::fromCallable($this->xmlDeserializer)(
+                $context->getResponse()->getRawBody(),
+                $this->responseClass
             );
-        } catch (Exception $e) {
-            throw $context->toApiException($e->getMessage());
         }
+        return $context->getJsonHelper()->mapClass(
+            $context->getResponse()->getBody(),
+            $this->responseClass,
+            $this->dimensions
+        );
     }
 }

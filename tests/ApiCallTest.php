@@ -3,6 +3,7 @@
 namespace Core\Tests;
 
 use apimatic\jsonmapper\AnyOfValidationException;
+use apimatic\jsonmapper\JsonMapperException;
 use apimatic\jsonmapper\OneOfValidationException;
 use Core\Request\Parameters\AdditionalFormParams;
 use Core\Request\Parameters\AdditionalQueryParams;
@@ -29,6 +30,7 @@ use CoreInterfaces\Core\Request\RequestMethod;
 use CoreInterfaces\Http\RetryOption;
 use CURLFile;
 use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ApiCallTest extends TestCase
@@ -766,7 +768,7 @@ class ApiCallTest extends TestCase
 
     public function testReceiveByWrongType()
     {
-        $this->expectException(MockException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JsonMapper::mapClass() requires second argument to be a class name, ' .
             'InvalidClass given.');
         MockHelper::newApiCall()
@@ -786,7 +788,7 @@ class ApiCallTest extends TestCase
 
     public function testReceiveByWrongDeserializerMethod()
     {
-        $this->expectException(MockException::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Invalid argument found');
         MockHelper::newApiCall()
             ->requestBuilder((new RequestBuilder(RequestMethod::POST, '/simple/{tyu}')))
@@ -1326,7 +1328,7 @@ class ApiCallTest extends TestCase
 
     public function testTypeXmlFailure()
     {
-        $this->expectException(MockException::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage(
             'Required value not found at XML path "/mockClass/new1[1]" during deserialization.'
         );
@@ -1349,7 +1351,7 @@ class ApiCallTest extends TestCase
 
     public function testTypeInvalidJsonFailure()
     {
-        $this->expectException(MockException::class);
+        $this->expectException(JsonMapperException::class);
         $this->expectExceptionMessage(
             'Could not find required constructor arguments for Core\Tests\Mocking\Other\MockClass: body'
         );
