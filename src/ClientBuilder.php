@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Logger\LoggingConfiguration;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
@@ -67,6 +68,11 @@ class ClientBuilder
     private $apiCallback;
 
     /**
+     * @var LoggingConfiguration|null
+     */
+    private $loggingConfiguration;
+
+    /**
      * @var string|null
      */
     private $userAgent;
@@ -128,6 +134,12 @@ class ClientBuilder
         if ($apiCallback instanceof CoreCallback) {
             $this->apiCallback = $apiCallback;
         }
+        return $this;
+    }
+
+    public function loggingConfiguration(?LoggingConfiguration $loggingConfiguration): self
+    {
+        $this->loggingConfiguration = $loggingConfiguration;
         return $this;
     }
 
@@ -203,7 +215,8 @@ class ClientBuilder
             $this->globalConfig,
             $this->globalRuntimeConfig,
             $this->globalErrors,
-            $this->apiCallback
+            $this->apiCallback,
+            $this->loggingConfiguration
         );
     }
 }
