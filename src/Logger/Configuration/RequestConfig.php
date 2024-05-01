@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Core\Logger;
+namespace Core\Logger\Configuration;
 
-class LoggingRequestConfiguration extends LoggingResponseConfiguration
+class RequestConfig extends ResponseConfig
 {
     private $includeQueryInPath;
 

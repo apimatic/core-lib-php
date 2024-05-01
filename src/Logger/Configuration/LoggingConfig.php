@@ -2,24 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Core\Logger;
+namespace Core\Logger\Configuration;
 
+use Core\Logger\ConsoleLogger;
+use Core\Logger\LoggerConstants;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
-class LoggingConfiguration
+class LoggingConfig
 {
-    private const ALLOWED_LEVELS = [
-        LogLevel::EMERGENCY,
-        LogLevel::ALERT,
-        LogLevel::CRITICAL,
-        LogLevel::ERROR,
-        LogLevel::WARNING,
-        LogLevel::NOTICE,
-        LogLevel::INFO,
-        LogLevel::DEBUG
-    ];
-
     private $logger;
     private $level;
     private $maskSensitiveHeaders;
@@ -30,11 +21,11 @@ class LoggingConfiguration
         ?AbstractLogger $logger,
         string $level,
         bool $maskSensitiveHeaders,
-        LoggingRequestConfiguration $requestConfig,
-        LoggingResponseConfiguration $responseConfig
+        RequestConfig $requestConfig,
+        ResponseConfig $responseConfig
     ) {
         $this->logger = $logger ?? new ConsoleLogger();
-        $this->level = !in_array($level, self::ALLOWED_LEVELS) ? LogLevel::INFO : $level;
+        $this->level = !in_array($level, LoggerConstants::ALLOWED_LEVELS) ? LogLevel::INFO : $level;
         $this->maskSensitiveHeaders = $maskSensitiveHeaders;
         $this->requestConfig = $requestConfig;
         $this->responseConfig = $responseConfig;
@@ -76,9 +67,9 @@ class LoggingConfiguration
     /**
      * Gets the request configuration for logging.
      *
-     * @return LoggingRequestConfiguration The request configuration.
+     * @return RequestConfig The request configuration.
      */
-    public function getRequestConfig(): LoggingRequestConfiguration
+    public function getRequestConfig(): RequestConfig
     {
         return $this->requestConfig;
     }
@@ -86,9 +77,9 @@ class LoggingConfiguration
     /**
      * Gets the response configuration for logging.
      *
-     * @return LoggingResponseConfiguration The response configuration.
+     * @return ResponseConfig The response configuration.
      */
-    public function getResponseConfig(): LoggingResponseConfiguration
+    public function getResponseConfig(): ResponseConfig
     {
         return $this->responseConfig;
     }

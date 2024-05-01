@@ -6,7 +6,7 @@ namespace Core;
 
 use Core\Authentication\Auth;
 use Core\Logger\ApiLogger;
-use Core\Logger\LoggingConfiguration;
+use Core\Logger\Configuration\LoggingConfig;
 use Core\Request\Parameters\MultipleParams;
 use Core\Request\Request;
 use Core\Response\Context;
@@ -61,7 +61,7 @@ class Client
      * @param ParamInterface[] $globalRuntimeConfig
      * @param array<string,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
-     * @param LoggingConfiguration|null $loggingConfiguration
+     * @param LoggingConfig|null $loggingConfig
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -74,7 +74,7 @@ class Client
         array $globalRuntimeConfig,
         array $globalErrors,
         ?CoreCallback $apiCallback,
-        ?LoggingConfiguration $loggingConfiguration
+        ?LoggingConfig $loggingConfig
     ) {
         $this->httpClient = $httpClient;
         self::$converter = $converter;
@@ -88,8 +88,8 @@ class Client
         $this->globalRuntimeConfig = $globalRuntimeConfig;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
-        if (isset($loggingConfiguration)) {
-            $this->apiLogger = new ApiLogger($loggingConfiguration);
+        if (isset($loggingConfig)) {
+            $this->apiLogger = new ApiLogger($loggingConfig);
         }
     }
 

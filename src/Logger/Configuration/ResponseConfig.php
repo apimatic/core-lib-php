@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Core\Logger;
+namespace Core\Logger\Configuration;
 
-class LoggingResponseConfiguration
+class ResponseConfig
 {
     private $logBody;
     private $logHeaders;
