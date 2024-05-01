@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Core\Logger;
 
-use CoreInterfaces\Core\Logger\LoggingRequestConfigInterface;
-
-class LoggingRequestConfiguration implements LoggingRequestConfigInterface
+class LoggingRequestConfiguration extends LoggingResponseConfiguration
 {
     private $includeQueryInPath;
-    private $logBody;
-    private $logHeaders;
-    private $headersToInclude;
-    private $headersToExclude;
 
     public function __construct(
         bool $includeQueryInPath,
@@ -21,45 +15,22 @@ class LoggingRequestConfiguration implements LoggingRequestConfigInterface
         array $headersToInclude,
         array $headersToExclude
     ) {
+        parent::__construct(
+            $logBody,
+            $logHeaders,
+            $headersToInclude,
+            $headersToExclude
+        );
         $this->includeQueryInPath = $includeQueryInPath;
-        $this->logBody = $logBody;
-        $this->logHeaders = $logHeaders;
-        $this->headersToInclude = $headersToInclude;
-        $this->headersToExclude = $headersToExclude;
     }
 
+    /**
+     * Indicates whether to include query parameters in the logged path.
+     *
+     * @return bool
+     */
     public function shouldIncludeQueryInPath(): bool
     {
         return $this->includeQueryInPath;
-    }
-
-    public function shouldLogBody(): bool
-    {
-        return $this->logBody;
-    }
-
-    public function shouldLogHeaders(): bool
-    {
-        return $this->logHeaders;
-    }
-
-    /**
-     * Gets the list of headers to include in logging.
-     *
-     * @return string[]
-     */
-    public function getHeadersToInclude(): array
-    {
-        return $this->headersToInclude;
-    }
-
-    /**
-     * Gets the list of headers to exclude from logging.
-     *
-     * @return string[]
-     */
-    public function getHeadersToExclude(): array
-    {
-        return $this->headersToExclude;
     }
 }

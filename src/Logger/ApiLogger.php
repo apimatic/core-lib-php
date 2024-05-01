@@ -22,6 +22,7 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logRequest(RequestInterface $request): void
     {
+        $this->logMessage($request->getQueryUrl(), []);
         // TODO: Implement logRequest() method.
     }
 
@@ -32,6 +33,16 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logResponse(ResponseInterface $response): void
     {
+        $this->logMessage($response->getRawBody(), []);
         // TODO: Implement logResponse() method.
+    }
+
+    private function logMessage(string $message, array $context): void
+    {
+        $this->loggingConfiguration->getLogger()->log(
+            $this->loggingConfiguration->getLevel(),
+            $message,
+            $context
+        );
     }
 }

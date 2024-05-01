@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Logger;
 
-use CoreInterfaces\Core\Logger\LoggingResponseConfigInterface;
-
-class LoggingResponseConfiguration implements LoggingResponseConfigInterface
+class LoggingResponseConfiguration
 {
     private $logBody;
     private $logHeaders;
