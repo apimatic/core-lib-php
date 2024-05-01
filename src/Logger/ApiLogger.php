@@ -35,7 +35,7 @@ class ApiLogger implements ApiLoggerInterface
         $this->logMessage("Request %s %s %s", $requestArguments);
 
         if ($this->config->getRequestConfig()->shouldLogHeaders()) {
-            $requestHeaderArguments = $request->getHeaders();
+            $requestHeaderArguments = CoreHelper::serialize($request->getHeaders());
             $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $requestHeaderArguments]);
         }
 
