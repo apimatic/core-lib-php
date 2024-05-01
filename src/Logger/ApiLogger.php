@@ -26,17 +26,16 @@ class ApiLogger implements ApiLoggerInterface
     {
         $contentType = $this->findHeaderIgnoringCase(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
 
-        $requestArguments = [
+        $requestContext = [
             LoggerConstants::METHOD => $request->getHttpMethod(),
             LoggerConstants::URL => $this->getRequestUrl($request),
             LoggerConstants::CONTENT_TYPE => $contentType
         ];
 
-        $this->logMessage("Request %s %s %s", $requestArguments);
+        $this->logMessage("Request %s %s %s", $requestContext);
 
         if ($this->config->getRequestConfig()->shouldLogHeaders()) {
-            $requestHeaderArguments = CoreHelper::serialize($request->getHeaders());
-            $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $requestHeaderArguments]);
+            $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $request->getHeaders()]);
         }
 
         if ($this->config->getRequestConfig()->shouldLogBody()) {
@@ -44,8 +43,7 @@ class ApiLogger implements ApiLoggerInterface
             if (empty($body)) {
                 $body = $request->getBody();
             }
-            $requestBodyArguments = [LoggerConstants::BODY => CoreHelper::serialize($body)];
-            $this->logMessage("Request Body %s", $requestBodyArguments);
+            $this->logMessage("Request Body %s", [LoggerConstants::BODY => $body]);
         }
     }
 
