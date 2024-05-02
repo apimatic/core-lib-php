@@ -23,7 +23,7 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logRequest(RequestInterface $request): void
     {
-        $contentType = $this->findHeader(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
+        $contentType = $this->getHeaderValue(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
 
         $this->logMessage("Request %s %s %s", [
             LoggerConstants::METHOD => $request->getHttpMethod(),
@@ -55,8 +55,8 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logResponse(ResponseInterface $response): void
     {
-        $contentLength = $this->findHeader(LoggerConstants::CONTENT_LENGTH_HEADER, $response->getHeaders());
-        $contentType = $this->findHeader(LoggerConstants::CONTENT_TYPE_HEADER, $response->getHeaders());
+        $contentLength = $this->getHeaderValue(LoggerConstants::CONTENT_LENGTH_HEADER, $response->getHeaders());
+        $contentType = $this->getHeaderValue(LoggerConstants::CONTENT_TYPE_HEADER, $response->getHeaders());
 
         $this->logMessage("Response %s %s %s", [
             LoggerConstants::STATUS_CODE => $response->getStatusCode(),
@@ -86,7 +86,7 @@ class ApiLogger implements ApiLoggerInterface
         );
     }
 
-    private function findHeader(string $key, array $headers): ?string
+    private function getHeaderValue(string $key, array $headers): ?string
     {
         $key = strtolower($key);
         foreach ($headers as $k => $value) {
