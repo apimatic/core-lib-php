@@ -3,7 +3,6 @@
 namespace Core\Logger;
 
 use Core\Logger\Configuration\LoggingConfig;
-use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Logger\ApiLoggerInterface;
 use CoreInterfaces\Core\Request\RequestInterface;
 use CoreInterfaces\Core\Response\ResponseInterface;
@@ -24,18 +23,20 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logRequest(RequestInterface $request): void
     {
-        $contentType = $this->findHeaderIgnoringCase(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
+        $contentType = $this->findHeader(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
 
-        $requestContext = [
+        $this->logMessage("Request %s %s %s", [
             LoggerConstants::METHOD => $request->getHttpMethod(),
             LoggerConstants::URL => $this->getRequestUrl($request),
             LoggerConstants::CONTENT_TYPE => $contentType
-        ];
-
-        $this->logMessage("Request %s %s %s", $requestContext);
+        ]);
 
         if ($this->config->getRequestConfig()->shouldLogHeaders()) {
-            $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $request->getHeaders()]);
+            $headers = $this->config->getRequestConfig()->getLoggableHeaders(
+                $request->getHeaders(),
+                $this->config->shouldMaskSensitiveHeaders()
+            );
+            $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $headers]);
         }
 
         if ($this->config->getRequestConfig()->shouldLogBody()) {
@@ -54,8 +55,26 @@ class ApiLogger implements ApiLoggerInterface
      */
     public function logResponse(ResponseInterface $response): void
     {
-        $this->logMessage($response->getRawBody(), []);
-        // TODO: Implement logResponse() method.
+        $contentLength = $this->findHeader(LoggerConstants::CONTENT_LENGTH_HEADER, $response->getHeaders());
+        $contentType = $this->findHeader(LoggerConstants::CONTENT_TYPE_HEADER, $response->getHeaders());
+
+        $this->logMessage("Response %s %s %s", [
+            LoggerConstants::STATUS_CODE => $response->getStatusCode(),
+            LoggerConstants::CONTENT_LENGTH => $contentLength,
+            LoggerConstants::CONTENT_TYPE => $contentType
+        ]);
+
+        if ($this->config->getResponseConfig()->shouldLogHeaders()) {
+            $headers = $this->config->getResponseConfig()->getLoggableHeaders(
+                $response->getHeaders(),
+                $this->config->shouldMaskSensitiveHeaders()
+            );
+            $this->logMessage("Response Headers %s", [LoggerConstants::HEADERS => $headers]);
+        }
+
+        if ($this->config->getResponseConfig()->shouldLogBody()) {
+            $this->logMessage("Response Body %s", [LoggerConstants::BODY => $response->getBody()]);
+        }
     }
 
     private function logMessage(string $message, array $context): void
@@ -67,7 +86,7 @@ class ApiLogger implements ApiLoggerInterface
         );
     }
 
-    private function findHeaderIgnoringCase(string $key, array $headers): ?string
+    private function findHeader(string $key, array $headers): ?string
     {
         $key = strtolower($key);
         foreach ($headers as $k => $value) {

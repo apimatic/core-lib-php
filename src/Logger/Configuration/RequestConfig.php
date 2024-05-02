@@ -8,18 +8,30 @@ class RequestConfig extends ResponseConfig
 {
     private $includeQueryInPath;
 
+    /**
+     * Construct an instance of RequestConfig for logging
+     *
+     * @param bool $includeQueryInPath
+     * @param bool $logBody
+     * @param bool $logHeaders
+     * @param string[] $headersToInclude
+     * @param string[] $headersToExclude
+     * @param string[] $headersToUnmask
+     */
     public function __construct(
         bool $includeQueryInPath,
         bool $logBody,
         bool $logHeaders,
         array $headersToInclude,
-        array $headersToExclude
+        array $headersToExclude,
+        array $headersToUnmask
     ) {
         parent::__construct(
             $logBody,
             $logHeaders,
             $headersToInclude,
-            $headersToExclude
+            $headersToExclude,
+            $headersToUnmask
         );
         $this->includeQueryInPath = $includeQueryInPath;
     }

@@ -4,23 +4,37 @@ declare(strict_types=1);
 
 namespace Core\Logger\Configuration;
 
+use Core\Logger\LoggerConstants;
+
 class ResponseConfig
 {
     private $logBody;
     private $logHeaders;
     private $headersToInclude;
     private $headersToExclude;
+    private $headersToUnmask;
 
+    /**
+     * Construct an instance of ResponseConfig for logging
+     *
+     * @param bool $logBody
+     * @param bool $logHeaders
+     * @param string[] $headersToInclude
+     * @param string[] $headersToExclude
+     * @param string[] $headersToUnmask
+     */
     public function __construct(
         bool $logBody,
         bool $logHeaders,
         array $headersToInclude,
-        array $headersToExclude
+        array $headersToExclude,
+        array $headersToUnmask
     ) {
         $this->logBody = $logBody;
         $this->logHeaders = $logHeaders;
-        $this->headersToInclude = $headersToInclude;
-        $this->headersToExclude = $headersToExclude;
+        $this->headersToInclude = array_map('strtolower', $headersToInclude);
+        $this->headersToExclude = array_map('strtolower', $headersToExclude);
+        $this->headersToUnmask = array_map('strtolower', $headersToUnmask);
     }
 
     /**
@@ -44,22 +58,48 @@ class ResponseConfig
     }
 
     /**
-     * Gets the list of headers to include in logging.
+     * Select the headers from the list of provided headers for logging.
+     *
+     * @param string[] $headers
+     * @param bool $maskSensitiveHeaders
      *
      * @return string[]
      */
-    public function getHeadersToInclude(): array
+    public function getLoggableHeaders(array $headers, bool $maskSensitiveHeaders): array
     {
-        return $this->headersToInclude;
+        $headersAfterInclusion = [];
+        $headersAfterExclusion = [];
+        $filteredHeaders = [];
+        foreach ($headers as $key => $value) {
+            $lowerCaseKey = strtolower($key);
+            if ($maskSensitiveHeaders && $this->isSensitiveHeader($lowerCaseKey)) {
+                $value = '**Redacted**';
+            }
+            if (in_array($lowerCaseKey, $this->headersToInclude)) {
+                $headersAfterInclusion[$key] = $value;
+            }
+            if (!in_array($lowerCaseKey, $this->headersToExclude)) {
+                $headersAfterExclusion[$key] = $value;
+            }
+            $filteredHeaders[$key] = $value;
+        }
+        if (!empty($this->headersToInclude)) {
+            return $headersAfterInclusion;
+        }
+        if (!empty($this->headersToExclude)) {
+            return $headersAfterExclusion;
+        }
+        return $filteredHeaders;
     }
 
-    /**
-     * Gets the list of headers to exclude from logging.
-     *
-     * @return string[]
-     */
-    public function getHeadersToExclude(): array
+    private function isSensitiveHeader(string $headerKey): bool
     {
-        return $this->headersToExclude;
+        if (in_array($headerKey, array_map('strtolower', LoggerConstants::NON_SENSITIVE_HEADERS))) {
+            return false;
+        }
+        if (in_array($headerKey, $this->headersToUnmask)) {
+            return false;
+        }
+        return true;
     }
 }
