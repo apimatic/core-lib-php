@@ -199,6 +199,18 @@ class UtilsTest extends TestCase
         $this->assertEquals(PHP_OS_FAMILY, CoreHelper::getOsInfo(PHP_OS_FAMILY, 'unknown_func'));
     }
 
+    public function testBasicAuthEncodedString()
+    {
+        $expected = 'Basic dXNlcm5hbWU6X1BhNTV3MHJk';
+        $this->assertEquals($expected, CoreHelper::getBasicAuthEncodedString('username', '_Pa55w0rd'));
+    }
+
+    public function testEmptyBasicAuthEncodedString()
+    {
+        $expected = '';
+        $this->assertEquals($expected, CoreHelper::getBasicAuthEncodedString('', '_Pa55w0rd'));
+    }
+
     public function testFromSimpleDateFailure()
     {
         $this->expectException(InvalidArgumentException::class);

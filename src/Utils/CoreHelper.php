@@ -150,4 +150,15 @@ class CoreHelper
         }
         return $osFamily . '-' . call_user_func($functionName, 'r');
     }
+
+    /**
+     * Return base64 encoded string for given username and password, prepended with Basic substring.
+     */
+    public static function getBasicAuthEncodedString(string $username, string $password): string
+    {
+        if (empty($username) || empty($password)) {
+            return '';
+        }
+        return 'Basic ' . base64_encode("$username:$password");
+    }
 }
