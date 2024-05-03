@@ -2,14 +2,8 @@
 
 namespace Core\Logger;
 
-use Psr\Log\LogLevel;
-
 class LoggerConstants
 {
-    public const ALLOWED_LEVELS = [
-        LogLevel::EMERGENCY, LogLevel::ALERT, LogLevel::CRITICAL, LogLevel::ERROR,
-        LogLevel::WARNING, LogLevel::NOTICE, LogLevel::INFO, LogLevel::DEBUG
-    ];
     public const NON_SENSITIVE_HEADERS = [
         "Accept", "Accept-Charset", "Accept-Encoding", "Accept-Language",
         "Access-Control-Allow-Origin", "Cache-Control", "Connection",

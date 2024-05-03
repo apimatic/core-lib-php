@@ -6,6 +6,7 @@ use Core\Logger\Configuration\LoggingConfig;
 use CoreInterfaces\Core\Logger\ApiLoggerInterface;
 use CoreInterfaces\Core\Request\RequestInterface;
 use CoreInterfaces\Core\Response\ResponseInterface;
+use Psr\Log\LogLevel;
 
 class ApiLogger implements ApiLoggerInterface
 {
@@ -25,18 +26,25 @@ class ApiLogger implements ApiLoggerInterface
     {
         $contentType = $this->getHeaderValue(LoggerConstants::CONTENT_TYPE_HEADER, $request->getHeaders());
 
-        $this->logMessage("Request %s %s %s", [
-            LoggerConstants::METHOD => $request->getHttpMethod(),
-            LoggerConstants::URL => $this->getRequestUrl($request),
-            LoggerConstants::CONTENT_TYPE => $contentType
-        ]);
+        $this->logMessage(
+            'Request {' . LoggerConstants::METHOD . '} {' . LoggerConstants::URL .
+            '} {' . LoggerConstants::CONTENT_TYPE . '}',
+            [
+                LoggerConstants::METHOD => $request->getHttpMethod(),
+                LoggerConstants::URL => $this->getRequestUrl($request),
+                LoggerConstants::CONTENT_TYPE => $contentType
+            ]
+        );
 
         if ($this->config->getRequestConfig()->shouldLogHeaders()) {
             $headers = $this->config->getRequestConfig()->getLoggableHeaders(
                 $request->getHeaders(),
                 $this->config->shouldMaskSensitiveHeaders()
             );
-            $this->logMessage("Request Headers %s", [LoggerConstants::HEADERS => $headers]);
+            $this->logMessage(
+                'Request Headers {' . LoggerConstants::HEADERS . '}',
+                [LoggerConstants::HEADERS => $headers]
+            );
         }
 
         if ($this->config->getRequestConfig()->shouldLogBody()) {
@@ -44,7 +52,10 @@ class ApiLogger implements ApiLoggerInterface
             if (empty($body)) {
                 $body = $request->getBody();
             }
-            $this->logMessage("Request Body %s", [LoggerConstants::BODY => $body]);
+            $this->logMessage(
+                'Request Body {' . LoggerConstants::BODY . '}',
+                [LoggerConstants::BODY => $body]
+            );
         }
     }
 
@@ -58,32 +69,63 @@ class ApiLogger implements ApiLoggerInterface
         $contentLength = $this->getHeaderValue(LoggerConstants::CONTENT_LENGTH_HEADER, $response->getHeaders());
         $contentType = $this->getHeaderValue(LoggerConstants::CONTENT_TYPE_HEADER, $response->getHeaders());
 
-        $this->logMessage("Response %s %s %s", [
-            LoggerConstants::STATUS_CODE => $response->getStatusCode(),
-            LoggerConstants::CONTENT_LENGTH => $contentLength,
-            LoggerConstants::CONTENT_TYPE => $contentType
-        ]);
+        $this->logMessage(
+            'Response {' . LoggerConstants::STATUS_CODE . '} {' . LoggerConstants::CONTENT_LENGTH .
+            '} {' . LoggerConstants::CONTENT_TYPE . '}',
+            [
+                LoggerConstants::STATUS_CODE => $response->getStatusCode(),
+                LoggerConstants::CONTENT_LENGTH => $contentLength,
+                LoggerConstants::CONTENT_TYPE => $contentType
+            ]
+        );
 
         if ($this->config->getResponseConfig()->shouldLogHeaders()) {
             $headers = $this->config->getResponseConfig()->getLoggableHeaders(
                 $response->getHeaders(),
                 $this->config->shouldMaskSensitiveHeaders()
             );
-            $this->logMessage("Response Headers %s", [LoggerConstants::HEADERS => $headers]);
+            $this->logMessage(
+                'Response Headers {' . LoggerConstants::HEADERS . '}',
+                [LoggerConstants::HEADERS => $headers]
+            );
         }
 
         if ($this->config->getResponseConfig()->shouldLogBody()) {
-            $this->logMessage("Response Body %s", [LoggerConstants::BODY => $response->getBody()]);
+            $this->logMessage(
+                'Response Body {' . LoggerConstants::BODY . '}',
+                [LoggerConstants::BODY => $response->getBody()]
+            );
         }
     }
 
     private function logMessage(string $message, array $context): void
     {
-        $this->config->getLogger()->log(
-            $this->config->getLevel(),
-            $message,
-            $context
-        );
+        switch ($this->config->getLevel()) {
+            case LogLevel::DEBUG:
+                $this->config->getLogger()->debug($message, $context);
+                break;
+            case LogLevel::INFO:
+                $this->config->getLogger()->info($message, $context);
+                break;
+            case LogLevel::NOTICE:
+                $this->config->getLogger()->notice($message, $context);
+                break;
+            case LogLevel::WARNING:
+                $this->config->getLogger()->warning($message, $context);
+                break;
+            case LogLevel::ERROR:
+                $this->config->getLogger()->error($message, $context);
+                break;
+            case LogLevel::CRITICAL:
+                $this->config->getLogger()->critical($message, $context);
+                break;
+            case LogLevel::ALERT:
+                $this->config->getLogger()->alert($message, $context);
+                break;
+            case LogLevel::EMERGENCY:
+                $this->config->getLogger()->emergency($message, $context);
+                break;
+        }
     }
 
     private function getHeaderValue(string $key, array $headers): ?string

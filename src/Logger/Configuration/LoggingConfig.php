@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Core\Logger\Configuration;
 
 use Core\Logger\ConsoleLogger;
-use Core\Logger\LoggerConstants;
-use Psr\Log\AbstractLogger;
-use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
 
 class LoggingConfig
 {
@@ -18,14 +16,14 @@ class LoggingConfig
     private $responseConfig;
 
     public function __construct(
-        ?AbstractLogger $logger,
+        ?LoggerInterface $logger,
         string $level,
         bool $maskSensitiveHeaders,
         RequestConfig $requestConfig,
         ResponseConfig $responseConfig
     ) {
         $this->logger = $logger ?? new ConsoleLogger();
-        $this->level = !in_array($level, LoggerConstants::ALLOWED_LEVELS) ? LogLevel::INFO : $level;
+        $this->level = $level;
         $this->maskSensitiveHeaders = $maskSensitiveHeaders;
         $this->requestConfig = $requestConfig;
         $this->responseConfig = $responseConfig;
@@ -34,9 +32,9 @@ class LoggingConfig
     /**
      * Gets the logger instance used for logging.
      *
-     * @return AbstractLogger The logger instance.
+     * @return LoggerInterface The logger instance.
      */
-    public function getLogger(): AbstractLogger
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }
