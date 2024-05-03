@@ -145,6 +145,16 @@ class AuthenticationTest extends TestCase
         MockHelper::getClient()->validateAuth($auth);
     }
 
+    public function testHeaderWithEmptyFieldAndQueryAuth()
+    {
+        $this->expectException(AuthValidationException::class);
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required header field: token");
+
+        $auth = Auth::and('headerWithEmpty', 'query');
+        MockHelper::getClient()->validateAuth($auth);
+    }
+
     public function testHeaderAndQueryAuthWithMissingFields()
     {
         $this->expectException(AuthValidationException::class);
