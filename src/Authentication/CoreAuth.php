@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core\Authentication;
 
 use CoreInterfaces\Core\Authentication\AuthInterface;
+use CoreInterfaces\Core\Request\NonEmptyParamInterface;
 use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Core\Request\RequestSetterInterface;
 use CoreInterfaces\Core\Request\TypeValidatorInterface;
@@ -19,7 +20,7 @@ class CoreAuth implements AuthInterface
     private $isValid = false;
 
     /**
-     * @param ParamInterface ...$parameters
+     * @param ParamInterface|NonEmptyParamInterface ...$parameters
      */
     public function __construct(...$parameters)
     {

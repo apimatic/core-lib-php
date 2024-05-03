@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Core\Request\Parameters;
 
 use Closure;
+use Core\Utils\CoreHelper;
+use CoreInterfaces\Core\Request\NonEmptyParamInterface;
 use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 use Throwable;
 
-abstract class Parameter implements ParamInterface
+abstract class Parameter implements NonEmptyParamInterface
 {
     protected $key;
     protected $value;
@@ -80,7 +82,7 @@ abstract class Parameter implements ParamInterface
      */
     public function requiredNonEmpty(): self
     {
-        if (empty($this->value)) {
+        if (CoreHelper::isNullOrEmpty($this->value)) {
             $this->valueMissing = true;
         }
         return $this;

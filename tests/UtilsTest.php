@@ -182,6 +182,17 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
+    public function testIsNullOrEmpty()
+    {
+        $this->assertTrue(CoreHelper::isNullOrEmpty(0));
+        $this->assertTrue(CoreHelper::isNullOrEmpty([]));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(''));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(null));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(false));
+        $this->assertFalse(CoreHelper::isNullOrEmpty('0'));
+        $this->assertFalse(CoreHelper::isNullOrEmpty('some value'));
+    }
+
     public function testOsInfo()
     {
         $expected = PHP_OS_FAMILY . '-' . php_uname('r');

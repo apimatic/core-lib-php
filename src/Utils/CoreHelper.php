@@ -85,6 +85,17 @@ class CoreHelper
     }
 
     /**
+     * Check if provided value is null or empty
+     */
+    public static function isNullOrEmpty($value): bool
+    {
+        if ($value === '0') {
+            return false;
+        }
+        return empty($value);
+    }
+
+    /**
      * Check if all the given value or values are present in the provided list.
      *
      * @param mixed $value        Value to be checked, could be scalar, array, 2D array, etc.
@@ -156,7 +167,7 @@ class CoreHelper
      */
     public static function getBasicAuthEncodedString(string $username, string $password): string
     {
-        if (empty($username) || empty($password)) {
+        if ($username == '' || $password == '') {
             return '';
         }
         return 'Basic ' . base64_encode("$username:$password");

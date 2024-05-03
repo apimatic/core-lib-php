@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/core-interfaces-php.git",
-                "reference": "66b7f74018d18d06c0b4843c339eaf3588e0a7b0"
+                "reference": "b2d22d5dd726ac2cb742bafd0dc9df6f10a7f0f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/66b7f74018d18d06c0b4843c339eaf3588e0a7b0",
-                "reference": "66b7f74018d18d06c0b4843c339eaf3588e0a7b0",
+                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/b2d22d5dd726ac2cb742bafd0dc9df6f10a7f0f3",
+                "reference": "b2d22d5dd726ac2cb742bafd0dc9df6f10a7f0f3",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 "issues": "https://github.com/apimatic/core-interfaces-php/issues",
                 "source": "https://github.com/apimatic/core-interfaces-php/tree/required-non-empty-validator"
             },
-            "time": "2024-05-03T05:00:15+00:00"
+            "time": "2024-05-03T06:24:27+00:00"
         },
         {
             "name": "apimatic/jsonmapper",
