@@ -11,7 +11,7 @@ class ConsoleLogger extends AbstractLogger
     {
         printf("%s: %s\n", $level, str_replace(
             array_map(function ($key) {
-                return "\{$key}";
+                return '{' . $key . '}';
             }, array_keys($context)),
             array_map(function ($value) {
                 return CoreHelper::serialize($value);
