@@ -6,6 +6,7 @@ namespace Core\Logger\Configuration;
 
 use Core\Logger\ConsoleLogger;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class LoggingConfig
 {
@@ -30,26 +31,37 @@ class LoggingConfig
     }
 
     /**
-     * Gets the logger instance used for logging.
-     *
-     * @return LoggerInterface The logger instance.
+     * Log the given message using the context array. This function uses the
+     * LogLevel and Logger instance set via constructor of this class.
      */
-    public function getLogger(): LoggerInterface
+    public function logMessage(string $message, array $context): void
     {
-        return $this->logger;
-    }
-
-    /**
-     * Gets the level of logging.
-     *
-     * Returns a string representing the level of logging. See Psr\Log\LogLevel.php
-     * for possible values of log levels.
-     *
-     * @return string The level of logging.
-     */
-    public function getLevel(): string
-    {
-        return $this->level;
+        switch ($this->level) {
+            case LogLevel::DEBUG:
+                $this->logger->debug($message, $context);
+                break;
+            case LogLevel::INFO:
+                $this->logger->info($message, $context);
+                break;
+            case LogLevel::NOTICE:
+                $this->logger->notice($message, $context);
+                break;
+            case LogLevel::WARNING:
+                $this->logger->warning($message, $context);
+                break;
+            case LogLevel::ERROR:
+                $this->logger->error($message, $context);
+                break;
+            case LogLevel::CRITICAL:
+                $this->logger->critical($message, $context);
+                break;
+            case LogLevel::ALERT:
+                $this->logger->alert($message, $context);
+                break;
+            case LogLevel::EMERGENCY:
+                $this->logger->emergency($message, $context);
+                break;
+        }
     }
 
     /**
