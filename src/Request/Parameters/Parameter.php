@@ -7,7 +7,6 @@ namespace Core\Request\Parameters;
 use Closure;
 use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Request\NonEmptyParamInterface;
-use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Core\Request\TypeValidatorInterface;
 use InvalidArgumentException;
 use Throwable;
