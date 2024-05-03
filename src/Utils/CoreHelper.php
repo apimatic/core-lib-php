@@ -89,7 +89,7 @@ class CoreHelper
      */
     public static function isNullOrEmpty($value): bool
     {
-        if ($value === '0') {
+        if (is_string($value) && $value == '0') {
             return false;
         }
         return empty($value);
