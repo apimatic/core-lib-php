@@ -10,9 +10,11 @@ class ConsoleLogger extends AbstractLogger
     public function log($level, $message, array $context = []): void
     {
         printf("%s: %s\n", $level, str_replace(
-            array_keys($context),
-            array_map(function ($contextItem) {
-                return CoreHelper::serialize($contextItem);
+            array_map(function ($key) {
+                return "\{$key}";
+            }, array_keys($context)),
+            array_map(function ($value) {
+                return CoreHelper::serialize($value);
             }, $context),
             $message
         ));
