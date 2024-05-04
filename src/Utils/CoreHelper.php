@@ -85,7 +85,10 @@ class CoreHelper
     }
 
     /**
-     * Check if provided value is null or empty
+     * Check if provided value is null or empty.
+     *
+     * @param $value mixed Value to be checked.
+     * @return bool True if given value is empty of null.
      */
     public static function isNullOrEmpty($value): bool
     {
@@ -171,5 +174,16 @@ class CoreHelper
             return '';
         }
         return 'Basic ' . base64_encode("$username:$password");
+    }
+
+    /**
+     * Return the accessToken prepended with Bearer substring.
+     */
+    public static function getBearerAuthString(string $accessToken): string
+    {
+        if ($accessToken == '') {
+            return '';
+        }
+        return 'Bearer ' . $accessToken;
     }
 }

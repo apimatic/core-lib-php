@@ -218,8 +218,20 @@ class UtilsTest extends TestCase
 
     public function testEmptyBasicAuthEncodedString()
     {
-        $expected = '';
-        $this->assertEquals($expected, CoreHelper::getBasicAuthEncodedString('', '_Pa55w0rd'));
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('', '_Pa55w0rd'));
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('username', ''));
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('', ''));
+    }
+
+    public function testBearerAuthString()
+    {
+        $expected = 'Bearer my-token';
+        $this->assertEquals($expected, CoreHelper::getBearerAuthString('my-token'));
+    }
+
+    public function testEmptyBearerAuthString()
+    {
+        $this->assertEmpty(CoreHelper::getBearerAuthString(''));
     }
 
     public function testFromSimpleDateFailure()
