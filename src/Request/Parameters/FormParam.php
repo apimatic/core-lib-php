@@ -30,9 +30,6 @@ class FormParam extends EncodedParam
 
     /**
      * Sets encoding header with the key and value provided.
-     *
-     * @param string $key
-     * @param string $value
      */
     public function encodingHeader(string $key, string $value): self
     {
