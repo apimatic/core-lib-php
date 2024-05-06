@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02bcff8cc75207b067f1a3373b24aa78",
+    "content-hash": "b0c18c36311074253e7dd2534394a86d",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
-            "version": "dev-master",
+            "version": "0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/core-interfaces-php.git",
@@ -23,7 +23,6 @@
             "require": {
                 "php": "^7.2 || ^8.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -46,7 +45,7 @@
             ],
             "support": {
                 "issues": "https://github.com/apimatic/core-interfaces-php/issues",
-                "source": "https://github.com/apimatic/core-interfaces-php/tree/master"
+                "source": "https://github.com/apimatic/core-interfaces-php/tree/0.1.4"
             },
             "time": "2024-05-04T04:33:59+00:00"
         },
@@ -3709,9 +3708,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "apimatic/core-interfaces": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
