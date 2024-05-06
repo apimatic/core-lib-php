@@ -10,8 +10,8 @@ class QueryAuthManager extends CoreAuth
     public function __construct($token, $accessToken)
     {
         parent::__construct(
-            QueryParam::init('token', $token)->required(),
-            QueryParam::init('authorization', $accessToken)->required()
+            QueryParam::init('token', $token)->requiredNonEmpty(),
+            QueryParam::init('authorization', $accessToken)->requiredNonEmpty()
         );
     }
 }

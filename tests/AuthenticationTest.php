@@ -43,6 +43,16 @@ class AuthenticationTest extends TestCase
         MockHelper::getClient()->validateAuth($auth);
     }
 
+    public function testHeaderAuthWithEmptyField()
+    {
+        $this->expectException(AuthValidationException::class);
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required header field: token");
+
+        $auth = Auth::or('headerWithEmpty');
+        MockHelper::getClient()->validateAuth($auth);
+    }
+
     public function testHeaderOrQueryAuth1()
     {
         $request = new Request('http://localhost:3000');
@@ -76,6 +86,19 @@ class AuthenticationTest extends TestCase
     {
         $request = new Request('http://localhost:3000');
         $auth = Auth::or('headerWithNull', 'query');
+        MockHelper::getClient()->validateAuth($auth)->apply($request);
+
+        $this->assertEquals([], $request->getHeaders());
+        $this->assertEquals(
+            'http://localhost:3000?token=someAuthToken&authorization=accessToken',
+            $request->getQueryUrl()
+        );
+    }
+
+    public function testHeaderWithEmptyFieldOrQueryAuth()
+    {
+        $request = new Request('http://localhost:3000');
+        $auth = Auth::or('headerWithEmpty', 'query');
         MockHelper::getClient()->validateAuth($auth)->apply($request);
 
         $this->assertEquals([], $request->getHeaders());
@@ -119,6 +142,16 @@ class AuthenticationTest extends TestCase
             "\n-> Missing required header field: authorization");
 
         $auth = Auth::and('headerWithNull', 'query');
+        MockHelper::getClient()->validateAuth($auth);
+    }
+
+    public function testHeaderWithEmptyFieldAndQueryAuth()
+    {
+        $this->expectException(AuthValidationException::class);
+        $this->expectExceptionMessage("Following authentication credentials are required:" .
+            "\n-> Missing required header field: token");
+
+        $auth = Auth::and('headerWithEmpty', 'query');
         MockHelper::getClient()->validateAuth($auth);
     }
 

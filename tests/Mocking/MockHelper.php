@@ -83,6 +83,7 @@ class MockHelper
                 ->authManagers([
                     "header" => new HeaderAuthManager('someAuthToken', 'accessToken'),
                     "headerWithNull" => new HeaderAuthManager('someAuthToken', null),
+                    "headerWithEmpty" => new HeaderAuthManager('', 'accessToken'),
                     "query" => new QueryAuthManager('someAuthToken', 'accessToken'),
                     "queryWithNull" => new QueryAuthManager(null, 'accessToken'),
                     "form" => new FormAuthManager('someAuthToken', 'accessToken'),

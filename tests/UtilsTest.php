@@ -182,6 +182,17 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
+    public function testIsNullOrEmpty()
+    {
+        $this->assertTrue(CoreHelper::isNullOrEmpty(0));
+        $this->assertTrue(CoreHelper::isNullOrEmpty([]));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(''));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(null));
+        $this->assertTrue(CoreHelper::isNullOrEmpty(false));
+        $this->assertFalse(CoreHelper::isNullOrEmpty('0'));
+        $this->assertFalse(CoreHelper::isNullOrEmpty('some value'));
+    }
+
     public function testOsInfo()
     {
         $expected = PHP_OS_FAMILY . '-' . php_uname('r');
@@ -197,6 +208,30 @@ class UtilsTest extends TestCase
     public function testDisabledOsVersion()
     {
         $this->assertEquals(PHP_OS_FAMILY, CoreHelper::getOsInfo(PHP_OS_FAMILY, 'unknown_func'));
+    }
+
+    public function testBasicAuthEncodedString()
+    {
+        $expected = 'Basic dXNlcm5hbWU6X1BhNTV3MHJk';
+        $this->assertEquals($expected, CoreHelper::getBasicAuthEncodedString('username', '_Pa55w0rd'));
+    }
+
+    public function testEmptyBasicAuthEncodedString()
+    {
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('', '_Pa55w0rd'));
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('username', ''));
+        $this->assertEmpty(CoreHelper::getBasicAuthEncodedString('', ''));
+    }
+
+    public function testBearerAuthString()
+    {
+        $expected = 'Bearer my-token';
+        $this->assertEquals($expected, CoreHelper::getBearerAuthString('my-token'));
+    }
+
+    public function testEmptyBearerAuthString()
+    {
+        $this->assertEmpty(CoreHelper::getBearerAuthString(''));
     }
 
     public function testFromSimpleDateFailure()

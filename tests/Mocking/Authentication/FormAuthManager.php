@@ -10,8 +10,8 @@ class FormAuthManager extends CoreAuth
     public function __construct($token, $accessToken)
     {
         parent::__construct(
-            FormParam::init('token', $token)->required(),
-            FormParam::init('authorization', $accessToken)->required()
+            FormParam::init('token', $token)->requiredNonEmpty(),
+            FormParam::init('authorization', $accessToken)->requiredNonEmpty()
         );
     }
 }
