@@ -33,7 +33,7 @@ class HttpConfiguration
         $this->logBody = $logBody;
         $this->logHeaders = $logHeaders;
         $this->headersToInclude = array_map('strtolower', $headersToInclude);
-        $this->headersToExclude = array_map('strtolower', $headersToExclude);
+        $this->headersToExclude = empty($headersToInclude) ? array_map('strtolower', $headersToExclude) : [];
         $this->headersToUnmask = array_merge(
             array_map('strtolower', LoggerConstants::NON_SENSITIVE_HEADERS),
             array_map('strtolower', $headersToUnmask)
@@ -70,29 +70,22 @@ class HttpConfiguration
      */
     public function getLoggableHeaders(array $headers, bool $maskSensitiveHeaders): array
     {
-        $headersAfterInclusion = [];
-        $headersAfterExclusion = [];
-        $filteredHeaders = [];
-        foreach ($headers as $key => $value) {
+        $sensitiveHeaders = [];
+        $filteredHeaders = array_filter($headers, function ($key) use ($maskSensitiveHeaders, &$sensitiveHeaders) {
             $lowerCaseKey = strtolower(strval($key));
             if ($maskSensitiveHeaders && $this->isSensitiveHeader($lowerCaseKey)) {
-                $value = '**Redacted**';
+                $sensitiveHeaders[$key] = '**Redacted**';
             }
-            if (in_array($lowerCaseKey, $this->headersToInclude)) {
-                $headersAfterInclusion[$key] = $value;
+            if (empty($this->headersToInclude) || in_array($lowerCaseKey, $this->headersToInclude)) {
+                if (empty($this->headersToExclude) || !in_array($lowerCaseKey, $this->headersToExclude)) {
+                    return true;
+                }
             }
-            if (!in_array($lowerCaseKey, $this->headersToExclude)) {
-                $headersAfterExclusion[$key] = $value;
-            }
-            $filteredHeaders[$key] = $value;
-        }
-        if (!empty($this->headersToInclude)) {
-            return $headersAfterInclusion;
-        }
-        if (!empty($this->headersToExclude)) {
-            return $headersAfterExclusion;
-        }
-        return $filteredHeaders;
+            unset($sensitiveHeaders[$key]);
+            return false;
+        }, ARRAY_FILTER_USE_KEY);
+
+        return array_merge($filteredHeaders, $sensitiveHeaders);
     }
 
     private function isSensitiveHeader($headerKey): bool

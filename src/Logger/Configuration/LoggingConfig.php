@@ -23,7 +23,7 @@ class LoggingConfig
         RequestConfig $requestConfig,
         ResponseConfig $responseConfig
     ) {
-        $this->logger = $logger ?? new ConsoleLogger();
+        $this->logger = $logger ?? new ConsoleLogger('printf');
         $this->level = $level;
         $this->maskSensitiveHeaders = $maskSensitiveHeaders;
         $this->requestConfig = $requestConfig;

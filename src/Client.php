@@ -15,6 +15,7 @@ use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
 use Core\Utils\JsonHelper;
 use CoreInterfaces\Core\Authentication\AuthInterface;
+use CoreInterfaces\Core\Logger\ApiLoggerInterface;
 use CoreInterfaces\Core\Request\ParamInterface;
 use CoreInterfaces\Http\HttpClientInterface;
 use CoreInterfaces\Sdk\ConverterInterface;
@@ -112,6 +113,11 @@ class Client
     public function getHttpClient(): HttpClientInterface
     {
         return $this->httpClient;
+    }
+
+    public function getApiLogger(): ApiLoggerInterface
+    {
+        return $this->apiLogger;
     }
 
     public function validateAuth(Auth $auth): Auth

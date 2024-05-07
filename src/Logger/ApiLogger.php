@@ -92,7 +92,7 @@ class ApiLogger implements ApiLoggerInterface
         if ($this->config->getResponseConfig()->shouldLogBody()) {
             $this->config->logMessage(
                 'Response Body {' . LoggerConstants::BODY . '}',
-                [LoggerConstants::BODY => $response->getBody()]
+                [LoggerConstants::BODY => $response->getRawBody()]
             );
         }
     }
