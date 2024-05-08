@@ -21,6 +21,21 @@ use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
+    private const REQUEST_FORMAT = 'Request {method} {url} {contentType}';
+    private const REQUEST_BODY_FORMAT = 'Request Body {body}';
+    private const REQUEST_HEADERS_FORMAT = 'Request Headers {headers}';
+    private const RESPONSE_FORMAT = 'Response {statusCode} {contentLength} {contentType}';
+    private const RESPONSE_BODY_FORMAT = 'Response Body {body}';
+    private const RESPONSE_HEADERS_FORMAT = 'Response Headers {headers}';
+
+    private const TEST_URL = 'https://some/path';
+    private const TEST_HEADERS = [
+        'Content-Type' => 'my-content-type',
+        'HeaderA' => 'value A',
+        'HeaderB' => 'value B',
+        'Expires' => '2345ms'
+    ];
+
     public function testLogLevels()
     {
         MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::INFO));
@@ -53,9 +68,9 @@ class LoggerTest extends TestCase
         $consoleLoggerMock = new ConsoleLogger([$printer, 'printMessage']);
         $loggingConfig = MockHelper::getLoggingConfiguration(null, null, null, null, $consoleLoggerMock);
         $apiLogger = new ApiLogger($loggingConfig);
-        $apiLogger->logRequest(new Request('https://some/path', MockHelper::getClient()));
+        $apiLogger->logRequest(new Request(self::TEST_URL, MockHelper::getClient()));
 
-        $this->assertEquals(["%s: %s\n", 'info', 'Request Get https://some/path '], $printer->args);
+        $this->assertEquals(["%s: %s\n", LogLevel::INFO, 'Request Get https://some/path '], $printer->args);
     }
 
     public function testDefaultLoggingConfiguration()
@@ -63,22 +78,22 @@ class LoggerTest extends TestCase
         $apiLogger = MockHelper::getClient()->getApiLogger();
         $this->assertInstanceOf(ApiLoggerInterface::class, $apiLogger);
 
-        $request = new Request('https://some/path');
+        $request = new Request(self::TEST_URL);
         $response = MockHelper::getClient()->getHttpClient()->execute($request);
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
+                'url' => self::TEST_URL,
                 'contentType' => null
             ])
         );
         $apiLogger->logResponse($response);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Response {statusCode} {contentLength} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::RESPONSE_FORMAT, [
                 'statusCode' => 200,
                 'contentLength' => null,
-                'contentType' => 'application/json'
+                'contentType' => Format::JSON
             ])
         );
     }
@@ -88,7 +103,7 @@ class LoggerTest extends TestCase
         $requestParams = MockHelper::getClient()->validateParameters([
             QueryParam::init('key', 'value')
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             null,
             null,
@@ -96,7 +111,7 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
                 'url' => 'https://some/path?key=value',
                 'contentType' => null
@@ -109,13 +124,13 @@ class LoggerTest extends TestCase
         $requestParams = MockHelper::getClient()->validateParameters([
             HeaderParam::init('Content-Type', 'my-content-type')
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration());
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
+                'url' => self::TEST_URL,
                 'contentType' => 'my-content-type'
             ])
         );
@@ -126,7 +141,7 @@ class LoggerTest extends TestCase
         $requestParams = MockHelper::getClient()->validateParameters([
             BodyParam::init(MockHelper::getFileWrapper()),
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $request->setBodyFormat(Format::JSON, [CoreHelper::class, 'serialize']);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             null,
@@ -138,12 +153,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
+                'url' => self::TEST_URL,
                 'contentType' => 'application/octet-stream'
             ]),
-            new LogEntry('info', 'Request Body {body}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_BODY_FORMAT, [
                 'body' => 'This test file is created to test CoreFileWrapper functionality'
             ])
         );
@@ -156,7 +171,7 @@ class LoggerTest extends TestCase
                 'key' => 'value'
             ]),
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $request->setBodyFormat(Format::JSON, [CoreHelper::class, 'serialize']);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             null,
@@ -168,12 +183,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
-                'contentType' => 'application/json'
+                'url' => self::TEST_URL,
+                'contentType' => Format::JSON
             ]),
-            new LogEntry('info', 'Request Body {body}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_BODY_FORMAT, [
                 'body' => '{"key":"value"}'
             ])
         );
@@ -184,7 +199,7 @@ class LoggerTest extends TestCase
         $requestParams = MockHelper::getClient()->validateParameters([
             FormParam::init('key', 'value')
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             null,
             null,
@@ -195,12 +210,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
+                'url' => self::TEST_URL,
                 'contentType' => null
             ]),
-            new LogEntry('info', 'Request Body {body}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_BODY_FORMAT, [
                 'body' => [
                     'key' => 'value'
                 ]
@@ -216,7 +231,7 @@ class LoggerTest extends TestCase
             HeaderParam::init('HeaderB', 'value B'),
             HeaderParam::init('Expires', '2345ms')
         ]);
-        $request = new Request('https://some/path', MockHelper::getClient(), $requestParams);
+        $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             null,
             null,
@@ -228,12 +243,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logRequest($request);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Request {method} {url} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
-                'url' => 'https://some/path',
+                'url' => self::TEST_URL,
                 'contentType' => 'my-content-type'
             ]),
-            new LogEntry('info', 'Request Headers {headers}', [
+            new LogEntry(LogLevel::INFO, self::REQUEST_HEADERS_FORMAT, [
                 'headers' => [
                     'Content-Type' => 'my-content-type',
                     'HeaderA' => '**Redacted**',
@@ -253,7 +268,7 @@ class LoggerTest extends TestCase
             'key' => 'value'
         ]);
         $response->setHeaders([
-            'content-type' => 'application/json',
+            'content-type' => Format::JSON,
             'content-length' => '45'
         ]);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
@@ -264,12 +279,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logResponse($response);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('info', 'Response {statusCode} {contentLength} {contentType}', [
+            new LogEntry(LogLevel::INFO, self::RESPONSE_FORMAT, [
                 'statusCode' => 200,
                 'contentLength' => '45',
-                'contentType' => 'application/json'
+                'contentType' => Format::JSON
             ]),
-            new LogEntry('info', 'Response Body {body}', [
+            new LogEntry(LogLevel::INFO, self::RESPONSE_BODY_FORMAT, [
                 'body' => '{"key":"value"}'
             ])
         );
@@ -279,12 +294,7 @@ class LoggerTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(400);
-        $response->setHeaders([
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ]);
+        $response->setHeaders(self::TEST_HEADERS);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
             LogLevel::ERROR,
             null,
@@ -296,12 +306,12 @@ class LoggerTest extends TestCase
         ));
         $apiLogger->logResponse($response);
         MockHelper::getMockLogger()->assertLastEntries(
-            new LogEntry('error', 'Response {statusCode} {contentLength} {contentType}', [
+            new LogEntry('error', self::RESPONSE_FORMAT, [
                 'statusCode' => 400,
                 'contentLength' => null,
                 'contentType' => 'my-content-type'
             ]),
-            new LogEntry('error', 'Response Headers {headers}', [
+            new LogEntry('error', self::RESPONSE_HEADERS_FORMAT, [
                 'headers' => [
                     'Content-Type' => 'my-content-type',
                     'HeaderA' => '**Redacted**',
@@ -315,31 +325,19 @@ class LoggerTest extends TestCase
     public function testLoggableHeaders()
     {
         $responseConfig = MockHelper::getResponseLoggingConfiguration(false, true);
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
         $expectedHeaders = [
             'Content-Type' => 'my-content-type',
             'HeaderA' => '**Redacted**',
             'HeaderB' => '**Redacted**',
             'Expires' => '2345ms'
         ];
-        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders($headers, true));
+        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
 
     public function testAllUnMaskedLoggableHeaders()
     {
         $responseConfig = MockHelper::getResponseLoggingConfiguration(false, true);
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
-        $this->assertEquals($headers, $responseConfig->getLoggableHeaders($headers, false));
+        $this->assertEquals(self::TEST_HEADERS, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, false));
     }
 
     public function testIncludedLoggableHeaders()
@@ -349,17 +347,11 @@ class LoggerTest extends TestCase
             true,
             ['HeaderB', 'Expires']
         );
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
         $expectedHeaders = [
             'HeaderB' => '**Redacted**',
             'Expires' => '2345ms'
         ];
-        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders($headers, true));
+        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
 
     public function testExcludedLoggableHeaders()
@@ -370,17 +362,11 @@ class LoggerTest extends TestCase
             [],
             ['HeaderB', 'Expires']
         );
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
         $expectedHeaders = [
             'HeaderA' => '**Redacted**',
             'Content-Type' => 'my-content-type',
         ];
-        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders($headers, true));
+        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
 
     public function testIncludeAndExcludeLoggableHeaders()
@@ -391,18 +377,12 @@ class LoggerTest extends TestCase
             ['HEADERB', 'EXPIRES'],
             ['EXPIRES']
         );
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
         $expectedHeaders = [
             'HeaderB' => '**Redacted**',
             'Expires' => '2345ms'
         ];
         // If both include and exclude headers are provided then only includeHeaders will work
-        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders($headers, true));
+        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
 
     public function testUnMaskedLoggableHeaders()
@@ -414,18 +394,12 @@ class LoggerTest extends TestCase
             [],
             ['HeaderB']
         );
-        $headers = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => 'value A',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
-        ];
         $expectedHeaders = [
             'Content-Type' => 'my-content-type',
             'HeaderA' => '**Redacted**',
             'HeaderB' => 'value B',
             'Expires' => '2345ms'
         ];
-        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders($headers, true));
+        $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
 }
