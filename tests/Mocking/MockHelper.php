@@ -186,11 +186,11 @@ class MockHelper
     }
 
     public static function getLoggingConfiguration(
-        ?string                $logLevel = null,
-        ?bool                  $maskSensitiveHeaders = null,
-        ?RequestConfiguration  $requestConfig = null,
+        ?string $logLevel = null,
+        ?bool $maskSensitiveHeaders = null,
+        ?RequestConfiguration $requestConfig = null,
         ?ResponseConfiguration $responseConfig = null,
-        ?LoggerInterface       $logger = null
+        ?LoggerInterface $logger = null
     ): LoggingConfiguration {
         return new LoggingConfiguration(
             $logger ?? self::getMockLogger(),
