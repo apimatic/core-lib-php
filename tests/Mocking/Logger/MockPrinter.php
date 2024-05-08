@@ -2,7 +2,15 @@
 
 namespace Core\Tests\Mocking\Logger;
 
-interface MockPrinter
+class MockPrinter
 {
-    public function printMessage($format, $level, $message);
+    /**
+     * @var string[]
+     */
+    public $args;
+
+    public function printMessage(string ...$args)
+    {
+        $this->args = $args;
+    }
 }

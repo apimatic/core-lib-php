@@ -10,7 +10,6 @@ use Core\Request\Parameters\HeaderParam;
 use Core\Request\Parameters\QueryParam;
 use Core\Request\Request;
 use Core\Tests\Mocking\Logger\LogEntry;
-use Core\Tests\Mocking\Logger\MockConsoleLogger;
 use Core\Tests\Mocking\Logger\MockPrinter;
 use Core\Tests\Mocking\MockHelper;
 use Core\Tests\Mocking\Response\MockResponse;
@@ -22,78 +21,41 @@ use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
-    public function testLogInfo()
+    public function testLogLevels()
     {
-        MockHelper::getLoggingConfiguration()->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('info', 'some message', []));
-    }
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::INFO));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::DEBUG));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::NOTICE));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::ERROR));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::EMERGENCY));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::ALERT));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::CRITICAL));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::WARNING));
+        MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::INFO));
 
-    public function testLogDebug()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::DEBUG)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('debug', 'some message', []));
-    }
-
-    public function testLogNotice()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::NOTICE)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('notice', 'some message', []));
-    }
-
-    public function testLogError()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::ERROR)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('error', 'some message', []));
-    }
-
-    public function testLogEmergency()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::EMERGENCY)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('emergency', 'some message', []));
-    }
-
-    public function testLogAlert()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::ALERT)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('alert', 'some message', []));
-    }
-
-    public function testLogCritical()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::CRITICAL)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('critical', 'some message', []));
-    }
-
-    public function testLogWarning()
-    {
-        MockHelper::getLoggingConfiguration(LogLevel::WARNING)->logMessage('some message', []);
-        MockHelper::getMockLogger()->assertLastEntries(new LogEntry('warning', 'some message', []));
-    }
-
-    public function testLogUnknown()
-    {
         $loggedEntriesCount = MockHelper::getMockLogger()->countEntries();
-        MockHelper::getLoggingConfiguration('__unknown__')->logMessage('some message', []);
+        $this->logAndGetEntry('__unknown__');
 
         // Making sure it didn't log any entry (increased entry count)
         $this->assertEquals($loggedEntriesCount, MockHelper::getMockLogger()->countEntries());
     }
 
+    private function logAndGetEntry(string $level): LogEntry
+    {
+        $logEntry = new LogEntry($level, 'someMessage', []);
+        MockHelper::getLoggingConfiguration($level)->logMessage($logEntry->message, $logEntry->context);
+        return $logEntry;
+    }
+
     public function testConsoleLogger()
     {
-        $printerMock = $this->createMock(MockPrinter::class);
-        $printerMock
-            ->expects($this->once())
-            ->method('printMessage')
-            ->with(
-                $this->equalTo("%s: %s\n"),
-                $this->equalTo('info'),
-                $this->equalTo('Request Get https://some/path ')
-            );
-        $consoleLoggerMock = new ConsoleLogger([$printerMock, 'printMessage']);
+        $printer = new MockPrinter();
+        $consoleLoggerMock = new ConsoleLogger([$printer, 'printMessage']);
         $loggingConfig = MockHelper::getLoggingConfiguration(null, null, null, null, $consoleLoggerMock);
         $apiLogger = new ApiLogger($loggingConfig);
         $apiLogger->logRequest(new Request('https://some/path', MockHelper::getClient()));
+
+        $this->assertEquals(["%s: %s\n", 'info', 'Request Get https://some/path '], $printer->args);
     }
 
     public function testDefaultLoggingConfiguration()

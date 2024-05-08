@@ -42,8 +42,6 @@ class HttpConfiguration
 
     /**
      * Indicates whether to log the body.
-     *
-     * @return bool
      */
     public function shouldLogBody(): bool
     {
@@ -52,8 +50,6 @@ class HttpConfiguration
 
     /**
      * Indicates whether to log the headers.
-     *
-     * @return bool
      */
     public function shouldLogHeaders(): bool
     {
@@ -76,8 +72,8 @@ class HttpConfiguration
             if ($maskSensitiveHeaders && $this->isSensitiveHeader($lowerCaseKey)) {
                 $sensitiveHeaders[$key] = '**Redacted**';
             }
-            if (empty($this->headersToInclude) || in_array($lowerCaseKey, $this->headersToInclude)) {
-                if (empty($this->headersToExclude) || !in_array($lowerCaseKey, $this->headersToExclude)) {
+            if (empty($this->headersToInclude) || in_array($lowerCaseKey, $this->headersToInclude, true)) {
+                if (empty($this->headersToExclude) || !in_array($lowerCaseKey, $this->headersToExclude, true)) {
                     return true;
                 }
             }

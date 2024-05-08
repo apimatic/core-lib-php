@@ -30,12 +30,8 @@ class MockLogger extends AbstractLogger
 
     /**
      * Assert if the given log entries are same as the last added log entries.
-     *
-     * @param LogEntry[] $logEntries Log entries to check
-     *
-     * @return void
      */
-    public function assertLastEntries(...$logEntries): void
+    public function assertLastEntries(LogEntry ...$logEntries): void
     {
         Assert::assertGreaterThanOrEqual(
             count($logEntries),
@@ -45,7 +41,7 @@ class MockLogger extends AbstractLogger
         $reversedActual = array_reverse($this->logEntries);
 
         foreach (array_reverse($logEntries) as $index => $entry) {
-            $entry->assertEquals($reversedActual[$index]);
+            $entry->checkEquals($reversedActual[$index]);
         }
     }
 }

@@ -38,8 +38,6 @@ class RequestConfig extends HttpConfiguration
 
     /**
      * Indicates whether to include query parameters in the logged path.
-     *
-     * @return bool
      */
     public function shouldIncludeQueryInPath(): bool
     {

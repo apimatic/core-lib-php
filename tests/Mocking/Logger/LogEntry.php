@@ -17,7 +17,7 @@ class LogEntry
         $this->context = $context;
     }
 
-    public function assertEquals(LogEntry $other): void
+    public function checkEquals(LogEntry $other): void
     {
         Assert::assertEquals(
             [
