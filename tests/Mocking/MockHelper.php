@@ -5,9 +5,9 @@ namespace Core\Tests\Mocking;
 use Core\ApiCall;
 use Core\Client;
 use Core\ClientBuilder;
-use Core\Logger\Configuration\LoggingConfig;
-use Core\Logger\Configuration\RequestConfig;
-use Core\Logger\Configuration\ResponseConfig;
+use Core\Logger\Configuration\LoggingConfiguration;
+use Core\Logger\Configuration\RequestConfiguration;
+use Core\Logger\Configuration\ResponseConfiguration;
 use Core\Request\Parameters\AdditionalHeaderParams;
 use Core\Request\Parameters\HeaderParam;
 use Core\Request\Parameters\TemplateParam;
@@ -186,13 +186,13 @@ class MockHelper
     }
 
     public static function getLoggingConfiguration(
-        ?string $logLevel = null,
-        ?bool $maskSensitiveHeaders = null,
-        ?RequestConfig $requestConfig = null,
-        ?ResponseConfig $responseConfig = null,
-        ?LoggerInterface $logger = null
-    ): LoggingConfig {
-        return new LoggingConfig(
+        ?string                $logLevel = null,
+        ?bool                  $maskSensitiveHeaders = null,
+        ?RequestConfiguration  $requestConfig = null,
+        ?ResponseConfiguration $responseConfig = null,
+        ?LoggerInterface       $logger = null
+    ): LoggingConfiguration {
+        return new LoggingConfiguration(
             $logger ?? self::getMockLogger(),
             $logLevel ?? LogLevel::INFO,
             $maskSensitiveHeaders ?? true,
@@ -208,8 +208,8 @@ class MockHelper
         array $headersToInclude = [],
         array $headersToExclude = [],
         array $headersToUnmask = []
-    ): RequestConfig {
-        return new RequestConfig(
+    ): RequestConfiguration {
+        return new RequestConfiguration(
             $includeQueryInPath,
             $logBody,
             $logHeaders,
@@ -225,8 +225,8 @@ class MockHelper
         array $headersToInclude = [],
         array $headersToExclude = [],
         array $headersToUnmask = []
-    ): ResponseConfig {
-        return new ResponseConfig(
+    ): ResponseConfiguration {
+        return new ResponseConfiguration(
             $logBody,
             $logHeaders,
             $headersToInclude,

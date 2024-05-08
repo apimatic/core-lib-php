@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Core;
 
-use Core\Logger\Configuration\LoggingConfig;
+use Core\Logger\Configuration\LoggingConfiguration;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
@@ -68,7 +68,7 @@ class ClientBuilder
     private $apiCallback;
 
     /**
-     * @var LoggingConfig|null
+     * @var LoggingConfiguration|null
      */
     private $loggingConfig;
 
@@ -137,7 +137,7 @@ class ClientBuilder
         return $this;
     }
 
-    public function loggingConfiguration(?LoggingConfig $loggingConfig): self
+    public function loggingConfiguration(?LoggingConfiguration $loggingConfig): self
     {
         $this->loggingConfig = $loggingConfig;
         return $this;

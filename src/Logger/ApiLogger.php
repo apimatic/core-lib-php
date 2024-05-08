@@ -2,7 +2,7 @@
 
 namespace Core\Logger;
 
-use Core\Logger\Configuration\LoggingConfig;
+use Core\Logger\Configuration\LoggingConfiguration;
 use CoreInterfaces\Core\Logger\ApiLoggerInterface;
 use CoreInterfaces\Core\Request\RequestInterface;
 use CoreInterfaces\Core\Response\ResponseInterface;
@@ -11,7 +11,7 @@ class ApiLogger implements ApiLoggerInterface
 {
     private $config;
 
-    public function __construct(LoggingConfig $config)
+    public function __construct(LoggingConfiguration $config)
     {
         $this->config = $config;
     }

@@ -8,7 +8,7 @@ use Core\Logger\ConsoleLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class LoggingConfig
+class LoggingConfiguration
 {
     private $logger;
     private $level;
@@ -17,11 +17,11 @@ class LoggingConfig
     private $responseConfig;
 
     public function __construct(
-        ?LoggerInterface $logger,
-        string $level,
-        bool $maskSensitiveHeaders,
-        RequestConfig $requestConfig,
-        ResponseConfig $responseConfig
+        ?LoggerInterface     $logger,
+        string               $level,
+        bool                 $maskSensitiveHeaders,
+        RequestConfiguration $requestConfig,
+        ResponseConfiguration $responseConfig
     ) {
         $this->logger = $logger ?? new ConsoleLogger('printf');
         $this->level = $level;
@@ -77,9 +77,9 @@ class LoggingConfig
     /**
      * Gets the request configuration for logging.
      *
-     * @return RequestConfig The request configuration.
+     * @return RequestConfiguration The request configuration.
      */
-    public function getRequestConfig(): RequestConfig
+    public function getRequestConfig(): RequestConfiguration
     {
         return $this->requestConfig;
     }
@@ -87,9 +87,9 @@ class LoggingConfig
     /**
      * Gets the response configuration for logging.
      *
-     * @return ResponseConfig The response configuration.
+     * @return ResponseConfiguration The response configuration.
      */
-    public function getResponseConfig(): ResponseConfig
+    public function getResponseConfig(): ResponseConfiguration
     {
         return $this->responseConfig;
     }
