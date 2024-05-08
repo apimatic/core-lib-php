@@ -35,6 +35,7 @@ class LoggerTest extends TestCase
         'HeaderB' => 'value B',
         'Expires' => '2345ms'
     ];
+    private const REDACTED_VALUE = '**Redacted**';
 
     public function testLogLevels()
     {
@@ -122,7 +123,7 @@ class LoggerTest extends TestCase
     public function testLoggingRequestContentType()
     {
         $requestParams = MockHelper::getClient()->validateParameters([
-            HeaderParam::init('Content-Type', 'my-content-type')
+            HeaderParam::init('Content-Type', self::TEST_HEADERS['Content-Type'])
         ]);
         $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration());
@@ -131,7 +132,7 @@ class LoggerTest extends TestCase
             new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
                 'url' => self::TEST_URL,
-                'contentType' => 'my-content-type'
+                'contentType' => self::TEST_HEADERS['Content-Type']
             ])
         );
     }
@@ -226,10 +227,10 @@ class LoggerTest extends TestCase
     public function testLoggingRequestHeaders()
     {
         $requestParams = MockHelper::getClient()->validateParameters([
-            HeaderParam::init('Content-Type', 'my-content-type'),
-            HeaderParam::init('HeaderA', 'value A'),
-            HeaderParam::init('HeaderB', 'value B'),
-            HeaderParam::init('Expires', '2345ms')
+            HeaderParam::init('Content-Type', self::TEST_HEADERS['Content-Type']),
+            HeaderParam::init('HeaderA', self::TEST_HEADERS['HeaderA']),
+            HeaderParam::init('HeaderB', self::TEST_HEADERS['HeaderB']),
+            HeaderParam::init('Expires', self::TEST_HEADERS['Expires'])
         ]);
         $request = new Request(self::TEST_URL, MockHelper::getClient(), $requestParams);
         $apiLogger = new ApiLogger(MockHelper::getLoggingConfiguration(
@@ -246,15 +247,15 @@ class LoggerTest extends TestCase
             new LogEntry(LogLevel::INFO, self::REQUEST_FORMAT, [
                 'method' => 'Get',
                 'url' => self::TEST_URL,
-                'contentType' => 'my-content-type'
+                'contentType' => self::TEST_HEADERS['Content-Type']
             ]),
             new LogEntry(LogLevel::INFO, self::REQUEST_HEADERS_FORMAT, [
                 'headers' => [
-                    'Content-Type' => 'my-content-type',
-                    'HeaderA' => '**Redacted**',
-                    'HeaderB' => '**Redacted**',
-                    'Expires' => '2345ms',
-                    'key5' => '**Redacted**'
+                    'Content-Type' => self::TEST_HEADERS['Content-Type'],
+                    'HeaderA' => self::REDACTED_VALUE,
+                    'HeaderB' => self::REDACTED_VALUE,
+                    'Expires' => self::TEST_HEADERS['Expires'],
+                    'key5' => self::REDACTED_VALUE
                 ]
             ])
         );
@@ -309,14 +310,14 @@ class LoggerTest extends TestCase
             new LogEntry('error', self::RESPONSE_FORMAT, [
                 'statusCode' => 400,
                 'contentLength' => null,
-                'contentType' => 'my-content-type'
+                'contentType' => self::TEST_HEADERS['Content-Type']
             ]),
             new LogEntry('error', self::RESPONSE_HEADERS_FORMAT, [
                 'headers' => [
-                    'Content-Type' => 'my-content-type',
-                    'HeaderA' => '**Redacted**',
-                    'HeaderB' => '**Redacted**',
-                    'Expires' => '2345ms'
+                    'Content-Type' => self::TEST_HEADERS['Content-Type'],
+                    'HeaderA' => self::REDACTED_VALUE,
+                    'HeaderB' => self::REDACTED_VALUE,
+                    'Expires' => self::TEST_HEADERS['Expires']
                 ]
             ])
         );
@@ -326,10 +327,10 @@ class LoggerTest extends TestCase
     {
         $responseConfig = MockHelper::getResponseLoggingConfiguration(false, true);
         $expectedHeaders = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => '**Redacted**',
-            'HeaderB' => '**Redacted**',
-            'Expires' => '2345ms'
+            'Content-Type' => self::TEST_HEADERS['Content-Type'],
+            'HeaderA' => self::REDACTED_VALUE,
+            'HeaderB' => self::REDACTED_VALUE,
+            'Expires' => self::TEST_HEADERS['Expires']
         ];
         $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
@@ -348,8 +349,8 @@ class LoggerTest extends TestCase
             ['HeaderB', 'Expires']
         );
         $expectedHeaders = [
-            'HeaderB' => '**Redacted**',
-            'Expires' => '2345ms'
+            'HeaderB' => self::REDACTED_VALUE,
+            'Expires' => self::TEST_HEADERS['Expires']
         ];
         $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
@@ -363,8 +364,8 @@ class LoggerTest extends TestCase
             ['HeaderB', 'Expires']
         );
         $expectedHeaders = [
-            'HeaderA' => '**Redacted**',
-            'Content-Type' => 'my-content-type',
+            'HeaderA' => self::REDACTED_VALUE,
+            'Content-Type' => self::TEST_HEADERS['Content-Type'],
         ];
         $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }
@@ -378,8 +379,8 @@ class LoggerTest extends TestCase
             ['EXPIRES']
         );
         $expectedHeaders = [
-            'HeaderB' => '**Redacted**',
-            'Expires' => '2345ms'
+            'HeaderB' => self::REDACTED_VALUE,
+            'Expires' => self::TEST_HEADERS['Expires']
         ];
         // If both include and exclude headers are provided then only includeHeaders will work
         $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
@@ -395,10 +396,10 @@ class LoggerTest extends TestCase
             ['HeaderB']
         );
         $expectedHeaders = [
-            'Content-Type' => 'my-content-type',
-            'HeaderA' => '**Redacted**',
-            'HeaderB' => 'value B',
-            'Expires' => '2345ms'
+            'Content-Type' => self::TEST_HEADERS['Content-Type'],
+            'HeaderA' => self::REDACTED_VALUE,
+            'HeaderB' => self::TEST_HEADERS['HeaderB'],
+            'Expires' => self::TEST_HEADERS['Expires']
         ];
         $this->assertEquals($expectedHeaders, $responseConfig->getLoggableHeaders(self::TEST_HEADERS, true));
     }

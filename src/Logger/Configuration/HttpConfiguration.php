@@ -72,10 +72,11 @@ class HttpConfiguration
             if ($maskSensitiveHeaders && $this->isSensitiveHeader($lowerCaseKey)) {
                 $sensitiveHeaders[$key] = '**Redacted**';
             }
-            if (empty($this->headersToInclude) || in_array($lowerCaseKey, $this->headersToInclude, true)) {
-                if (empty($this->headersToExclude) || !in_array($lowerCaseKey, $this->headersToExclude, true)) {
-                    return true;
-                }
+            if (
+                (empty($this->headersToInclude) || in_array($lowerCaseKey, $this->headersToInclude, true)) &&
+                (empty($this->headersToExclude) || !in_array($lowerCaseKey, $this->headersToExclude, true))
+            ) {
+                return true;
             }
             unset($sensitiveHeaders[$key]);
             return false;
