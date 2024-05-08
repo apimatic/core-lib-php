@@ -17,9 +17,9 @@ class LoggingConfiguration
     private $responseConfig;
 
     public function __construct(
-        ?LoggerInterface     $logger,
-        string               $level,
-        bool                 $maskSensitiveHeaders,
+        ?LoggerInterface $logger,
+        string $level,
+        bool $maskSensitiveHeaders,
         RequestConfiguration $requestConfig,
         ResponseConfiguration $responseConfig
     ) {
