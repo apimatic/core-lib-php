@@ -5,6 +5,9 @@ namespace Core\Tests\Mocking;
 use Core\ApiCall;
 use Core\Client;
 use Core\ClientBuilder;
+use Core\Logger\Configuration\LoggingConfiguration;
+use Core\Logger\Configuration\RequestConfiguration;
+use Core\Logger\Configuration\ResponseConfiguration;
 use Core\Request\Parameters\AdditionalHeaderParams;
 use Core\Request\Parameters\HeaderParam;
 use Core\Request\Parameters\TemplateParam;
@@ -13,6 +16,7 @@ use Core\Response\Types\ErrorType;
 use Core\Tests\Mocking\Authentication\FormAuthManager;
 use Core\Tests\Mocking\Authentication\HeaderAuthManager;
 use Core\Tests\Mocking\Authentication\QueryAuthManager;
+use Core\Tests\Mocking\Logger\MockLogger;
 use Core\Tests\Mocking\Other\MockChild1;
 use Core\Tests\Mocking\Other\MockChild2;
 use Core\Tests\Mocking\Other\MockChild3;
@@ -24,6 +28,8 @@ use Core\Tests\Mocking\Types\MockCallback;
 use Core\Tests\Mocking\Types\MockFileWrapper;
 use Core\Types\CallbackCatcher;
 use Core\Utils\JsonHelper;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class MockHelper
 {
@@ -57,12 +63,18 @@ class MockHelper
      */
     private static $urlFileWrapper;
 
+    /**
+     * @var MockLogger
+     */
+    private static $logger;
+
     public static function getClient(): Client
     {
         if (!isset(self::$client)) {
             $clientBuilder = ClientBuilder::init(new MockHttpClient())
                 ->converter(new MockConverter())
                 ->apiCallback(self::getCallbackCatcher())
+                ->loggingConfiguration(self::getLoggingConfiguration())
                 ->serverUrls([
                     'Server1' => 'http://my/path:3000/{one}',
                     'Server2' => 'https://my/path/{two}'
@@ -163,5 +175,63 @@ class MockHelper
             self::$urlFileWrapper = MockFileWrapper::createFromPath($filePath, 'text/plain', 'My Text');
         }
         return self::$urlFileWrapper;
+    }
+
+    public static function getMockLogger(): MockLogger
+    {
+        if (!isset(self::$logger)) {
+            self::$logger = new MockLogger();
+        }
+        return self::$logger;
+    }
+
+    public static function getLoggingConfiguration(
+        ?string $logLevel = null,
+        ?bool $maskSensitiveHeaders = null,
+        ?RequestConfiguration $requestConfig = null,
+        ?ResponseConfiguration $responseConfig = null,
+        ?LoggerInterface $logger = null
+    ): LoggingConfiguration {
+        return new LoggingConfiguration(
+            $logger ?? self::getMockLogger(),
+            $logLevel ?? LogLevel::INFO,
+            $maskSensitiveHeaders ?? true,
+            $requestConfig ?? self::getRequestLoggingConfiguration(),
+            $responseConfig ?? self::getResponseLoggingConfiguration()
+        );
+    }
+
+    public static function getRequestLoggingConfiguration(
+        bool $includeQueryInPath = false,
+        bool $logBody = false,
+        bool $logHeaders = false,
+        array $headersToInclude = [],
+        array $headersToExclude = [],
+        array $headersToUnmask = []
+    ): RequestConfiguration {
+        return new RequestConfiguration(
+            $includeQueryInPath,
+            $logBody,
+            $logHeaders,
+            $headersToInclude,
+            $headersToExclude,
+            $headersToUnmask
+        );
+    }
+
+    public static function getResponseLoggingConfiguration(
+        bool $logBody = false,
+        bool $logHeaders = false,
+        array $headersToInclude = [],
+        array $headersToExclude = [],
+        array $headersToUnmask = []
+    ): ResponseConfiguration {
+        return new ResponseConfiguration(
+            $logBody,
+            $logHeaders,
+            $headersToInclude,
+            $headersToExclude,
+            $headersToUnmask
+        );
     }
 }

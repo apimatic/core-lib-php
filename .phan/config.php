@@ -30,7 +30,8 @@ return [
         $vendor_dir . '/apimatic/core-interfaces',
         $vendor_dir . '/apimatic/jsonmapper',
         $vendor_dir . '/phpunit/phpunit',
-        $vendor_dir . '/php-jsonpointer/php-jsonpointer'
+        $vendor_dir . '/php-jsonpointer/php-jsonpointer',
+        $vendor_dir . '/psr/log'
     ],
 
     // A directory list that defines files that will be excluded

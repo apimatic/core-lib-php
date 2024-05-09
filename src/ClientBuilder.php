@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Logger\ApiLogger;
+use Core\Logger\Configuration\LoggingConfiguration;
+use Core\Logger\NullApiLogger;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
@@ -67,6 +70,11 @@ class ClientBuilder
     private $apiCallback;
 
     /**
+     * @var LoggingConfiguration|null
+     */
+    private $loggingConfig;
+
+    /**
      * @var string|null
      */
     private $userAgent;
@@ -128,6 +136,12 @@ class ClientBuilder
         if ($apiCallback instanceof CoreCallback) {
             $this->apiCallback = $apiCallback;
         }
+        return $this;
+    }
+
+    public function loggingConfiguration(?LoggingConfiguration $loggingConfig): self
+    {
+        $this->loggingConfig = $loggingConfig;
         return $this;
     }
 
@@ -203,7 +217,8 @@ class ClientBuilder
             $this->globalConfig,
             $this->globalRuntimeConfig,
             $this->globalErrors,
-            $this->apiCallback
+            $this->apiCallback,
+            is_null($this->loggingConfig) ? new NullApiLogger() : new ApiLogger($this->loggingConfig)
         );
     }
 }
