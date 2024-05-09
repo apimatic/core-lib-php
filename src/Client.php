@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Core;
 
 use Core\Authentication\Auth;
-use Core\Logger\ApiLogger;
-use Core\Logger\Configuration\LoggingConfiguration;
 use Core\Request\Parameters\MultipleParams;
 use Core\Request\Request;
 use Core\Response\Context;
@@ -62,7 +60,7 @@ class Client
      * @param ParamInterface[] $globalRuntimeConfig
      * @param array<string,ErrorType> $globalErrors
      * @param CoreCallback|null $apiCallback
-     * @param LoggingConfiguration|null $loggingConfig
+     * @param ApiLoggerInterface $apiLogger
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -75,7 +73,7 @@ class Client
         array $globalRuntimeConfig,
         array $globalErrors,
         ?CoreCallback $apiCallback,
-        ?LoggingConfiguration $loggingConfig
+        ApiLoggerInterface $apiLogger
     ) {
         $this->httpClient = $httpClient;
         self::$converter = $converter;
@@ -89,9 +87,7 @@ class Client
         $this->globalRuntimeConfig = $globalRuntimeConfig;
         $this->globalErrors = $globalErrors;
         $this->apiCallback = $apiCallback;
-        if (isset($loggingConfig)) {
-            $this->apiLogger = new ApiLogger($loggingConfig);
-        }
+        $this->apiLogger = $apiLogger;
     }
 
     public function getGlobalRequest(?string $server = null): Request
@@ -142,9 +138,7 @@ class Client
         if (isset($this->apiCallback)) {
             $this->apiCallback->callOnBeforeWithConversion($request, self::getConverter($this));
         }
-        if (isset($this->apiLogger)) {
-            $this->apiLogger->logRequest($request);
-        }
+        $this->apiLogger->logRequest($request);
     }
 
     public function afterResponse(Context $context)
@@ -152,8 +146,6 @@ class Client
         if (isset($this->apiCallback)) {
             $this->apiCallback->callOnAfterWithConversion($context, self::getConverter($this));
         }
-        if (isset($this->apiLogger)) {
-            $this->apiLogger->logResponse($context->getResponse());
-        }
+        $this->apiLogger->logResponse($context->getResponse());
     }
 }

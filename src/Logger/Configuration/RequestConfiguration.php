@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Logger\Configuration;
 
-class RequestConfiguration extends HttpConfiguration
+class RequestConfiguration extends BaseHttpLoggingConfiguration
 {
     private $includeQueryInPath;
 

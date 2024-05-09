@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b45edafb0b8cb7f57b8a2f9bb53b0117",
+    "content-hash": "9fdb3ec1706ae57fb5bdfd790d73983f",
     "packages": [
         {
             "name": "apimatic/core-interfaces",
-            "version": "dev-test-logging",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/core-interfaces-php.git",
-                "reference": "c4290466b90bb02d6deeaf9d8108f4e4874bbcf7"
+                "reference": "b4f1bffc8be79584836f70af33c65e097eec155c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/c4290466b90bb02d6deeaf9d8108f4e4874bbcf7",
-                "reference": "c4290466b90bb02d6deeaf9d8108f4e4874bbcf7",
+                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/b4f1bffc8be79584836f70af33c65e097eec155c",
+                "reference": "b4f1bffc8be79584836f70af33c65e097eec155c",
                 "shasum": ""
             },
             "require": {
@@ -45,9 +45,9 @@
             ],
             "support": {
                 "issues": "https://github.com/apimatic/core-interfaces-php/issues",
-                "source": "https://github.com/apimatic/core-interfaces-php/tree/test-logging"
+                "source": "https://github.com/apimatic/core-interfaces-php/tree/0.1.5"
             },
-            "time": "2024-05-08T04:39:06+00:00"
+            "time": "2024-05-09T06:32:07+00:00"
         },
         {
             "name": "apimatic/jsonmapper",
@@ -3708,9 +3708,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "apimatic/core-interfaces": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

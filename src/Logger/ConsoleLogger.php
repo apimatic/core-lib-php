@@ -5,6 +5,7 @@ namespace Core\Logger;
 use Closure;
 use Core\Utils\CoreHelper;
 use Psr\Log\AbstractLogger;
+use Psr\Log\InvalidArgumentException;
 
 class ConsoleLogger extends AbstractLogger
 {
@@ -26,6 +27,11 @@ class ConsoleLogger extends AbstractLogger
      */
     public function log($level, $message, array $context = []): void
     {
+        if (!in_array($level, LoggerConstants::ALLOWED_LOG_LEVELS, true)) {
+            throw new InvalidArgumentException(
+                "Invalid LogLevel: $level. See Psr\Log\LogLevel.php for possible values of log levels."
+            );
+        }
         Closure::fromCallable($this->printer)("%s: %s\n", $level, str_replace(
             array_map(function ($key) {
                 return '{' . $key . '}';

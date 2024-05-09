@@ -6,7 +6,6 @@ namespace Core\Logger\Configuration;
 
 use Core\Logger\ConsoleLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 
 class LoggingConfiguration
 {
@@ -36,32 +35,7 @@ class LoggingConfiguration
      */
     public function logMessage(string $message, array $context): void
     {
-        switch ($this->level) {
-            case LogLevel::DEBUG:
-                $this->logger->debug($message, $context);
-                break;
-            case LogLevel::INFO:
-                $this->logger->info($message, $context);
-                break;
-            case LogLevel::NOTICE:
-                $this->logger->notice($message, $context);
-                break;
-            case LogLevel::WARNING:
-                $this->logger->warning($message, $context);
-                break;
-            case LogLevel::ERROR:
-                $this->logger->error($message, $context);
-                break;
-            case LogLevel::CRITICAL:
-                $this->logger->critical($message, $context);
-                break;
-            case LogLevel::ALERT:
-                $this->logger->alert($message, $context);
-                break;
-            case LogLevel::EMERGENCY:
-                $this->logger->emergency($message, $context);
-                break;
-        }
+        $this->logger->log($this->level, $message, $context);
     }
 
     /**

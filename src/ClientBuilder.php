@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Logger\ApiLogger;
 use Core\Logger\Configuration\LoggingConfiguration;
+use Core\Logger\NullApiLogger;
 use Core\Request\Parameters\HeaderParam;
 use Core\Response\Types\ErrorType;
 use Core\Types\Sdk\CoreCallback;
@@ -216,7 +218,7 @@ class ClientBuilder
             $this->globalRuntimeConfig,
             $this->globalErrors,
             $this->apiCallback,
-            $this->loggingConfig
+            is_null($this->loggingConfig) ? new NullApiLogger() : new ApiLogger($this->loggingConfig)
         );
     }
 }

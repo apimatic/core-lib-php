@@ -17,9 +17,7 @@ class ApiLogger implements ApiLoggerInterface
     }
 
     /**
-     * Log the provided request.
-     *
-     * @param $request RequestInterface HTTP requests to be logged.
+     * @inheritDoc
      */
     public function logRequest(RequestInterface $request): void
     {
@@ -59,9 +57,7 @@ class ApiLogger implements ApiLoggerInterface
     }
 
     /**
-     * Log the provided response.
-     *
-     * @param $response ResponseInterface HTTP responses to be logged.
+     * @inheritDoc
      */
     public function logResponse(ResponseInterface $response): void
     {

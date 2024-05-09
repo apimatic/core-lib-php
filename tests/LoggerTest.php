@@ -17,6 +17,8 @@ use Core\Utils\CoreHelper;
 use CoreInterfaces\Core\Format;
 use CoreInterfaces\Core\Logger\ApiLoggerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
@@ -48,30 +50,45 @@ class LoggerTest extends TestCase
         MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::CRITICAL));
         MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::WARNING));
         MockHelper::getMockLogger()->assertLastEntries($this->logAndGetEntry(LogLevel::INFO));
-
-        $loggedEntriesCount = MockHelper::getMockLogger()->countEntries();
-        $this->logAndGetEntry('__unknown__');
-
-        // Making sure it didn't log any entry (increased entry count)
-        $this->assertEquals($loggedEntriesCount, MockHelper::getMockLogger()->countEntries());
-    }
-
-    private function logAndGetEntry(string $level): LogEntry
-    {
-        $logEntry = new LogEntry($level, 'someMessage', []);
-        MockHelper::getLoggingConfiguration($level)->logMessage($logEntry->message, $logEntry->context);
-        return $logEntry;
     }
 
     public function testConsoleLogger()
     {
         $printer = new MockPrinter();
-        $consoleLoggerMock = new ConsoleLogger([$printer, 'printMessage']);
-        $loggingConfig = MockHelper::getLoggingConfiguration(null, null, null, null, $consoleLoggerMock);
-        $apiLogger = new ApiLogger($loggingConfig);
-        $apiLogger->logRequest(new Request(self::TEST_URL, MockHelper::getClient()));
+        $consoleLogger = new ConsoleLogger([$printer, 'printMessage']);
 
-        $this->assertEquals(["%s: %s\n", LogLevel::INFO, 'Request Get https://some/path '], $printer->args);
+        $this->logAndGetEntry(LogLevel::INFO, $consoleLogger, '{key1}-{key2}', [
+            'key1' => 'valA',
+            'key2' => 'valB'
+        ]);
+
+        $this->assertEquals(["%s: %s\n", LogLevel::INFO, 'valA-valB'], $printer->args);
+    }
+
+    public function testConsoleLoggerFailure()
+    {
+        $level = '__unknown__';
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Invalid LogLevel: $level. See Psr\Log\LogLevel.php for possible values of log levels."
+        );
+
+        $printer = new MockPrinter();
+        $consoleLogger = new ConsoleLogger([$printer, 'printMessage']);
+
+        $this->logAndGetEntry($level, $consoleLogger);
+    }
+
+    private function logAndGetEntry(
+        string $level,
+        LoggerInterface $logger = null,
+        string $message = 'someMessage',
+        array $context = []
+    ): LogEntry {
+        $logEntry = new LogEntry($level, $message, $context);
+        MockHelper::getLoggingConfiguration($level, null, null, null, $logger)
+            ->logMessage($logEntry->message, $logEntry->context);
+        return $logEntry;
     }
 
     public function testDefaultLoggingConfiguration()

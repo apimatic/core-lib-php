@@ -6,7 +6,7 @@ namespace Core\Logger\Configuration;
 
 use Core\Logger\LoggerConstants;
 
-class HttpConfiguration
+class BaseHttpLoggingConfiguration
 {
     private $logBody;
     private $logHeaders;

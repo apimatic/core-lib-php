@@ -2,6 +2,8 @@
 
 namespace Core\Logger;
 
+use Psr\Log\LogLevel;
+
 class LoggerConstants
 {
     public const NON_SENSITIVE_HEADERS = [
@@ -14,6 +16,10 @@ class LoggerConstants
         "Max-Forwards", "Pragma", "Range", "Referer", "Retry-After", "Server",
         "Trailer", "Transfer-Encoding", "Upgrade", "User-Agent", "Vary", "Via",
         "Warning", "X-Forwarded-For", "X-Requested-With", "X-Powered-By"
+    ];
+    public const ALLOWED_LOG_LEVELS = [
+        LogLevel::EMERGENCY, LogLevel::ALERT, LogLevel::CRITICAL, LogLevel::ERROR,
+        LogLevel::WARNING, LogLevel::NOTICE, LogLevel::INFO, LogLevel::DEBUG
     ];
     public const METHOD = 'method';
     public const URL = 'url';

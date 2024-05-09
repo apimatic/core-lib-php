@@ -52,15 +52,15 @@ composer require "apimatic/core"
 | [`Context`](src/Response/Context.php)                                       | Holds the current context i.e. the current request, response and other needed details |
 
 ## Logger
-| Name                                                                          | Description                                                                 |
-|-------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| [`ApiLogger`](src/Logger/ApiLogger.php)                                       | Provides implementation for logging API requests and responses              |
-| [`ConsoleLogger`](src/Logger/ConsoleLogger.php)                               | A LoggerInterface implementation that log messages on console               |
-| [`LoggerConstants`](src/Logger/LoggerConstants.php)                           | Holds constants like NON_SENSITIVE_HEADERS, etc.                            |
-| [`HttpConfiguration`](src/Logger/Configuration/HttpConfiguration.php)         | Common configurations shared by request and response logging configurations |
-| [`LoggingConfiguration`](src/Logger/Configuration/LoggingConfiguration.php)   | Provides client's logging configurations                                    |
-| [`RequestConfiguration`](src/Logger/Configuration/RequestConfiguration.php)   | Provides request's logging configurations                                   |
-| [`ResponseConfiguration`](src/Logger/Configuration/ResponseConfiguration.php) | Provides response's logging configurations                                  |
+| Name                                                                                        | Description                                                                 |
+|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| [`ApiLogger`](src/Logger/ApiLogger.php)                                                     | Provides implementation for logging API requests and responses              |
+| [`ConsoleLogger`](src/Logger/ConsoleLogger.php)                                             | A LoggerInterface implementation that log messages on console               |
+| [`LoggerConstants`](src/Logger/LoggerConstants.php)                                         | Holds constants like NON_SENSITIVE_HEADERS, etc.                            |
+| [`BaseHttpLoggingConfiguration`](src/Logger/Configuration/BaseHttpLoggingConfiguration.php) | Common configurations shared by request and response logging configurations |
+| [`LoggingConfiguration`](src/Logger/Configuration/LoggingConfiguration.php)                 | Provides client's logging configurations                                    |
+| [`RequestConfiguration`](src/Logger/Configuration/RequestConfiguration.php)                 | Provides request's logging configurations                                   |
+| [`ResponseConfiguration`](src/Logger/Configuration/ResponseConfiguration.php)               | Provides response's logging configurations                                  |
 
 ## TestCase
 | Name                                                                                 | Description                                                                   |
