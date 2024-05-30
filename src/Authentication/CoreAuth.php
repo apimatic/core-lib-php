@@ -31,9 +31,6 @@ class CoreAuth implements AuthInterface
      */
     public function validate(TypeValidatorInterface $validator): void
     {
-        if ($this->isValid) {
-            return;
-        }
         array_walk($this->parameters, function ($param) use ($validator): void {
             $param->validate($validator);
         });
