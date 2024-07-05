@@ -71,7 +71,7 @@ class MockResponse implements ResponseInterface
 
     public function getBody()
     {
-        return $this->body ?? ["res" => "This is raw body"];
+        return $this->body;
     }
 
     public function convert(ConverterInterface $converter)

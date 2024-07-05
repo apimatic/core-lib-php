@@ -39,7 +39,7 @@ class ResponseMultiType
      */
     public function getFrom(Context $context)
     {
-        if (is_null($this->typeGroup)) {
+        if (is_null($this->typeGroup) || $context->isBodyMissing()) {
             return null;
         }
         $responseBody = $context->getResponse()->getBody();

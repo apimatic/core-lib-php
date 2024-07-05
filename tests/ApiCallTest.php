@@ -864,6 +864,7 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(400);
+        $response->setBody(['res' => 'This is raw body']);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
@@ -875,6 +876,7 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(100);
+        $response->setBody(['res' => 'This is raw body']);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
@@ -919,6 +921,90 @@ class ApiCallTest extends TestCase
         $response->setStatusCode(400);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         MockHelper::responseHandler()->nullOn404()->getResult($context);
+    }
+
+    public function testNullableTypeWithMissingBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullableType()->getResult($context);
+        $this->assertNull($result);
+    }
+
+    public function testNullableTypeWithMissingBodyAndApiResponse()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullableType()->returnApiResponse()->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertNull($result->getResult());
+        $this->assertFalse($result->isError());
+    }
+
+    public function testNullableTypeWithNullBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody(null);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullableType()->getResult($context);
+        $this->assertNull($result);
+    }
+
+    public function testNullableTypeWithBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody(214);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullableType()->getResult($context);
+        $this->assertEquals(214, $result);
+    }
+
+    public function testNonNullableTypeWithMissingBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->getResult($context);
+        $this->assertEquals('', $result);
+    }
+
+    public function testNonNullableTypeWithMissingBodyAndApiResponse()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->returnApiResponse()->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals('', $result->getResult());
+        $this->assertFalse($result->isError());
+    }
+
+    public function testNonNullableTypeWithNullBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody(null);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->getResult($context);
+        $this->assertNull($result);
+    }
+
+    public function testNonNullableTypeWithBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody(214);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->getResult($context);
+        $this->assertEquals(214, $result);
     }
 
     public function testGlobalMockException()

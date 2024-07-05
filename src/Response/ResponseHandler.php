@@ -19,6 +19,7 @@ class ResponseHandler
     private $responseMultiType;
     private $responseError;
     private $useApiResponse = false;
+    private $nullableType = false;
 
     public function __construct()
     {
@@ -57,6 +58,15 @@ class ResponseHandler
     }
 
     /**
+     * Sets the return type as nullable.
+     */
+    public function nullableType(): self
+    {
+        $this->nullableType = true;
+        return $this;
+    }
+
+    /**
      * Sets the deserializer method to the one provided, for deserializableType.
      */
     public function deserializerMethod(callable $deserializerMethod): self
@@ -82,8 +92,8 @@ class ResponseHandler
     /**
      * Sets response type to the one provided and format to XML.
      *
-     * @param string $responseClass Response type class
-     * @param string $rootName
+     * @param string $responseClass Type of Response class
+     * @param string $rootName Name of the root in xml response
      */
     public function typeXml(string $responseClass, string $rootName): self
     {
@@ -97,6 +107,9 @@ class ResponseHandler
 
     /**
      * Sets response type to the one provided and format to XML.
+     *
+     * @param string $responseClass Type of Response class
+     * @param string $rootName Name of the root for map in xml response
      */
     public function typeXmlMap(string $responseClass, string $rootName): self
     {
@@ -110,6 +123,10 @@ class ResponseHandler
 
     /**
      * Sets response type to the one provided and format to XML.
+     *
+     * @param string $responseClass Type of Response class
+     * @param string $rootName Name of the root for array in xml response
+     * @param string $itemName Name of each item in array
      */
     public function typeXmlArray(string $responseClass, string $rootName, string $itemName): self
     {
@@ -126,7 +143,6 @@ class ResponseHandler
      * @param string[] $typeGroupDeserializers Methods required for deserialization of specific types in
      *                                         in the provided typeGroup, should be an array in the format:
      *                                         ['path/to/method returnType', ...]. Default: []
-     * @return $this
      */
     public function typeGroup(string $typeGroup, array $typeGroupDeserializers = []): self
     {
@@ -155,10 +171,19 @@ class ResponseHandler
         if ($context->isFailure()) {
             return $this->responseError->getResult($context);
         }
+        if ($this->nullableType && $context->isBodyMissing()) {
+            return $this->getResponse($context, null);
+        }
         $result = $this->deserializableType->getFrom($context);
         $result = $result ?? $this->responseType->getFrom($context);
         $result = $result ?? $this->responseMultiType->getFrom($context);
         $result = $result ?? $context->getResponseBody();
+
+        return $this->getResponse($context, $result);
+    }
+
+    private function getResponse(Context $context, $result)
+    {
         if ($this->useApiResponse) {
             return $context->toApiResponse($result);
         }
