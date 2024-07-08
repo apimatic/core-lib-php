@@ -955,6 +955,16 @@ class ApiCallTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testNullableTypeWithWhiteSpacedBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('  ');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->nullableType()->getResult($context);
+        $this->assertNull($result);
+    }
+
     public function testNullableTypeWithBody()
     {
         $response = new MockResponse();
@@ -973,6 +983,16 @@ class ApiCallTest extends TestCase
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->getResult($context);
         $this->assertEquals('', $result);
+    }
+
+    public function testNonNullableTypeWithWhiteSpacedBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(200);
+        $response->setBody('  ');
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()->getResult($context);
+        $this->assertEquals('  ', $result);
     }
 
     public function testNonNullableTypeWithMissingBodyAndApiResponse()

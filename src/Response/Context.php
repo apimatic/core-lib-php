@@ -71,7 +71,7 @@ class Context implements ContextInterface
     public function isBodyMissing(): bool
     {
         $rawBody = $this->response->getRawBody();
-        return $rawBody === '';
+        return trim($rawBody) === '';
     }
 
     /**
