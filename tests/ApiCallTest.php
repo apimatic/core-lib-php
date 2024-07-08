@@ -35,6 +35,8 @@ use PHPUnit\Framework\TestCase;
 
 class ApiCallTest extends TestCase
 {
+    private const DUMMY_BODY = ['res' => 'This is raw body'];
+
     /**
      * @param string $query Just the query path of the url
      * @return array<string,string>
@@ -864,11 +866,11 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(400);
-        $response->setBody(['res' => 'This is raw body']);
+        $response->setBody(self::DUMMY_BODY);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
-        $this->assertEquals(['res' => 'This is raw body'], $result->getResult());
+        $this->assertEquals(self::DUMMY_BODY, $result->getResult());
         $this->assertTrue($result->isError());
     }
 
@@ -876,11 +878,11 @@ class ApiCallTest extends TestCase
     {
         $response = new MockResponse();
         $response->setStatusCode(100);
-        $response->setBody(['res' => 'This is raw body']);
+        $response->setBody(self::DUMMY_BODY);
         $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
-        $this->assertEquals(['res' => 'This is raw body'], $result->getResult());
+        $this->assertEquals(self::DUMMY_BODY, $result->getResult());
         $this->assertTrue($result->isError());
     }
 
