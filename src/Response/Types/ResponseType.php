@@ -53,7 +53,7 @@ class ResponseType
      */
     public function getFrom(Context $context)
     {
-        if (is_null($this->responseClass)) {
+        if (is_null($this->responseClass) || $context->isBodyMissing()) {
             return null;
         }
         if (isset($this->xmlDeserializer)) {

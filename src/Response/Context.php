@@ -66,6 +66,15 @@ class Context implements ContextInterface
     }
 
     /**
+     * Is response body missing.
+     */
+    public function isBodyMissing(): bool
+    {
+        $rawBody = $this->response->getRawBody();
+        return trim($rawBody) === '';
+    }
+
+    /**
      * Returns JsonHelper object.
      */
     public function getJsonHelper(): JsonHelper
