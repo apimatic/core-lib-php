@@ -186,4 +186,35 @@ class CoreHelper
         }
         return 'Bearer ' . $accessToken;
     }
+
+    /**
+     * Converts the properties to a human-readable string representation
+     */
+    public static function stringify(
+        string $className,
+        array $properties,
+        string $parentClassRepresentation = '',
+        array $additionalProperties = []
+    ): string {
+        $output = $className . ' [' . implode(
+            ', ',
+            array_map(function ($key, $value) {
+                    return "$key: $value";
+            },
+                array_keys($properties),
+                $properties)
+        );
+
+        if (!empty($additionalProperties)) {
+            $additionalPropertiesString = self::stringify('additionalProperties:', $additionalProperties);
+            $output .= ", $additionalPropertiesString";
+        }
+
+        if (empty($parentClassRepresentation)) {
+            return $output . ']';
+        }
+
+        $startPos = strpos($parentClassRepresentation, '[');
+        return $output . ', ' . substr($parentClassRepresentation, $startPos + 1);
+    }
 }
