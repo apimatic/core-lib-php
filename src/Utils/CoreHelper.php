@@ -6,6 +6,8 @@ namespace Core\Utils;
 
 use Core\Types\Sdk\CoreFileWrapper;
 use InvalidArgumentException;
+use JsonSerializable;
+use stdClass;
 
 class CoreHelper
 {
@@ -188,33 +190,80 @@ class CoreHelper
     }
 
     /**
-     * Converts the properties to a human-readable string representation
+     * Prepare a mixed typed value or array for a readable form.
+     *
+     * @param mixed $value Any mixed typed value.
+     * @param bool $exportBoolAsString Should export boolean values as string? Default: true
+     * @param bool $exportJsonSerializableAsString Should export JsonSerializable as string? Default: false
+     *
+     * @return mixed A valid readable instance to be sent in form/query.
+     */
+    public static function prepareValue(
+        $value,
+        bool $exportBoolAsString = true,
+        bool $exportJsonSerializableAsString = false
+    ) {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $selfCaller = function ($v) use ($exportBoolAsString, $exportJsonSerializableAsString) {
+            return self::prepareValue($v, $exportBoolAsString, $exportJsonSerializableAsString);
+        };
+
+        if (is_array($value)) {
+            // recursively calling this function to resolve all types in any array
+            return array_map($selfCaller, $value);
+        }
+
+        if (is_bool($value)) {
+            return $exportBoolAsString ? var_export($value, true) : $value;
+        }
+
+        if ($value instanceof JsonSerializable) {
+            if ($exportJsonSerializableAsString) {
+                return (string) $value;
+            }
+            $modelArray = $value->jsonSerialize();
+            // recursively calling this function to resolve all types in any model
+            return array_map($selfCaller, $modelArray instanceof stdClass ? [] : $modelArray);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Converts the properties to a human-readable string representation.
+     *
+     * Sample output:
+     *
+     * $prefix [$properties:key: $properties:value, $propertiesPostfix,
+     * additionalProperties: [$additionalProperties:key: $additionalProperties:value]]
      */
     public static function stringify(
-        string $className,
+        string $prefix,
         array $properties,
-        string $parentClassRepresentation = '',
+        string $propertiesPostfix = '',
         array $additionalProperties = []
     ): string {
-        $output = $className . ' [' . implode(
-            ', ',
-            array_map(function ($key, $value) {
-                    return "$key: $value";
-            },
-                array_keys($properties),
-                $properties)
-        );
+        $formattedProperties = array_map(function ($key, $value) {
+            $value = self::serialize(self::prepareValue($value, true, true));
+            return "$key: $value";
+        }, array_keys($properties), $properties);
+        $formattedPropertiesString = implode(', ', $formattedProperties);
+
+        $output = "$prefix [$formattedPropertiesString";
 
         if (!empty($additionalProperties)) {
             $additionalPropertiesString = self::stringify('additionalProperties:', $additionalProperties);
             $output .= ", $additionalPropertiesString";
         }
 
-        if (empty($parentClassRepresentation)) {
-            return $output . ']';
+        if (empty($propertiesPostfix)) {
+            return "$output]";
         }
 
-        $startPos = strpos($parentClassRepresentation, '[');
-        return $output . ', ' . substr($parentClassRepresentation, $startPos + 1);
+        $propertiesPostfix = substr($propertiesPostfix, strpos($propertiesPostfix, '[') + 1);
+        return "$output, $propertiesPostfix";
     }
 }

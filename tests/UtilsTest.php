@@ -182,6 +182,27 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
+    public function testCoreHelperStringify()
+    {
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string, additionalProperties: ' .
+            '[additional1: ["A","B","false","true"], additional2: other string, additional3: false], ' .
+            'parentProp1: 1.0, parentProp2: some string]';
+        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
+            'Model',
+            [
+                'prop1' => true,
+                'prop2' => 90,
+                'prop3' => 'my string'
+            ],
+            'Parent [parentProp1: 1.0, parentProp2: some string]',
+            [
+                'additional1' => [ 'A', 'B', false, true ],
+                'additional2' => 'other string',
+                'additional3' => false,
+            ]
+        ));
+    }
+
     public function testIsNullOrEmpty()
     {
         $this->assertTrue(CoreHelper::isNullOrEmpty(0));
