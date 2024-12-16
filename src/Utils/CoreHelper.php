@@ -194,21 +194,21 @@ class CoreHelper
      *
      * @param mixed $value Any mixed typed value.
      * @param bool $exportBoolAsString Should export boolean values as string? Default: true
-     * @param bool $exportJsonSerializableAsString Should export JsonSerializable as string? Default: false
+     * @param bool $castAsString Should cast the output into string? Default: false
      *
      * @return mixed A valid readable instance to be sent in form/query.
      */
     public static function prepareValue(
         $value,
         bool $exportBoolAsString = true,
-        bool $exportJsonSerializableAsString = false
+        bool $castAsString = false
     ) {
         if (is_null($value)) {
             return null;
         }
 
-        $selfCaller = function ($v) use ($exportBoolAsString, $exportJsonSerializableAsString) {
-            return self::prepareValue($v, $exportBoolAsString, $exportJsonSerializableAsString);
+        $selfCaller = function ($v) use ($exportBoolAsString, $castAsString) {
+            return self::prepareValue($v, $exportBoolAsString, $castAsString);
         };
 
         if (is_array($value)) {
@@ -220,10 +220,11 @@ class CoreHelper
             return $exportBoolAsString ? var_export($value, true) : $value;
         }
 
+        if ($castAsString) {
+            return (string) $value;
+        }
+
         if ($value instanceof JsonSerializable) {
-            if ($exportJsonSerializableAsString) {
-                return (string) $value;
-            }
             $modelArray = $value->jsonSerialize();
             // recursively calling this function to resolve all types in any model
             return array_map($selfCaller, $modelArray instanceof stdClass ? [] : $modelArray);
@@ -237,27 +238,25 @@ class CoreHelper
      *
      * Sample output:
      *
-     * $prefix [$properties:key: $properties:value, $propertiesPostfix,
-     * additionalProperties: [$additionalProperties:key: $additionalProperties:value]]
+     * $prefix [$properties:key: $properties:value, $propertiesPostfix]
      */
     public static function stringify(
         string $prefix,
         array $properties,
-        string $propertiesPostfix = '',
-        array $additionalProperties = []
+        string $propertiesPostfix = ''
     ): string {
         $formattedProperties = array_map(function ($key, $value) {
-            $value = self::serialize(self::prepareValue($value, true, true));
-            return "$key: $value";
+            if (is_null($value)) {
+                return null; // Skip null values
+            }
+            $value = is_array($value) ? self::stringify('', $value) : self::prepareValue($value, true, true);
+            if (is_string($key)) {
+                return "$key: $value";
+            }
+            return $value;
         }, array_keys($properties), $properties);
-        $formattedPropertiesString = implode(', ', $formattedProperties);
-
-        $output = "$prefix [$formattedPropertiesString";
-
-        if (!empty($additionalProperties)) {
-            $additionalPropertiesString = self::stringify('additionalProperties:', $additionalProperties);
-            $output .= ", $additionalPropertiesString";
-        }
+        $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
+        $output = ltrim("$prefix [$formattedPropertiesString");
 
         if (empty($propertiesPostfix)) {
             return "$output]";

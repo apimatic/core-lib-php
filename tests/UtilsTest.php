@@ -2,7 +2,9 @@
 
 namespace Core\Tests;
 
+use Core\Tests\Mocking\Other\Customer;
 use Core\Tests\Mocking\Other\MockClass;
+use Core\Tests\Mocking\Other\Order;
 use Core\Utils\CoreHelper;
 use Core\Utils\DateHelper;
 use Core\Utils\XmlDeserializer;
@@ -182,23 +184,88 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
+    public function testCoreHelperStringifyWithToString()
+    {
+        $customer = new Customer();
+        $customer->name = 'John Doe';
+        $customer->email = 'john.doe@example.com';
+        $customer->additionalProperties = [
+            'age' => 21
+        ];
+
+        $orderA = new Order();
+        $orderA->orderId = 345;
+
+        $orderB = new Order();
+        $orderB->orderId = 567;
+        $orderB->sender = $customer;
+
+        $order = new Order();
+        $order->orderId = 123;
+        $order->similarOrders = [$orderA, $orderB];
+        $order->sender = $customer;
+        $order->total = 250.75;
+        $order->delivered = true;
+
+        $expectedStringNotation = 'Placed Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
+            'name: John Doe, additionalProperties: [age: 21]], similarOrders: [Order [orderId: 345],' .
+            ' Order [orderId: 567, sender: Customer [email: john.doe@example.com, name: John Doe,' .
+            ' additionalProperties: [age: 21]]]], total: 250.75, delivered: true]';
+        $actual = "Placed $order";
+
+        $this->assertEquals($expectedStringNotation, $actual);
+    }
+
     public function testCoreHelperStringify()
     {
         $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string, additionalProperties: ' .
-            '[additional1: ["A","B","false","true"], additional2: other string, additional3: false], ' .
+            '[additional1: [A, B, false, true], additional2: other string, additional3: false], ' .
             'parentProp1: 1.0, parentProp2: some string]';
+
         $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
             'Model',
             [
                 'prop1' => true,
                 'prop2' => 90,
+                'prop3' => 'my string',
+                'additionalProperties' =>
+                    [
+                        'additional1' => [ 'A', 'B', false, true ],
+                        'additional2' => 'other string',
+                        'additional3' => false,
+                    ]
+            ],
+            'Parent [parentProp1: 1.0, parentProp2: some string]'
+        ));
+    }
+
+    public function testCoreHelperStringifyWithoutAdditionalProperties()
+    {
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90.234, prop3: my string, parentProp1: 1.0, ' .
+            'parentProp2: some string]';
+
+        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
+            'Model',
+            [
+                'prop1' => true,
+                'prop2' => 90.234,
                 'prop3' => 'my string'
             ],
-            'Parent [parentProp1: 1.0, parentProp2: some string]',
+            'Parent [parentProp1: 1.0, parentProp2: some string]'
+        ));
+    }
+
+    public function testCoreHelperStringifyWithoutPostfix()
+    {
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string, prop4: [23, 24.4]]';
+
+        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
+            'Model',
             [
-                'additional1' => [ 'A', 'B', false, true ],
-                'additional2' => 'other string',
-                'additional3' => false,
+                'prop1' => true,
+                'prop2' => 90,
+                'prop3' => 'my string',
+                'prop4' => [23, 24.4]
             ]
         ));
     }
