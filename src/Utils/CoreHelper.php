@@ -255,15 +255,14 @@ class CoreHelper
         string $processedProperties = ''
     ): string {
         $formattedProperties = array_map([self::class, 'stringifyProperty'], array_keys($properties), $properties);
-        $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
-        $output = ltrim("$prefix [$formattedPropertiesString");
 
-        if (empty($processedProperties)) {
-            return "$output]";
+        if (!empty($processedProperties)) {
+            $processedProperties = substr($processedProperties, strpos($processedProperties, '[') + 1, -1);
+            $formattedProperties[] = $processedProperties;
         }
+        $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
 
-        $processedProperties = substr($processedProperties, strpos($processedProperties, '[') + 1);
-        return "$output, $processedProperties";
+        return ltrim("$prefix [$formattedPropertiesString]");
     }
 
     /**
@@ -275,7 +274,12 @@ class CoreHelper
             return null; // Skip null values
         }
 
+        if ($value instanceof stdClass) {
+            $value = (array) $value;
+        }
+
         $value = is_array($value) ? self::stringify('', $value) : self::prepareValue($value, true, true);
+
         if (is_string($key)) {
             return "$key: $value";
         }

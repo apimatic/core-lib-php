@@ -2,9 +2,11 @@
 
 namespace Core\Tests;
 
+use Core\Tests\Mocking\MockHelper;
 use Core\Tests\Mocking\Other\Customer;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Other\Order;
+use Core\Tests\Mocking\Other\Person;
 use Core\Utils\CoreHelper;
 use Core\Utils\DateHelper;
 use Core\Utils\XmlDeserializer;
@@ -13,6 +15,7 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class UtilsTest extends TestCase
 {
@@ -184,7 +187,7 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
-    public function testCoreHelperStringifyWithToString()
+    public function testToString()
     {
         $customer = new Customer();
         $customer->name = 'John Doe';
@@ -208,10 +211,32 @@ class UtilsTest extends TestCase
         $order->delivered = true;
 
         $expected = 'Placed Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
-            'name: John Doe, additionalProperties: [age: 21]], similarOrders: [Order [orderId: 345],' .
-            ' Order [orderId: 567, sender: Customer [email: john.doe@example.com, name: John Doe,' .
-            ' additionalProperties: [age: 21]]]], total: 250.75, delivered: true]';
+            'name: John Doe, additionalProperties: [age: 21]], similarOrders: [Order [orderId: 345], ' .
+            'Order [orderId: 567, sender: Customer [email: john.doe@example.com, name: John Doe, ' .
+            'additionalProperties: [age: 21]]]], total: 250.75, delivered: true]';
         $actual = "Placed $order";
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testToStringWithNonArrayAndNonModelProperties()
+    {
+        $fileWrapper = MockHelper::getFileWrapper();
+
+        $object = new stdClass();
+        $object->name = "John";
+        $object->age = 30;
+
+        $person = new Person();
+        $person->additionalProperties = [
+            'stdClass' => $object,
+            'file' => $fileWrapper
+        ];
+
+        $expected = 'My Person [additionalProperties: [stdClass: [name: John, age: 30], file: MockFileWrapper' .
+            ' [realFilePath: C:\Users\Asad Apimatic\vs-workspace\core-lib-php\tests\Mocking\Other\testFile.txt,' .
+            ' mimeType: text/plain, filename: My Text]]]';
+        $actual = "My $person";
 
         $this->assertEquals($expected, $actual);
     }
