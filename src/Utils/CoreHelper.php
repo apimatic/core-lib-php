@@ -247,23 +247,23 @@ class CoreHelper
      *
      * Sample output:
      *
-     * $prefix [$properties:key: $properties:value, $propertiesPostfix]
+     * $prefix [$properties:key: $properties:value, $processedProperties]
      */
     public static function stringify(
         string $prefix,
         array $properties,
-        string $propertiesPostfix = ''
+        string $processedProperties = ''
     ): string {
         $formattedProperties = array_map([self::class, 'stringifyProperty'], array_keys($properties), $properties);
         $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
         $output = ltrim("$prefix [$formattedPropertiesString");
 
-        if (empty($propertiesPostfix)) {
+        if (empty($processedProperties)) {
             return "$output]";
         }
 
-        $propertiesPostfix = substr($propertiesPostfix, strpos($propertiesPostfix, '[') + 1);
-        return "$output, $propertiesPostfix";
+        $processedProperties = substr($processedProperties, strpos($processedProperties, '[') + 1);
+        return "$output, $processedProperties";
     }
 
     /**

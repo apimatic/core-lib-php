@@ -220,7 +220,7 @@ class UtilsTest extends TestCase
     {
         $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 1, additionalProperties: ' .
             '[additional1: [A, B, false, true], additional2: other string, additional3: false], ' .
-            'parentProp1: 1.0, parentProp2: some string]';
+            'parentProp1: 1.1, parentProp2: some string]';
 
         $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
             'Model',
@@ -235,7 +235,13 @@ class UtilsTest extends TestCase
                         'additional3' => false,
                     ]
             ],
-            'Parent [parentProp1: 1.0, parentProp2: some string]'
+            CoreHelper::stringify(
+                'Parent',
+                [
+                    'parentProp1' => 1.1,
+                    'parentProp2' => 'some string'
+                ]
+            )
         ));
     }
 
