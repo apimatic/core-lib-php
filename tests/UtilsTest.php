@@ -207,18 +207,18 @@ class UtilsTest extends TestCase
         $order->total = 250.75;
         $order->delivered = true;
 
-        $expectedStringNotation = 'Placed Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
+        $expected = 'Placed Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
             'name: John Doe, additionalProperties: [age: 21]], similarOrders: [Order [orderId: 345],' .
             ' Order [orderId: 567, sender: Customer [email: john.doe@example.com, name: John Doe,' .
             ' additionalProperties: [age: 21]]]], total: 250.75, delivered: true]';
         $actual = "Placed $order";
 
-        $this->assertEquals($expectedStringNotation, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testCoreHelperStringify()
     {
-        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string, additionalProperties: ' .
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 1, additionalProperties: ' .
             '[additional1: [A, B, false, true], additional2: other string, additional3: false], ' .
             'parentProp1: 1.0, parentProp2: some string]';
 
@@ -227,7 +227,7 @@ class UtilsTest extends TestCase
             [
                 'prop1' => true,
                 'prop2' => 90,
-                'prop3' => 'my string',
+                'prop3' => 'my string 1',
                 'additionalProperties' =>
                     [
                         'additional1' => [ 'A', 'B', false, true ],
@@ -241,7 +241,7 @@ class UtilsTest extends TestCase
 
     public function testCoreHelperStringifyWithoutAdditionalProperties()
     {
-        $expectedStringNotation = 'Model [prop1: true, prop2: 90.234, prop3: my string, parentProp1: 1.0, ' .
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90.234, prop3: my string 2, parentProp1: 1.0, ' .
             'parentProp2: some string]';
 
         $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
@@ -249,7 +249,7 @@ class UtilsTest extends TestCase
             [
                 'prop1' => true,
                 'prop2' => 90.234,
-                'prop3' => 'my string'
+                'prop3' => 'my string 2'
             ],
             'Parent [parentProp1: 1.0, parentProp2: some string]'
         ));
@@ -257,14 +257,14 @@ class UtilsTest extends TestCase
 
     public function testCoreHelperStringifyWithoutPostfix()
     {
-        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string, prop4: [23, 24.4]]';
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 3, prop4: [23, 24.4]]';
 
         $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
             'Model',
             [
                 'prop1' => true,
                 'prop2' => 90,
-                'prop3' => 'my string',
+                'prop3' => 'my string 3',
                 'prop4' => [23, 24.4]
             ]
         ));

@@ -190,7 +190,7 @@ class CoreHelper
     }
 
     /**
-     * Prepare a mixed typed value or array for a readable form.
+     * Prepare a mixed typed value or array into a readable form.
      *
      * @param mixed $value Any mixed typed value.
      * @param bool $exportBoolAsString Should export boolean values as string? Default: true
@@ -207,21 +207,30 @@ class CoreHelper
             return null;
         }
 
-        $selfCaller = function ($v) use ($exportBoolAsString, $castAsString) {
-            return self::prepareValue($v, $exportBoolAsString, $castAsString);
+        if (is_bool($value)) {
+            return $exportBoolAsString ? var_export($value, true) : $value;
+        }
+
+        return $castAsString ? (string) $value : self::prepareCollectedValues($value, $exportBoolAsString);
+    }
+
+    /**
+     * Prepare a mixed typed value or array into a readable form.
+     *
+     * @param mixed $value Any mixed typed value.
+     * @param bool $exportBoolAsString Should export boolean values as string? Default: true
+     *
+     * @return mixed A valid readable instance to be sent in form/query.
+     */
+    private static function prepareCollectedValues($value, bool $exportBoolAsString)
+    {
+        $selfCaller = function ($v) use ($exportBoolAsString) {
+            return self::prepareValue($v, $exportBoolAsString);
         };
 
         if (is_array($value)) {
             // recursively calling this function to resolve all types in any array
             return array_map($selfCaller, $value);
-        }
-
-        if (is_bool($value)) {
-            return $exportBoolAsString ? var_export($value, true) : $value;
-        }
-
-        if ($castAsString) {
-            return (string) $value;
         }
 
         if ($value instanceof JsonSerializable) {
@@ -245,16 +254,7 @@ class CoreHelper
         array $properties,
         string $propertiesPostfix = ''
     ): string {
-        $formattedProperties = array_map(function ($key, $value) {
-            if (is_null($value)) {
-                return null; // Skip null values
-            }
-            $value = is_array($value) ? self::stringify('', $value) : self::prepareValue($value, true, true);
-            if (is_string($key)) {
-                return "$key: $value";
-            }
-            return $value;
-        }, array_keys($properties), $properties);
+        $formattedProperties = array_map([self::class, 'stringifyProperty'], array_keys($properties), $properties);
         $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
         $output = ltrim("$prefix [$formattedPropertiesString");
 
@@ -264,5 +264,23 @@ class CoreHelper
 
         $propertiesPostfix = substr($propertiesPostfix, strpos($propertiesPostfix, '[') + 1);
         return "$output, $propertiesPostfix";
+    }
+
+    /**
+     * Converts the provided key value pair into a human-readable string representation.
+     */
+    private static function stringifyProperty($key, $value)
+    {
+        if (is_null($value)) {
+            return null; // Skip null values
+        }
+
+        $value = is_array($value) ? self::stringify('', $value) : self::prepareValue($value, true, true);
+        if (is_string($key)) {
+            return "$key: $value";
+        }
+
+        // Skip keys representation for numeric keys (i.e. non associative arrays)
+        return $value;
     }
 }
