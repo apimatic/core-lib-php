@@ -255,13 +255,11 @@ class CoreHelper
         string $processedProperties = ''
     ): string {
         $formattedProperties = array_map([self::class, 'stringifyProperty'], array_keys($properties), $properties);
-
         if (!empty($processedProperties)) {
-            $processedProperties = substr($processedProperties, strpos($processedProperties, '[') + 1, -1);
-            $formattedProperties[] = $processedProperties;
+            $formattedProperties[] = substr($processedProperties, strpos($processedProperties, '[') + 1, -1);
         }
-        $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
 
+        $formattedPropertiesString = implode(', ', array_filter($formattedProperties));
         return ltrim("$prefix [$formattedPropertiesString]");
     }
 

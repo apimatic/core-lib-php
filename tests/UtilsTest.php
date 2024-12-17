@@ -2,11 +2,11 @@
 
 namespace Core\Tests;
 
-use Core\Tests\Mocking\MockHelper;
 use Core\Tests\Mocking\Other\Customer;
 use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Other\Order;
 use Core\Tests\Mocking\Other\Person;
+use Core\Tests\Mocking\Types\MockFileWrapper;
 use Core\Utils\CoreHelper;
 use Core\Utils\DateHelper;
 use Core\Utils\XmlDeserializer;
@@ -187,7 +187,7 @@ class UtilsTest extends TestCase
         $this->assertEquals("false", CoreHelper::convertToNullableString("false"));
     }
 
-    public function testToString()
+    public function testToStringWithInheritanceAndNesting()
     {
         $customer = new Customer();
         $customer->name = 'John Doe';
@@ -210,19 +210,31 @@ class UtilsTest extends TestCase
         $order->total = 250.75;
         $order->delivered = true;
 
-        $expected = 'Placed Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
+        $expected = 'Order [orderId: 123, sender: Customer [email: john.doe@example.com, ' .
             'name: John Doe, additionalProperties: [age: 21]], similarOrders: [Order [orderId: 345], ' .
             'Order [orderId: 567, sender: Customer [email: john.doe@example.com, name: John Doe, ' .
             'additionalProperties: [age: 21]]]], total: 250.75, delivered: true]';
-        $actual = "Placed $order";
 
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $order);
     }
 
-    public function testToStringWithNonArrayAndNonModelProperties()
+    public function testToStringWithFileType()
     {
-        $fileWrapper = MockHelper::getFileWrapper();
+        $fileWrapper = MockFileWrapper::createFromPath('some\path\test.txt', 'text/plain', 'My Text');
 
+        $person = new Person();
+        $person->additionalProperties = [
+            'file' => $fileWrapper
+        ];
+
+        $expected = 'Person [additionalProperties: [file: MockFileWrapper [realFilePath: some\path\test.txt,' .
+            ' mimeType: text/plain, filename: My Text]]]';
+
+        $this->assertEquals($expected, $person);
+    }
+
+    public function testToStringWithStdClass()
+    {
         $object = new stdClass();
         $object->name = "John";
         $object->age = 30;
@@ -230,63 +242,18 @@ class UtilsTest extends TestCase
         $person = new Person();
         $person->additionalProperties = [
             'stdClass' => $object,
-            'file' => $fileWrapper
+            'stdClassArray' => [$object, $object],
+            'stdClassMap' => ['keyA' => $object, 'keyB' => $object]
         ];
 
-        $expected = 'My Person [additionalProperties: [stdClass: [name: John, age: 30], file: MockFileWrapper' .
-            ' [realFilePath: C:\Users\Asad Apimatic\vs-workspace\core-lib-php\tests\Mocking\Other\testFile.txt,' .
-            ' mimeType: text/plain, filename: My Text]]]';
-        $actual = "My $person";
+        $expected = 'Person [additionalProperties: [stdClass: [name: John, age: 30], stdClassArray: ' .
+            '[[name: John, age: 30], [name: John, age: 30]], stdClassMap: [keyA: [name: John, age: 30], ' .
+            'keyB: [name: John, age: 30]]]]';
 
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $person);
     }
 
     public function testCoreHelperStringify()
-    {
-        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 1, additionalProperties: ' .
-            '[additional1: [A, B, false, true], additional2: other string, additional3: false], ' .
-            'parentProp1: 1.1, parentProp2: some string]';
-
-        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
-            'Model',
-            [
-                'prop1' => true,
-                'prop2' => 90,
-                'prop3' => 'my string 1',
-                'additionalProperties' =>
-                    [
-                        'additional1' => [ 'A', 'B', false, true ],
-                        'additional2' => 'other string',
-                        'additional3' => false,
-                    ]
-            ],
-            CoreHelper::stringify(
-                'Parent',
-                [
-                    'parentProp1' => 1.1,
-                    'parentProp2' => 'some string'
-                ]
-            )
-        ));
-    }
-
-    public function testCoreHelperStringifyWithoutAdditionalProperties()
-    {
-        $expectedStringNotation = 'Model [prop1: true, prop2: 90.234, prop3: my string 2, parentProp1: 1.0, ' .
-            'parentProp2: some string]';
-
-        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
-            'Model',
-            [
-                'prop1' => true,
-                'prop2' => 90.234,
-                'prop3' => 'my string 2'
-            ],
-            'Parent [parentProp1: 1.0, parentProp2: some string]'
-        ));
-    }
-
-    public function testCoreHelperStringifyWithoutPostfix()
     {
         $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 3, prop4: [23, 24.4]]';
 
@@ -298,6 +265,37 @@ class UtilsTest extends TestCase
                 'prop3' => 'my string 3',
                 'prop4' => [23, 24.4]
             ]
+        ));
+    }
+
+    public function testCoreHelperStringifyWithProcessedProperties()
+    {
+        $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 1, ' .
+            'parentProp1: 1.1, parentProp2: some string, additionalProperties: ' .
+            '[additional1: [A, B, false, true], additional2: other string, additional3: false]]';
+
+        $processedProperties = CoreHelper::stringify(
+            'Parent',
+            [
+                'parentProp1' => 1.1,
+                'parentProp2' => 'some string',
+                'additionalProperties' =>
+                    [
+                        'additional1' => [ 'A', 'B', false, true ],
+                        'additional2' => 'other string',
+                        'additional3' => false,
+                    ]
+            ]
+        );
+
+        $this->assertEquals($expectedStringNotation, CoreHelper::stringify(
+            'Model',
+            [
+                'prop1' => true,
+                'prop2' => 90,
+                'prop3' => 'my string 1'
+            ],
+            $processedProperties
         ));
     }
 
