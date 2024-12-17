@@ -253,6 +253,24 @@ class UtilsTest extends TestCase
         $this->assertEquals($expected, $person);
     }
 
+    public function testToStringWithDateTime()
+    {
+        $date = DateHelper::fromSimpleDate('2024-01-16');
+
+        $person = new Person();
+        $person->additionalProperties = [
+            'date' => $date,
+            'dateArray' => [$date, $date],
+            'dateMap' => ['keyA' => $date, 'keyB' => $date]
+        ];
+
+        $expected = 'Person [additionalProperties: [date: 2024-01-16T00:00:00+00:00, dateArray: ' .
+            '[2024-01-16T00:00:00+00:00, 2024-01-16T00:00:00+00:00], dateMap: [keyA: 2024-01-16T00:00:00+00:00,' .
+            ' keyB: 2024-01-16T00:00:00+00:00]]]';
+
+        $this->assertEquals($expected, $person);
+    }
+
     public function testCoreHelperStringify()
     {
         $expectedStringNotation = 'Model [prop1: true, prop2: 90, prop3: my string 3, prop4: [23, 24.4]]';

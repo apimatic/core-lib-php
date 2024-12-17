@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core\Utils;
 
 use Core\Types\Sdk\CoreFileWrapper;
+use DateTime;
 use InvalidArgumentException;
 use JsonSerializable;
 use stdClass;
@@ -272,10 +273,7 @@ class CoreHelper
             return null; // Skip null values
         }
 
-        if ($value instanceof stdClass) {
-            $value = (array) $value;
-        }
-
+        $value = self::handleNonConvertibleTypes($value);
         $value = is_array($value) ? self::stringify('', $value) : self::prepareValue($value, true, true);
 
         if (is_string($key)) {
@@ -283,6 +281,19 @@ class CoreHelper
         }
 
         // Skip keys representation for numeric keys (i.e. non associative arrays)
+        return $value;
+    }
+
+    private static function handleNonConvertibleTypes($value)
+    {
+        if ($value instanceof stdClass) {
+            return (array) $value;
+        }
+
+        if ($value instanceof DateTime) {
+            return DateHelper::toRfc3339DateTime($value);
+        }
+
         return $value;
     }
 }
