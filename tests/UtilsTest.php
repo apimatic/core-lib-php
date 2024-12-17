@@ -255,7 +255,7 @@ class UtilsTest extends TestCase
 
     public function testToStringWithDateTime()
     {
-        $date = DateHelper::fromSimpleDate('2024-01-16');
+        $date = DateHelper::fromSimpleDate('2024-01-17');
 
         $person = new Person();
         $person->additionalProperties = [
@@ -264,9 +264,9 @@ class UtilsTest extends TestCase
             'dateMap' => ['keyA' => $date, 'keyB' => $date]
         ];
 
-        $expected = 'Person [additionalProperties: [date: 2024-01-16T00:00:00+00:00, dateArray: ' .
-            '[2024-01-16T00:00:00+00:00, 2024-01-16T00:00:00+00:00], dateMap: [keyA: 2024-01-16T00:00:00+00:00,' .
-            ' keyB: 2024-01-16T00:00:00+00:00]]]';
+        $expected = 'Person [additionalProperties: [date: 2024-01-17T00:00:00+00:00, dateArray: ' .
+            '[2024-01-17T00:00:00+00:00, 2024-01-17T00:00:00+00:00], dateMap: [keyA: 2024-01-17T00:00:00+00:00,' .
+            ' keyB: 2024-01-17T00:00:00+00:00]]]';
 
         $this->assertEquals($expected, $person);
     }
