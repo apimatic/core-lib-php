@@ -18,7 +18,7 @@ body:
       options:
         - label: I have searched the existing issues, and I could not find an existing issue for this feature
           required: true
-        - label: I am requesting a straightforward extension of existing functionality
+        - label: I am requesting an extension of the existing functionality
   - type: textarea
     attributes:
       label: Describe the feature
