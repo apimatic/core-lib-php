@@ -45,16 +45,6 @@ body:
       required: true
 
   - type: textarea
-    id: logs
-    attributes:
-      label: Relevant log output
-      description: |
-        If applicable, log output to help explain your problem.
-      render: shell
-    validations:
-      required: false
-
-  - type: textarea
     attributes:
       label: Environment
       description: |
@@ -65,6 +55,16 @@ body:
         - **OS**:
         - **Language version**:
       render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        If applicable, log output to help explain your problem.
+      render: shell
     validations:
       required: false
 
