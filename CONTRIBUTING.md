@@ -44,6 +44,7 @@ Thank you for your interest in contributing! 🎉 Your contributions help make t
   - Provide a clear **description** of the changes.
   - Mention related **issue numbers**.
   - Request a **review** from maintainers.
+  - Make sure your changes clear all the **PR Checks**.
 
 ---
 
