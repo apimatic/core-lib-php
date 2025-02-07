@@ -51,9 +51,11 @@ body:
         examples:
           - **OS**: Ubuntu 20.04
           - **Language version**: PHP 8.2 (`php -v`)
+          - **SDK Name**: PayPal (If you are using this library as a dependency, please name the parent SDK)
       value: |
         - **OS**:
         - **Language version**:
+        - **SDK Name**:
       render: markdown
     validations:
       required: true
