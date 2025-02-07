@@ -12,8 +12,6 @@ body:
       label: Is this a new bug?
       description: >
         In other words: Is this an error, flaw, failure or fault? Please search issues to see if someone has already reported the bug you encountered.
-
-        If this is a request for help or troubleshooting code in your own Pinecone project, please join [the Pinecone Community Forum](https://community.pinecone.io/).
       options:
         - label: I believe this is a new bug
           required: true
