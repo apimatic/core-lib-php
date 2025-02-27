@@ -102,7 +102,7 @@ class EndToEndTest extends TestCase
             ->bodyMatcher(NativeBodyMatcher::init(TestParam::object('{"body":{"httpMethod":"POST","queryUrl":' .
                 '"https:\/\/my\/path\/v2\/api\/path\/poster?&date+array=Fri%2C+01+Oct+2021+00%3A00%3A00+GMT%2CThu' .
                 '%2C+30+Sep+2021+00%3A00%3A00+GMT&token=someAuthToken&authorization=accessToken","headers":{' .
-                '"additionalHead1":"headVal1","additionalHead2":"headVal2","header":1234,"token":"someAuthToken",' .
+                '"additionalHead1":"headVal1","additionalHead2":"headVal2","header":"1234","token":"someAuthToken",' .
                 '"authorization":"accessToken","Accept":"application\/json"},"parameters":{"form 2":{"key1":' .
                 '"value 1","key2":"false","key3":2.3}},"parametersEncoded":{' .
                 '"form 2":"form+2%5Bkey1%5D=value+1&form+2%5Bkey2%5D=false&form+2%5Bkey3%5D=2.3"},' .

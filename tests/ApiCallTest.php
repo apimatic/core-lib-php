@@ -147,6 +147,34 @@ class ApiCallTest extends TestCase
         $this->assertEquals(890.098, $request->getHeaders()['key5']);
     }
 
+    public function testComplexHeaderParams()
+    {
+        $request = (new RequestBuilder(RequestMethod::POST, '/some/path'))
+            ->parameters(
+                HeaderParam::init('class', new MockClass([
+                    'my string' => 'value',
+                ])),
+                HeaderParam::init('file', MockHelper::getFileWrapper()),
+                HeaderParam::init('array', ['my number' => 123]),
+                HeaderParam::init('false', false),
+                HeaderParam::init('true', true),
+                HeaderParam::init('number', 1234),
+                HeaderParam::init('string', 'value s')
+            )
+            ->build(MockHelper::getClient());
+
+        $this->assertEquals('{"body":{"my string":"value"}}', $request->getHeaders()['class']);
+        $this->assertEquals('{"my number":123}', $request->getHeaders()['array']);
+        $this->assertEquals(
+            'This test file is created to test CoreFileWrapper functionality',
+            $request->getHeaders()['file']
+        );
+        $this->assertEquals('false', $request->getHeaders()['false']);
+        $this->assertEquals('true', $request->getHeaders()['true']);
+        $this->assertEquals(1234, $request->getHeaders()['number']);
+        $this->assertEquals('value s', $request->getHeaders()['string']);
+    }
+
     public function testCollectedQueryParams()
     {
         $options = ['key1' => true, 'key2' => 'some string', 'key3' => 23];

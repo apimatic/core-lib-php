@@ -158,7 +158,7 @@ class Request implements RequestSetterInterface
      */
     public function addHeader(string $key, $value): void
     {
-        $this->headers[$key] = $value;
+        $this->headers[$key] = CoreHelper::serialize($value);
     }
 
     /**
