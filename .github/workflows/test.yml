@@ -67,11 +67,9 @@ jobs:
     - name: Run tests
       run: composer test-ci
 
-    - name: Upload coverage report
+    - name: SonarQube Scan
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '8.1' && github.actor != 'dependabot[bot]' }}
-      uses: paambaati/codeclimate-action@v3.0.0
+      uses: SonarSource/sonarqube-scan-action@v5.2.0
       env:
-        CC_TEST_REPORTER_ID: 3ee5e7a87dbd07c2616dfc72aada93a8d88684a483279f3995ab045190b5a811
-      with:
-        coverageLocations: |
-          ${{github.workspace}}/coverage-clover.xml:clover
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
