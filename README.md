@@ -2,8 +2,9 @@
 
 [![Version][packagist-version]][packagist-url]
 [![Tests][test-badge]][test-url]
-[![Test Coverage](https://api.codeclimate.com/v1/badges/90aa03dca1ef28d9cef3/test_coverage)](https://codeclimate.com/github/apimatic/core-lib-php/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/90aa03dca1ef28d9cef3/maintainability)](https://codeclimate.com/github/apimatic/core-lib-php/maintainability)
+[![Test Coverage][coverage-badge]][coverage-url]
+[![Maintainability Rating][maintainability-badge]][maintainability-url]
+[![Vulnerabilities][vulnerabilities-badge]][vulnerabilities-url]
 [![Licence][license-badge]][license-url]
 
 
@@ -82,5 +83,11 @@ composer require "apimatic/core"
 [packagist-downloads]: https://img.shields.io/packagist/dm/apimatic/core.svg?style=flat
 [test-badge]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml/badge.svg
 [test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
+[coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=apimatic_core-lib-php&metric=coverage
+[coverage-url]: https://sonarcloud.io/summary/new_code?id=apimatic_core-lib-php
+[maintainability-badge]: https://sonarcloud.io/api/project_badges/measure?project=apimatic_core-lib-php&metric=sqale_rating
+[maintainability-url]: https://sonarcloud.io/summary/new_code?id=apimatic_core-lib-php
+[vulnerabilities-badge]: https://sonarcloud.io/api/project_badges/measure?project=apimatic_core-lib-php&metric=vulnerabilities
+[vulnerabilities-url]: https://sonarcloud.io/summary/new_code?id=apimatic_core-lib-php
 [license-badge]: https://img.shields.io/badge/licence-MIT-blue
 [license-url]: LICENSE
