@@ -69,14 +69,14 @@ class SignatureVerifierTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('secretKey must be a non-empty string');
-        $verifier = new HmacSignatureVerifier('', self::SIGNATURE_HEADER, $this->createTemplateResolver());
+        $verifier = new HmacSignatureVerifier('', [MockVerificationFailure::class, 'init'], self::SIGNATURE_HEADER, $this->createTemplateResolver());
     }
 
     public function testShouldThrowErrorForEmptySignatureHeader(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('signatureHeader must be a non-empty string');
-        $verifier = new HmacSignatureVerifier(self::SECRET_KEY, '', $this->createTemplateResolver());
+        $verifier = new HmacSignatureVerifier(self::SECRET_KEY, [MockVerificationFailure::class, 'init'], '', $this->createTemplateResolver());
     }
 
     public function testShouldThrowErrorForInvalidAlgorithm(): void
@@ -85,6 +85,7 @@ class SignatureVerifierTest extends TestCase
         $this->expectExceptionMessage('algorithm must be one of');
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             'invalid'
@@ -97,6 +98,7 @@ class SignatureVerifierTest extends TestCase
         $this->expectExceptionMessage('encoding must be one of');
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             self::HMAC_ALGORITHM,
@@ -108,6 +110,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver()
         );
@@ -125,6 +128,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver()
         );
@@ -141,6 +145,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             self::HMAC_ALGORITHM,
@@ -167,6 +172,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver()
         );
@@ -189,6 +195,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             'sha512',
@@ -213,6 +220,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             'sha512',
@@ -237,6 +245,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             'sha512',
@@ -264,6 +273,7 @@ class SignatureVerifierTest extends TestCase
 
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             self::HMAC_ALGORITHM,
@@ -290,6 +300,7 @@ class SignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             'different-key',
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
             self::HMAC_ALGORITHM,
