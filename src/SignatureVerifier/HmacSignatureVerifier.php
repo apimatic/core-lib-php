@@ -14,6 +14,7 @@ class HmacSignatureVerifier implements SignatureVerifierInterface
     private const VALID_ALGORITHMS = ['sha256', 'sha512'];
 
     private $secretKey;
+    private $signatureVerificationFailureCreator;
     private $signatureHeader;
     private $algorithm;
     private $encoding;
@@ -22,6 +23,7 @@ class HmacSignatureVerifier implements SignatureVerifierInterface
 
     public function __construct(
         string $secretKey,
+        callable $signatureVerificationFailureCreator,
         string $signatureHeader,
         ?callable $templateResolver = null,
         string $algorithm = 'sha256',
@@ -42,6 +44,7 @@ class HmacSignatureVerifier implements SignatureVerifierInterface
         }
 
         $this->secretKey = $secretKey;
+        $this->signatureVerificationFailureCreator = $signatureVerificationFailureCreator;
         $this->signatureHeader = $signatureHeader;
         $this->algorithm = strtolower($algorithm);
         $this->encoding = strtolower($encoding);
@@ -58,7 +61,7 @@ class HmacSignatureVerifier implements SignatureVerifierInterface
         $receivedSignature = $request->headers->get($this->signatureHeader);
 
         if ($receivedSignature === null) {
-            return VerificationFailure::init('Missing signature header');
+            return call_user_func($this->signatureVerificationFailureCreator, 'Missing signature header');
         }
 
         if ($this->templateResolver !== null) {
@@ -79,7 +82,7 @@ class HmacSignatureVerifier implements SignatureVerifierInterface
         }
 
         if (!hash_equals($expectedSignature, $receivedSignature)) {
-            return VerificationFailure::init('Signature mismatch');
+            return call_user_func($this->signatureVerificationFailureCreator, 'Signature mismatch');
         }
 
         return true;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Core\Tests\SignatureVerifier;
+namespace Core\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Core\SignatureVerifier\HmacSignatureVerifier;
-use Core\Types\Sdk\VerificationFailure;
+use Core\Tests\Mocking\SignatureVerifier\MockVerificationFailure;
 
-class HmacSignatureVerifierTest extends TestCase
+class SignatureVerifierTest extends TestCase
 {
     private const SECRET_KEY = 'test_secret';
     private const SIGNATURE_HEADER = 'X-Signature';
@@ -117,7 +117,7 @@ class HmacSignatureVerifierTest extends TestCase
 
         $result = $verifier->verify($request);
 
-        $this->assertInstanceOf(VerificationFailure::class, $result);
+        $this->assertInstanceOf(MockVerificationFailure::class, $result);
         $this->assertEquals('Missing signature header', $result->getErrorMessage());
     }
 
@@ -133,7 +133,7 @@ class HmacSignatureVerifierTest extends TestCase
 
         $result = $verifier->verify($request);
 
-        $this->assertInstanceOf(VerificationFailure::class, $result);
+        $this->assertInstanceOf(MockVerificationFailure::class, $result);
         $this->assertEquals('Signature mismatch', $result->getErrorMessage());
     }
 
@@ -310,7 +310,7 @@ class HmacSignatureVerifierTest extends TestCase
 
         $result = $verifier->verify($request);
 
-        $this->assertInstanceOf(VerificationFailure::class, $result);
+        $this->assertInstanceOf(MockVerificationFailure::class, $result);
         $this->assertEquals('Signature mismatch', $result->getErrorMessage());
     }
 
@@ -318,6 +318,7 @@ class HmacSignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             'different-key',
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             null,
             self::HMAC_ALGORITHM,
@@ -337,7 +338,7 @@ class HmacSignatureVerifierTest extends TestCase
 
         $result = $verifier->verify($request);
 
-        $this->assertInstanceOf(VerificationFailure::class, $result);
+        $this->assertInstanceOf(MockVerificationFailure::class, $result);
         $this->assertEquals('Signature mismatch', $result->getErrorMessage());
     }
 
@@ -345,6 +346,7 @@ class HmacSignatureVerifierTest extends TestCase
     {
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             null,
             self::HMAC_ALGORITHM,
@@ -373,6 +375,7 @@ class HmacSignatureVerifierTest extends TestCase
         };
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $templateResolver,
             self::HMAC_ALGORITHM,
@@ -396,6 +399,7 @@ class HmacSignatureVerifierTest extends TestCase
         };
         $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
+            [MockVerificationFailure::class, 'init'],
             self::SIGNATURE_HEADER,
             $templateResolver,
             self::HMAC_ALGORITHM,
