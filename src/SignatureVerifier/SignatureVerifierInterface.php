@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Core\SignatureVerifier;
 
 use Symfony\Component\HttpFoundation\Request;
-use Core\Types\Sdk\VerificationFailure;
+use Core\SignatureVerifier\VerificationFailure;
 
 interface SignatureVerifierInterface
 {
