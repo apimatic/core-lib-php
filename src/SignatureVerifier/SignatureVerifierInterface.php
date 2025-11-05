@@ -6,7 +6,6 @@ namespace Core\SignatureVerifier;
 
 use Symfony\Component\HttpFoundation\Request;
 
-
 interface SignatureVerifierInterface
 {
     /**

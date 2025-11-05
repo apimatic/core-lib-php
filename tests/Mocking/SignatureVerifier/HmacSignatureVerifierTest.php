@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Core\SignatureVerifier\HmacSignatureVerifier;
 use Core\Types\Sdk\VerificationFailure;
 
-
 class HmacSignatureVerifierTest extends TestCase
 {
     private const SECRET_KEY = 'test_secret';

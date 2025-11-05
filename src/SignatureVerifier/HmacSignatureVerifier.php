@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Core\Types\Sdk\VerificationFailure;
 use Core\SignatureVerifier\SignatureVerifierInterface;
 
-
 class HmacSignatureVerifier implements SignatureVerifierInterface
 {
     private const VALID_ENCODINGS = ['hex', 'base64', 'base64url'];
