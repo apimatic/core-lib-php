@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core\SignatureVerifier;
 
 use Symfony\Component\HttpFoundation\Request;
+use Core\Types\Sdk\VerificationFailure;
 
 interface SignatureVerifierInterface
 {
@@ -12,7 +13,7 @@ interface SignatureVerifierInterface
      * Verifies the signature of a request.
      *
      * @param Request $request
-     * @return VerificationFailure | true
+     * @return VerificationFailure|true
      */
     public function verify(Request $request);
 }

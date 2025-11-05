@@ -6,7 +6,7 @@ namespace Core\Types\Sdk;
 
 class VerificationFailure
 {
-    private string $errorMessage;
+    private $errorMessage;
 
     public function __construct(string $errorMessage)
     {

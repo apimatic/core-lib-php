@@ -69,21 +69,21 @@ class HmacSignatureVerifierTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('secretKey must be a non-empty string');
-        new HmacSignatureVerifier('', self::SIGNATURE_HEADER, $this->createTemplateResolver());
+        $verifier = new HmacSignatureVerifier('', self::SIGNATURE_HEADER, $this->createTemplateResolver());
     }
 
     public function testShouldThrowErrorForEmptySignatureHeader(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('signatureHeader must be a non-empty string');
-        new HmacSignatureVerifier(self::SECRET_KEY, '', $this->createTemplateResolver());
+        $verifier = new HmacSignatureVerifier(self::SECRET_KEY, '', $this->createTemplateResolver());
     }
 
     public function testShouldThrowErrorForInvalidAlgorithm(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('algorithm must be one of');
-        new HmacSignatureVerifier(
+        $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
@@ -95,7 +95,7 @@ class HmacSignatureVerifierTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('encoding must be one of');
-        new HmacSignatureVerifier(
+        $verifier = new HmacSignatureVerifier(
             self::SECRET_KEY,
             self::SIGNATURE_HEADER,
             $this->createTemplateResolver(),
