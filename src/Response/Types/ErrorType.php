@@ -113,7 +113,10 @@ class ErrorType
         $jsonPointers = $jsonPointersInTemplate[0];
 
         for ($x = 0; $x < count($jsonPointers); $x++) {
-            $placeHolderValue = JsonPointerValue::getJsonPointerValue($response->getRawBody(), ltrim($jsonPointers[$x], '#'));
+            $placeHolderValue = JsonPointerValue::getJsonPointerValue(
+                $response->getRawBody(),
+                ltrim($jsonPointers[$x], '#')
+            );
 
             $errorDescription = $this->addPlaceHolderValue(
                 $errorDescription,
