@@ -25,7 +25,7 @@ class JsonPointerValue
             $pointerValue = $jsonPointer->get($pointer);
 
             if (is_object($pointerValue)) {
-                return CoreHelper::serialize($pointerValue);
+                $jsonPointer = CoreHelper::serialize($pointerValue);
             }
 
             return $pointerValue;
