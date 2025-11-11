@@ -20,7 +20,7 @@
     "apimatic/core-interfaces": "~0.1.5",
     "apimatic/jsonmapper": "^3.1.1",
     "php-jsonpointer/php-jsonpointer": "^3.0.2",
-    "symfony/http-foundation": "^5.4"
+    "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.5",
