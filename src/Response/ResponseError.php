@@ -79,14 +79,13 @@ class ResponseError
             return $context->toApiResponse($context->getResponseBody());
         }
 
-        $errorTypeName = null;
         if (isset($this->errors[strval($statusCode)])) {
-            $errorTypeName = $this->errors[strval($statusCode)]->getClassName();
+            return $context->toApiResponseWithMappedType($this->errors[strval($statusCode)]->getClassName());
         }
         if (isset($this->errors[strval(0)])) {
-            $errorTypeName = $this->errors[strval(0)]->getClassName();
+            return $context->toApiResponseWithMappedType($this->errors[strval(0)]->getClassName());
         }
-        return $context->toApiResponseWithMappedType($errorTypeName);
+        return $context->toApiResponse($context->getResponseBody());
     }
 
     private function shouldReturnNull(int $statusCode): bool
