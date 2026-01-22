@@ -13,6 +13,7 @@ class ResponseError
      */
     private $errors;
     private $useApiResponse = false;
+    private $mapErrorTypes = false;
     private $nullOn404 = false;
 
     /**
@@ -23,9 +24,20 @@ class ResponseError
         $this->errors[$errorCode] = $error;
     }
 
+    /**
+     * Sets the useApiResponse flag.
+     */
     public function returnApiResponse(): void
     {
         $this->useApiResponse = true;
+    }
+
+    /**
+     * Sets the mapErrorTypes flag.
+     */
+    public function mapErrorTypesInApiResponse()
+    {
+        $this->mapErrorTypes = true;
     }
 
     /**
@@ -36,31 +48,17 @@ class ResponseError
         $this->nullOn404 = true;
     }
 
-    private function shouldReturnNull(int $statusCode): bool
-    {
-        if (!$this->nullOn404) {
-            return false;
-        }
-        if ($statusCode !== 404) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Returns calculated result on failure or throws an exception.
      */
     public function getResult(Context $context)
     {
+        if ($this->useApiResponse) {
+            return $this->getApiResponse($context);
+        }
         $statusCode = $context->getResponse()->getStatusCode();
         if ($this->shouldReturnNull($statusCode)) {
-            if ($this->useApiResponse) {
-                return $context->toApiResponse(null);
-            }
             return null;
-        }
-        if ($this->useApiResponse) {
-            return $context->toApiResponse($context->getResponseBody());
         }
         if (isset($this->errors[strval($statusCode)])) {
             throw $this->errors[strval($statusCode)]->throwable($context);
@@ -69,5 +67,33 @@ class ResponseError
             throw $this->errors[strval(0)]->throwable($context); // throw default error (if set)
         }
         throw $context->toApiException('HTTP Response Not OK');
+    }
+
+    private function getApiResponse(Context $context)
+    {
+        $statusCode = $context->getResponse()->getStatusCode();
+        if ($this->shouldReturnNull($statusCode)) {
+            return $context->toApiResponse(null);
+        }
+        if (!$this->mapErrorTypes) {
+            return $context->toApiResponse($context->getResponseBody());
+        }
+
+        $errorTypeName = null;
+        if (isset($this->errors[strval($statusCode)])) {
+            $errorTypeName = $this->errors[strval($statusCode)]->getClassName();
+        }
+        if (isset($this->errors[strval(0)])) {
+            $errorTypeName = $this->errors[strval(0)]->getClassName();
+        }
+        return $context->toApiResponseWithMappedType($errorTypeName);
+    }
+
+    private function shouldReturnNull(int $statusCode): bool
+    {
+        if (!$this->nullOn404) {
+            return false;
+        }
+        return $statusCode == 404;
     }
 }

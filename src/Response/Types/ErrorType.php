@@ -38,13 +38,21 @@ class ErrorType
     }
 
     /**
-     * Throws an Api exception from the context provided.
+     * Returns a throwable instance of Api exception from the context provided.
      */
     public function throwable(Context $context)
     {
         $this->updateErrorDescriptionTemplate($context->getResponse());
 
         return $context->toApiException($this->description, $this->className);
+    }
+
+    /**
+     * Returns the class name of the error type.
+     */
+    public function getClassName(): ?string
+    {
+        return $this->className;
     }
 
     private function updateErrorDescriptionTemplate($response): void
