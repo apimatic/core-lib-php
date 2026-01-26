@@ -100,6 +100,6 @@ class ResponseError
         if (!$this->nullOn404) {
             return false;
         }
-        return $statusCode == 404;
+        return $statusCode === 404;
     }
 }
