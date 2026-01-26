@@ -60,13 +60,13 @@ class ResponseError
         if ($this->shouldReturnNull($statusCode)) {
             return null;
         }
-        if (isset($this->errors[strval($statusCode)])) {
-            throw $this->errors[strval($statusCode)]->throwable($context);
+
+        $errorType = $this->getErrorType($statusCode);
+        if (empty($errorType)) {
+            throw $context->toApiException('HTTP Response Not OK');
         }
-        if (isset($this->errors[strval(0)])) {
-            throw $this->errors[strval(0)]->throwable($context); // throw default error (if set)
-        }
-        throw $context->toApiException('HTTP Response Not OK');
+
+        throw $errorType->throwable($context);
     }
 
     private function getApiResponse(Context $context)
@@ -75,17 +75,24 @@ class ResponseError
         if ($this->shouldReturnNull($statusCode)) {
             return $context->toApiResponse(null);
         }
-        if (!$this->mapErrorTypes) {
+
+        $errorType = $this->getErrorType($statusCode);
+        if (!$this->mapErrorTypes || empty($errorType)) {
             return $context->toApiResponse($context->getResponseBody());
         }
 
+        return $context->toApiResponseWithMappedType($errorType->getClassName());
+    }
+
+    private function getErrorType(int $statusCode): ?ErrorType
+    {
         if (isset($this->errors[strval($statusCode)])) {
-            return $context->toApiResponseWithMappedType($this->errors[strval($statusCode)]->getClassName());
+            return $this->errors[strval($statusCode)];
         }
         if (isset($this->errors[strval(0)])) {
-            return $context->toApiResponseWithMappedType($this->errors[strval(0)]->getClassName());
+            return $this->errors[strval(0)];
         }
-        return $context->toApiResponse($context->getResponseBody());
+        return null;
     }
 
     private function shouldReturnNull(int $statusCode): bool
