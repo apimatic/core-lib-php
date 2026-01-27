@@ -21,6 +21,7 @@ use Core\Tests\Mocking\Other\MockClass;
 use Core\Tests\Mocking\Other\MockException;
 use Core\Tests\Mocking\Other\MockException1;
 use Core\Tests\Mocking\Other\MockException3;
+use Core\Tests\Mocking\Other\MockException4;
 use Core\Tests\Mocking\Response\MockResponse;
 use Core\Tests\Mocking\Types\MockApiResponse;
 use Core\Tests\Mocking\Types\MockRequest;
@@ -36,6 +37,7 @@ use PHPUnit\Framework\TestCase;
 class ApiCallTest extends TestCase
 {
     private const DUMMY_BODY = ['res' => 'This is raw body'];
+    private const DUMMY_BODY_NATIVE = 'string body';
 
     /**
      * @param string $query Just the query path of the url
@@ -911,6 +913,85 @@ class ApiCallTest extends TestCase
         $result = MockHelper::responseHandler()->type(MockClass::class)->returnApiResponse()->getResult($context);
         $this->assertInstanceOf(MockApiResponse::class, $result);
         $this->assertEquals(self::DUMMY_BODY, $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testApiResponseWithMappedErrorTypes()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(400);
+        $response->setBody(self::DUMMY_BODY);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
+            ->throwErrorOn("400", ErrorType::init('', MockException4::class))
+            ->returnApiResponse()
+            ->mapErrorTypesInApiResponse()
+            ->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(new MockException4(), $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testApiResponseWithMappedErrorTypesWithoutClass()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(400);
+        $response->setBody(self::DUMMY_BODY);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
+            ->throwErrorOn("400", ErrorType::init(''))
+            ->returnApiResponse()
+            ->mapErrorTypesInApiResponse()
+            ->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(self::DUMMY_BODY, $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testApiResponseWithMappedErrorTypesWithoutObjBody()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(400);
+        $response->setBody(self::DUMMY_BODY_NATIVE);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
+            ->throwErrorOn("400", ErrorType::init('', MockException4::class))
+            ->returnApiResponse()
+            ->mapErrorTypesInApiResponse()
+            ->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(self::DUMMY_BODY_NATIVE, $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testApiResponseWithMappedErrorTypesWithUnknownStatus()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(100);
+        $response->setBody(self::DUMMY_BODY);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
+            ->returnApiResponse()
+            ->mapErrorTypesInApiResponse()
+            ->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(self::DUMMY_BODY, $result->getResult());
+        $this->assertTrue($result->isError());
+    }
+
+    public function testApiResponseWithMappedErrorTypesWithUnknownStatusGlobal()
+    {
+        $response = new MockResponse();
+        $response->setStatusCode(100);
+        $response->setBody(self::DUMMY_BODY);
+        $context = new Context(MockHelper::getClient()->getGlobalRequest(), $response, MockHelper::getClient());
+        $result = MockHelper::responseHandler()
+            ->throwErrorOn("0", ErrorType::init('', MockException4::class))
+            ->returnApiResponse()
+            ->mapErrorTypesInApiResponse()
+            ->getResult($context);
+        $this->assertInstanceOf(MockApiResponse::class, $result);
+        $this->assertEquals(new MockException4(), $result->getResult());
         $this->assertTrue($result->isError());
     }
 
